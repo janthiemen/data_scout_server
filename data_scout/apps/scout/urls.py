@@ -14,8 +14,31 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+from rest_framework import routers
+from . import views
+from rest_framework_simplejwt import views as jwt_views
+
+router = routers.DefaultRouter()
+router.register(r'datasource', views.DataSourceViewSet)
+router.register(r'recipe', views.RecipeViewSet)
+router.register(r'transformation', views.TransformationViewSet)
+router.register(r'flow', views.FlowViewSet)
+router.register(r'join', views.JoinViewSet)
+router.register(r'flowstep', views.FlowStepViewSet)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('api/', include(router.urls)),
+    # path('datasource_types/', views.data_source_types_view),
+    path('token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/check/', views.LoginCheckView.as_view(), name='token_check'),
+    path('datasource_types/', views.DataSourceTypesView.as_view(), name='hello'),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
+
+# urlpatterns = [
+#     path('recipe/<int:recipe>/recipe', recipe.get_recipe),
+#     path('recipe/<int:recipe>/data', recipe.get_data),
+# ]
+

@@ -4,132 +4,114 @@ import './App.css';
 
 import * as React from "react";
 
-import { Menu, MenuItem } from "@blueprintjs/core";
-
-import {
-	Cell,
-	Column,
-	ColumnHeaderCell,
-	CopyCellsMenuItem,
-	IMenuContext,
-	SelectionModes,
-	Table,
-	Utils,
-} from "@blueprintjs/table";
+import { ScoutNavbar } from "./components/ScoutNavbar";
+import { DataSources } from "./components/DataSources";
+import { Login } from "./components/User";
+import { Toaster, Position, IProps, IToastProps } from "@blueprintjs/core";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import { APICaller } from './helpers/userService';
 
 // tslint:disable-next-line:no-var-requires
-const sumo = require("./sumo.json") as any[];
+// import { DataTable } from "./components/DataTable";
+// const sumo = require("./sumo.json") as any[];
 
-export type ICellLookup = (rowIndex: number, columnIndex: number) => any;
-export type ISortCallback = (columnIndex: number, comparator: (a: any, b: any) => number) => void;
-
-export interface ISortableColumn {
-	getColumn(getCellData: ICellLookup, sortColumn: ISortCallback): JSX.Element;
+interface LoginRedirectProps extends IProps {
+	isLoggedIn: boolean;
+	loginRequired: boolean;
 }
 
-abstract class AbstractSortableColumn implements ISortableColumn {
-	constructor(protected name: string, protected index: number) { }
-
-	public getColumn(getCellData: ICellLookup, sortColumn: ISortCallback) {
-		const cellRenderer = (rowIndex: number, columnIndex: number) => (
-			<Cell>{getCellData(rowIndex, columnIndex)}</Cell>
-		);
-		const menuRenderer = this.renderMenu.bind(this, sortColumn);
-		const columnHeaderCellRenderer = () => <ColumnHeaderCell name={this.name} menuRenderer={menuRenderer} />;
-		return (
-			<Column
-				cellRenderer={cellRenderer}
-				columnHeaderCellRenderer={columnHeaderCellRenderer}
-				key={this.index}
-				name={this.name}
-			/>
-		);
+function LoginRedirect(props: LoginRedirectProps) {
+	if (!props.isLoggedIn && props.loginRequired) {
+		return <Redirect to='/login' />;
 	}
-
-	protected abstract renderMenu(sortColumn: ISortCallback): JSX.Element;
-}
-
-class DataColumn extends AbstractSortableColumn {
-	protected renderMenu(sortColumn: ISortCallback) {
-		return (
-			<Menu>
-				<MenuItem icon="style" text="Transform">
-					<MenuItem icon="bold" text="Bold" />
-					<MenuItem icon="italic" text="Italic" />
-					<MenuItem icon="underline" text="Underline" />
-				</MenuItem>
-			</Menu>
-		);
+	if (props.isLoggedIn && !props.loginRequired) {
+		return <Redirect to='/' />;
 	}
+	return <span></span>;
 }
 
-export class DataTable extends React.PureComponent {
+export default class App extends React.Component<IProps> {
+	private apiCaller: APICaller;
+	private toaster: Toaster;
+	private refHandlers = {
+		toaster: (ref: Toaster) => (this.toaster = ref),
+	};
 	public state = {
-		columns: [
-			new DataColumn("Rikishi", 0),
-			new DataColumn("Rank - Hatsu Basho", 1),
-			new DataColumn("Record - Hatsu Basho", 2),
-			new DataColumn("Rank - Haru Basho", 3),
-			new DataColumn("Record - Haru Basho", 4),
-			new DataColumn("Rank - Natsu Basho", 5),
-			new DataColumn("Record - Natsu Basho", 6),
-			new DataColumn("Rank - Nagoya Basho", 7),
-			new DataColumn("Record - Nagoya Basho", 8),
-			new DataColumn("Rank - Aki Basho", 9),
-			new DataColumn("Record - Aki Basho", 10),
-			new DataColumn("Rank - Kyūshū Basho", 11),
-			new DataColumn("Record - Kyūshū Basho", 12),
-		] as ISortableColumn[],
-		data: sumo,
-		sortedIndexMap: [] as number[],
-	};
-
-	public render() {
-		const numRows = this.state.data.length;
-		const columns = this.state.columns.map(col => col.getColumn(this.getCellData, this.sortColumn));
-		return (
-			<Table
-				bodyContextMenuRenderer={this.renderBodyContextMenu}
-				numRows={numRows}
-				selectionModes={SelectionModes.COLUMNS_AND_CELLS}
-			>
-				{columns}
-			</Table>
-		);
+		isLoggedIn: true
 	}
 
-	private getCellData = (rowIndex: number, columnIndex: number) => {
-		const sortedRowIndex = this.state.sortedIndexMap[rowIndex];
-		if (sortedRowIndex != null) {
-			rowIndex = sortedRowIndex;
-		}
-		return this.state.data[rowIndex][columnIndex];
-	};
+	constructor(props: IProps) {
+		super(props);
+		this.addToast = this.addToast.bind(this);
+		this.setLoggedIn = this.setLoggedIn.bind(this);
+	}
 
-	private renderBodyContextMenu = (context: IMenuContext) => {
+	/**
+	 * Add a toast.
+	 * @param toast The Blueprint.js toast properties
+	 */
+	private addToast(toast: IToastProps) {
+		toast.timeout = 5000;
+		this.toaster.show(toast);
+	}
+
+	/**
+	 * Set the logged in status of the user.
+	 * @param isLoggedIn Is the user logged in or not?
+	 */
+	private setLoggedIn(isLoggedIn: boolean) {
+		this.setState({isLoggedIn: isLoggedIn});
+	}
+
+	render() {
 		return (
-			<Menu>
-				<CopyCellsMenuItem context={context} getCellData={this.getCellData} text="Copy" />
-			</Menu>
+			<Router>
+				<div>
+					<Toaster autoFocus={false} canEscapeKeyClear={true} position={Position.TOP} ref={this.refHandlers.toaster} />
+					<ScoutNavbar></ScoutNavbar>
+					<Switch>
+						<Route path="/about">
+							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
+							<About />
+						</Route>
+						<Route path="/data_sources">
+							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
+							<DataSources addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
+							{/* <SelectExample /> */}
+						</Route>
+						<Route path="/login">
+							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={false} />
+							<Login addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
+						</Route>
+						<Route path="/">
+							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
+						</Route>
+					</Switch>
+				</div>
+			</Router>
 		);
-	};
-
-	private sortColumn = (columnIndex: number, comparator: (a: any, b: any) => number) => {
-		const { data } = this.state;
-		const sortedIndexMap = Utils.times(data.length, (i: number) => i);
-		sortedIndexMap.sort((a: number, b: number) => {
-			return comparator(data[a][columnIndex], data[b][columnIndex]);
-		});
-		this.setState({ sortedIndexMap });
-	};
+	}
 }
 
-function App() {
-	return (
-		<div className="App">
-			<DataTable />
-		</div>
-	);
+
+function About() {
+	return <h2>About</h2>;
 }
 
-export default App;
+function Users() {
+	return <h2>Users</h2>;
+}
+
+
+
+// function App() {
+// 	return (
+// 		<div className="App">
+// 			<ScoutNavbar></ScoutNavbar>
+// 			{/* <DataTable data={sumo} /> */}
+// 			<DataSources />
+// 		</div>
+// 	);
+// }
+
+// export default App;
