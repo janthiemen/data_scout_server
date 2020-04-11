@@ -5,7 +5,7 @@ import './App.css';
 import * as React from "react";
 
 import { ScoutNavbar } from "./components/ScoutNavbar";
-import { DataSources } from "./components/DataSources";
+import { DataSources } from "./components/DataSource/DataSources";
 import { Login } from "./components/User";
 import { Toaster, Position, IProps, IToastProps } from "@blueprintjs/core";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
@@ -93,25 +93,6 @@ export default class App extends React.Component<IProps> {
 	}
 }
 
-
 function About() {
 	return <h2>About</h2>;
 }
-
-function Users() {
-	return <h2>Users</h2>;
-}
-
-
-
-// function App() {
-// 	return (
-// 		<div className="App">
-// 			<ScoutNavbar></ScoutNavbar>
-// 			{/* <DataTable data={sumo} /> */}
-// 			<DataSources />
-// 		</div>
-// 	);
-// }
-
-// export default App;

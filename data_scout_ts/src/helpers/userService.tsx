@@ -1,4 +1,4 @@
-import { IToastProps, Intent } from "@blueprintjs/core";
+import { IToastProps } from "@blueprintjs/core";
 
 /**
  * The API caller handles all API requests to the Scout backend.
@@ -147,14 +147,6 @@ export class APICaller {
 }
 
 export class DataSourceService extends APICaller {
-    /**
-     * Construct a data source service object.
-     * @param addToast Method to add a toast with
-     * @param setLoggedIn Method to set if the user is logged in
-     */
-    constructor(addToast: (toast: IToastProps) => void, setLoggedIn: (loggedIn: boolean) => void) {
-        super(addToast, setLoggedIn);
-    }
 
     getTypes(callback: (body: {}) => void) {
         console.log("Types:");
