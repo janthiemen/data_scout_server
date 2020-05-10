@@ -9,16 +9,24 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['id', 'name', 'source', 'kwargs']
 
 
-class RecipeSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Recipe
-        fields = ['id', 'name', 'input', 'output']
-
-
-class TransformationSerializer(serializers.HyperlinkedModelSerializer):
+class TransformationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transformation
-        fields = ['id', 'recipe', 'transformation', 'kwargs']
+        fields = ['id', 'recipe', 'transformation', 'previous', 'next', 'kwargs']
+
+
+class TransformationSerializerUpdate(serializers.ModelSerializer):
+    class Meta:
+        model = Transformation
+        fields = ['id', 'recipe', 'transformation', 'previous', 'kwargs']
+
+
+class RecipeSerializer(serializers.ModelSerializer):
+    transformations = TransformationSerializer(many=True)
+
+    class Meta:
+        model = Recipe
+        fields = ['id', 'name', 'input', 'output', 'transformations']
 
 
 class FlowSerializer(serializers.HyperlinkedModelSerializer):

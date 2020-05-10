@@ -9,18 +9,15 @@ import {
 export type ICellLookup = (rowIndex: number, columnIndex: number) => any;
 export type ISortCallback = (columnIndex: number, comparator: (a: any, b: any) => number) => void;
 
-export interface ISortableColumn {
-	getColumn(getCellData: ICellLookup, sortColumn: ISortCallback): JSX.Element;
-}
 
-export abstract class AbstractSortableColumn implements ISortableColumn {
+export abstract class AbstractSortableColumn {
 	constructor(protected name: string, protected index: number) { }
 
 	public getColumn(getCellData: ICellLookup, sortColumn: ISortCallback) {
 		const cellRenderer = (rowIndex: number, columnIndex: number) => (
 			<Cell>{getCellData(rowIndex, columnIndex)}</Cell>
 		);
-		const menuRenderer = this.renderMenu.bind(this, sortColumn);
+		const menuRenderer = this.renderMenu.bind(this, sortColumn, "test");
 		const columnHeaderCellRenderer = () => <ColumnHeaderCell name={this.name} menuRenderer={menuRenderer} />;
 		return (
 			<Column
@@ -32,5 +29,5 @@ export abstract class AbstractSortableColumn implements ISortableColumn {
 		);
 	}
 
-	protected abstract renderMenu(sortColumn: ISortCallback): JSX.Element;
+	protected abstract renderMenu(sortColumn: ISortCallback, test: string): JSX.Element;
 }

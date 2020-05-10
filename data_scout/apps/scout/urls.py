@@ -29,11 +29,12 @@ router.register(r'flowstep', views.FlowStepViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),
-    # path('datasource_types/', views.data_source_types_view),
     path('token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     path('token/check/', views.LoginCheckView.as_view(), name='token_check'),
     path('datasource_types/', views.DataSourceTypesView.as_view(), name='hello'),
+    path('transformation_types_view/', views.TransformationTypesView.as_view(), name='hello'),
+    path('data/<int:recipe>/<int:step>', views.data, name='data'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
 

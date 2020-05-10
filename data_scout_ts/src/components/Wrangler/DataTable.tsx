@@ -8,52 +8,56 @@ import {
 	SelectionModes,
 	Table,
 	Utils,
+	TableLoadingOption,
 } from "@blueprintjs/table";
 
-import { ISortableColumn } from "./AbstractSortableColumn";
-import {DataColumn} from "./DataColumn"
+import { DataColumn } from "./DataColumn";
 
-interface IProps {
-	/** An object of data to display. */
-    data?: [][];
+interface DataTableProps {
+    data: number[][];
+	columns: DataColumn[];
+	loading: boolean;
 }
 
-interface IState {
-	columns: ISortableColumn[];
-	data: [][];
+interface DataTableState {
+	columns: DataColumn[];
+	data: number[][];
 	sortedIndexMap: number[];
+	loading: boolean;
 }
 
-export class DataTable extends React.PureComponent<IProps, IState> {
-	constructor(props: any) {
+export class DataTable extends React.PureComponent<DataTableProps, DataTableState> {
+	public state: DataTableState;
+
+	constructor(props: DataTableProps) {
 		super(props);
 		this.state = {
-			columns: [
-				new DataColumn("Rikishi", 0),
-				new DataColumn("Rank - Hatsu Basho", 1),
-				new DataColumn("Record - Hatsu Basho", 2),
-				new DataColumn("Rank - Haru Basho", 3),
-				new DataColumn("Record - Haru Basho", 4),
-				new DataColumn("Rank - Natsu Basho", 5),
-				new DataColumn("Record - Natsu Basho", 6),
-				new DataColumn("Rank - Nagoya Basho", 7),
-				new DataColumn("Record - Nagoya Basho", 8),
-				new DataColumn("Rank - Aki Basho", 9),
-				new DataColumn("Record - Aki Basho", 10),
-				new DataColumn("Rank - Kyūshū Basho", 11),
-				new DataColumn("Record - Kyūshū Basho", 12),
-			] as ISortableColumn[],
-			data: props.data as [],
-			sortedIndexMap: [] as number[],
-		};
-		this.setState({data: props.data});
+            data: props.data,
+            columns: props.columns,
+            sortedIndexMap: [] as number[],
+            loading: props.loading,
+        };
+
 	}
+
+	/**
+     * Called when new props are received.
+     * @param props The new props
+     */
+    componentWillReceiveProps(props: DataTableProps) {
+        this.setState({
+            data: props.data,
+            columns: props.columns,
+            loading: props.loading
+        });
+    }
 
 	public render() {
 		const numRows = this.state.data.length;
 		const columns = this.state.columns.map(col => col.getColumn(this.getCellData, this.sortColumn));
 		return (
 			<Table
+				loadingOptions={this.state.loading ? [TableLoadingOption.CELLS, TableLoadingOption.COLUMN_HEADERS, TableLoadingOption.ROW_HEADERS]: []}
 				bodyContextMenuRenderer={this.renderBodyContextMenu}
 				numRows={numRows}
 				selectionModes={SelectionModes.COLUMNS_AND_CELLS}

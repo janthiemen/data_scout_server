@@ -1,19 +1,41 @@
 import './App.css';
 
-// tslint:disable max-classes-per-file
-
 import * as React from "react";
 
 import { ScoutNavbar } from "./components/ScoutNavbar";
 import { DataSources } from "./components/DataSource/DataSources";
 import { Login } from "./components/User";
-import { Toaster, Position, IProps, IToastProps } from "@blueprintjs/core";
+import { Toaster, Position, IProps, IToastProps, HTMLTable } from "@blueprintjs/core";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
-import { APICaller } from './helpers/userService';
+import { Wrangler } from './components/Wrangler/Wrangler';
 
-// tslint:disable-next-line:no-var-requires
-// import { DataTable } from "./components/DataTable";
-// const sumo = require("./sumo.json") as any[];
+import { ReactSortable } from "react-sortablejs";
+
+interface BasicClassState {
+	list: { id: string; name: string }[];
+}
+
+export class BasicClass extends React.Component<{}, BasicClassState> {
+	state: BasicClassState = {
+		list: [{ id: "1", name: "shrek" }, { id: "2", name: "fiona" }]
+	};
+	render() {
+		return (
+			<HTMLTable striped={true}>
+				<tbody>
+					<ReactSortable
+						list={this.state.list}
+						setList={newState => this.setState({ list: newState })}
+					>
+						{this.state.list.map(item => (
+							<tr><td>{item.id}</td><td>{item.name}</td><td>{item.name}</td></tr>
+						))}
+					</ReactSortable>
+				</tbody>
+			</HTMLTable>
+		);
+	}
+}
 
 interface LoginRedirectProps extends IProps {
 	isLoggedIn: boolean;
@@ -31,7 +53,6 @@ function LoginRedirect(props: LoginRedirectProps) {
 }
 
 export default class App extends React.Component<IProps> {
-	private apiCaller: APICaller;
 	private toaster: Toaster;
 	private refHandlers = {
 		toaster: (ref: Toaster) => (this.toaster = ref),
@@ -60,7 +81,7 @@ export default class App extends React.Component<IProps> {
 	 * @param isLoggedIn Is the user logged in or not?
 	 */
 	private setLoggedIn(isLoggedIn: boolean) {
-		this.setState({isLoggedIn: isLoggedIn});
+		this.setState({ isLoggedIn: isLoggedIn });
 	}
 
 	render() {
@@ -74,6 +95,10 @@ export default class App extends React.Component<IProps> {
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
 							<About />
 						</Route>
+						<Route path="/wrangler">
+							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
+							<Wrangler addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
+						</Route>
 						<Route path="/data_sources">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
 							<DataSources addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
@@ -85,6 +110,7 @@ export default class App extends React.Component<IProps> {
 						</Route>
 						<Route path="/">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
+							<BasicClass></BasicClass>
 						</Route>
 					</Switch>
 				</div>

@@ -1,4 +1,5 @@
 import { IToastProps } from "@blueprintjs/core";
+import { Transformation } from "../components/Wrangler/Wrangler";
 
 /**
  * The API caller handles all API requests to the Scout backend.
@@ -110,7 +111,6 @@ export class APICaller {
                         }
                         break;
                     default:
-                        // console.log("Success");
                         callback(body);
                         break;
                 }
@@ -155,6 +155,50 @@ export class DataSourceService extends APICaller {
 
     get(callback: (body: {}) => void) {
         this.call("http://localhost:8000/scout/api/datasource/", "GET", {}, callback);
+    }
+
+    save(data: { [key: string]: any }, callback: (body: {}) => void) {
+        if (data["id"] > 0) {
+            this.call(`http://localhost:8000/scout/api/datasource/${data["id"]}/`, "PUT", data, callback);
+        } else {
+            this.call("http://localhost:8000/scout/api/datasource/", "POST", data, callback);
+        }
+    }
+
+    delete(id: number | string, callback: (body: {}) => void) {
+        this.call(`http://localhost:8000/scout/api/datasource/${id}/`, "DELETE", {}, callback);
+    }
+}
+
+
+export class WranglerService extends APICaller {
+
+    get(callback: (body: {}) => void) {
+        this.call("http://localhost:8000/scout/api/datasource/", "GET", {}, callback);
+    }
+
+    getRecipe(recipe: number, callback: (body: {}) => void) {
+        this.call(`http://localhost:8000/scout/api/recipe/${recipe}/`, "GET", {}, callback);
+    }
+
+    getData(recipe: number, recipe_step: number, callback: (body: {}) => void) {
+        this.call(`http://localhost:8000/scout/data/${recipe}/${recipe_step}`, "GET", {}, callback);
+    }
+
+    putTransformation(id: number, data: Transformation, callback: (body: {}) => void) {
+        this.call(`http://localhost:8000/scout/api/transformation/${id}/`, "PUT", data, callback);
+    }
+
+    putTransformationOrder(id: number, data: Transformation, callback: (body: {}) => void) {
+        this.call(`http://localhost:8000/scout/api/transformation/${id}/`, "PUT", data, callback);
+    }
+
+    postTransformation(data: Transformation, callback: (body: {}) => void) {
+        this.call(`http://localhost:8000/scout/api/transformation/`, "POST", data, callback);
+    }
+
+    deleteTransformation(id: number | string, callback: (body: {}) => void) {
+        this.call(`http://localhost:8000/scout/api/transformation/${id}/`, "DELETE", {}, callback);
     }
 
     save(data: { [key: string]: any }, callback: (body: {}) => void) {

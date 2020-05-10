@@ -30,7 +30,10 @@ class Recipe(models.Model):
 
 
 class Transformation(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name="transformations")
+
+    # We'll link the transformation steps together by defining a "previous", which links to another transformation
+    previous = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="next")
     # The name of the transformation to apply
     transformation = models.CharField(max_length=512)
     # The arguments to pass to the transformation, defined as a JSON string
@@ -59,3 +62,25 @@ class FlowStep(models.Model):
     flow = models.ForeignKey(Flow, on_delete=models.CASCADE, related_name="steps")
     recipe = models.OneToOneField(Recipe, on_delete=models.CASCADE, null=True)
     join = models.OneToOneField(Join, on_delete=models.CASCADE, null=True)
+
+
+class TempDataSample(models.Model):
+    """
+    This table contains samples of the data sources. The actual samples are stored as CSV files on disk.
+    """
+    SAMPLING_TECHNIQUE_CHOICES = (
+        ('random', 'Random'),
+        ('stratified', 'Stratified'),
+        ('top', 'Top'),
+    )
+    data_source = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="samples")
+    last_used = models.DateTimeField(auto_now=True)
+    file_name = models.CharField(max_length=2048)
+    sampling_technique = models.CharField(
+        max_length=64,
+        choices=SAMPLING_TECHNIQUE_CHOICES,
+        default="top",
+    )
+
+    def __str__(self):
+        return self.file_name
