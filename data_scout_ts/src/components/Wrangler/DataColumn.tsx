@@ -12,6 +12,10 @@ export class DataColumn extends AbstractSortableColumn {
 		this.createTransformation = createTransformation;
 	}
 
+	public getName(): string {
+		return this.name;
+	}
+
 	protected renderMenu(sortColumn: ISortCallback) {
 		return (
 			<Menu>

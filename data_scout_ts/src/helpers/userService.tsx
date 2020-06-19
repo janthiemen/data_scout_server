@@ -1,5 +1,5 @@
 import { IToastProps } from "@blueprintjs/core";
-import { Transformation } from "../components/Wrangler/Wrangler";
+import { Transformation } from "../components/Wrangler/Transformation";
 
 /**
  * The API caller handles all API requests to the Scout backend.
