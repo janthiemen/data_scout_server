@@ -115,10 +115,12 @@ export class TransformationDialog extends React.Component<TransformationDialogPr
             return <ColumnsSelect value={field_values[key]} columns={this.state.columns} field={key} onValueChange={this.onValueChange} />
         } else if (field["input"] === "column") {
             return <HTMLSelect value={this.state.fieldValues[key]} id={`transformation-input-${key}`} data-field={key} onChange={this.onInputChange} key={`transformation-input-${key}`}>
+                <option></option>
                 {this.state.columns.map(column => <option id={column} key={`transformation-input-${key}-option-${column}`}>{column}</option>)}
             </HTMLSelect>
         } else if (field["input"] === "select") {
             return <HTMLSelect value={this.state.fieldValues[key]} id={`transformation-input-${key}`} data-field={key} onChange={this.onInputChange} key={`transformation-input-${key}`}>
+                <option></option>
                 {Object.keys(field["options"]).map(option => <option value={option}>{field["options"][option]}</option>)}
             </HTMLSelect>
         } else if (field["input"] === "text") {
