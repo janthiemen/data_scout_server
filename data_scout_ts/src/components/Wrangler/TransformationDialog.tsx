@@ -1,8 +1,9 @@
 import * as React from "react";
 import { Transformation, TRANSFORMATIONS, transformationMakeTitle } from "./Transformation"
-import { HTMLSelect, FormGroup, Button, Dialog, Classes, Intent, InputGroup } from "@blueprintjs/core";
+import { HTMLSelect, FormGroup, Button, Dialog, Classes, Intent, InputGroup, NumericInput } from "@blueprintjs/core";
 import { WranglerService } from "../../helpers/userService";
 import { ColumnsSelect } from "./ColumnsSelect"
+import { NumberInput } from "./NumberInput"; 
 
 
 interface TransformationDialogProps {
@@ -78,6 +79,12 @@ export class TransformationDialog extends React.Component<TransformationDialogPr
         }
     }
 
+    private onNumericValueChange(valueAsNumber: number, valueAsString: string, e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) {
+        if (e.target.dataset["field"] !== undefined) {
+            this.onValueChange(e.target.dataset["field"], valueAsNumber);
+        }
+    }
+
     /**
      * Saves the transformation.
      */
@@ -125,6 +132,9 @@ export class TransformationDialog extends React.Component<TransformationDialogPr
             </HTMLSelect>
         } else if (field["input"] === "text") {
             return <InputGroup value={this.state.fieldValues[key]} key={`transformation-input-${key}`} data-field={key} onChange={this.onInputChange} id={`transformation-input-${key}`} />
+        } else if (field["input"] === "number") {
+            // return <NumericInput min={0} minorStepSize={1} value={this.state.fieldValues[key]} key={`transformation-input-${key}`} data-field={key} onValueChange={this.onNumericValueChange} id={`transformation-input-${key}`} />
+            return <NumberInput field={key} value={this.state.fieldValues[key]} onValueChange={this.onValueChange} />
         }
     }
 

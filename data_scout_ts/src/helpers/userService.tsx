@@ -24,7 +24,7 @@ export class APICaller {
      * Check if the user is logged in.
      */
     public checkLoggedIn() {
-        this.call("http://localhost:8000/scout/token/check/", "GET", {}, (body: {}) => {this.setLoggedIn(true);})
+        this.call("/scout/token/check/", "GET", {}, (body: {}) => {this.setLoggedIn(true);})
     }
 
     /**
@@ -124,7 +124,7 @@ export class APICaller {
     }
 
     public login(email: string, password: string, callbackSuccess: (body: {}) => void, callbackError: (body: {}) => void) {
-		fetch("http://localhost:8000/scout/token/", {
+		fetch("/scout/token/", {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ "username": email, "password": password })
@@ -150,23 +150,23 @@ export class DataSourceService extends APICaller {
 
     getTypes(callback: (body: {}) => void) {
         console.log("Types:");
-        this.call("http://localhost:8000/scout/datasource_types/", "GET", {}, callback);
+        this.call("/scout/datasource_types/", "GET", {}, callback);
     }
 
     get(callback: (body: {}) => void) {
-        this.call("http://localhost:8000/scout/api/datasource/", "GET", {}, callback);
+        this.call("/scout/api/datasource/", "GET", {}, callback);
     }
 
     save(data: { [key: string]: any }, callback: (body: {}) => void) {
         if (data["id"] > 0) {
-            this.call(`http://localhost:8000/scout/api/datasource/${data["id"]}/`, "PUT", data, callback);
+            this.call(`/scout/api/datasource/${data["id"]}/`, "PUT", data, callback);
         } else {
-            this.call("http://localhost:8000/scout/api/datasource/", "POST", data, callback);
+            this.call("/scout/api/datasource/", "POST", data, callback);
         }
     }
 
     delete(id: number | string, callback: (body: {}) => void) {
-        this.call(`http://localhost:8000/scout/api/datasource/${id}/`, "DELETE", {}, callback);
+        this.call(`/scout/api/datasource/${id}/`, "DELETE", {}, callback);
     }
 }
 
@@ -174,42 +174,42 @@ export class DataSourceService extends APICaller {
 export class WranglerService extends APICaller {
 
     get(callback: (body: {}) => void) {
-        this.call("http://localhost:8000/scout/api/datasource/", "GET", {}, callback);
+        this.call("/scout/api/datasource/", "GET", {}, callback);
     }
 
     getRecipe(recipe: number, callback: (body: {}) => void) {
-        this.call(`http://localhost:8000/scout/api/recipe/${recipe}/`, "GET", {}, callback);
+        this.call(`/scout/api/recipe/${recipe}/`, "GET", {}, callback);
     }
 
     getData(recipe: number, recipe_step: number, callback: (body: {}) => void) {
-        this.call(`http://localhost:8000/scout/data/${recipe}/${recipe_step}`, "GET", {}, callback);
+        this.call(`/scout/data/${recipe}/${recipe_step}`, "GET", {}, callback);
     }
 
     putTransformation(id: number, data: Transformation, callback: (body: {}) => void) {
-        this.call(`http://localhost:8000/scout/api/transformation/${id}/`, "PUT", data, callback);
+        this.call(`/scout/api/transformation/${id}/`, "PUT", data, callback);
     }
 
     putTransformationOrder(id: number, data: Transformation, callback: (body: {}) => void) {
-        this.call(`http://localhost:8000/scout/api/transformation/${id}/`, "PUT", data, callback);
+        this.call(`/scout/api/transformation/${id}/`, "PUT", data, callback);
     }
 
     postTransformation(data: Transformation, callback: (body: {}) => void) {
-        this.call(`http://localhost:8000/scout/api/transformation/`, "POST", data, callback);
+        this.call(`/scout/api/transformation/`, "POST", data, callback);
     }
 
     deleteTransformation(id: number | string, callback: (body: {}) => void) {
-        this.call(`http://localhost:8000/scout/api/transformation/${id}/`, "DELETE", {}, callback);
+        this.call(`/scout/api/transformation/${id}/`, "DELETE", {}, callback);
     }
 
     save(data: { [key: string]: any }, callback: (body: {}) => void) {
         if (data["id"] > 0) {
-            this.call(`http://localhost:8000/scout/api/datasource/${data["id"]}/`, "PUT", data, callback);
+            this.call(`/scout/api/datasource/${data["id"]}/`, "PUT", data, callback);
         } else {
-            this.call("http://localhost:8000/scout/api/datasource/", "POST", data, callback);
+            this.call("/scout/api/datasource/", "POST", data, callback);
         }
     }
 
     delete(id: number | string, callback: (body: {}) => void) {
-        this.call(`http://localhost:8000/scout/api/datasource/${id}/`, "DELETE", {}, callback);
+        this.call(`/scout/api/datasource/${id}/`, "DELETE", {}, callback);
     }
 }

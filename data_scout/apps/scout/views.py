@@ -166,13 +166,17 @@ def data(request, recipe: int, step: int):
     return JsonResponse({"success": True, "data": {'records': records_export, "columns": list(records[0].keys())}})
 
 
-"""
-Wrangler:
-    
-    Get data
-        :param recipe: The recipe
-        :param step: The step in the recipe
-"""
+def meta_transformations(request):
+    """
+    Request a list of all transformations.
+
+    :param request:
+    :return:
+    """
+    return JsonResponse({
+        key: {"title": transformation.title, "fields": transformation.fields}
+        for key, transformation in TRANSFORMATION_MAP.items()}
+    )
 
 
 # Create your views here.

@@ -1,26 +1,27 @@
 class Add:
+    title = "Sum {fields}"
     fields = {
-        "fields": {"name": "Fields", "type": "list<string>", "help": "The fields to add to each other",
-                   "required": True, "input": "column", "multiple": True},
+        "fields": {"name": "Columns", "type": "list<string>", "help": "The fields to add to each other",
+                   "required": True, "input": "column", "multiple": True, "default": ""},
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
-                   "help": "The name of the (newly created) column that contains the results"},
+                   "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
     def __init__(self, arguments):
         """Initialize the transformation with the given parameters.
-        
+
         Arguments:
             arguments {dict} -- The arguments
-        """        
+        """
         self.fields = arguments["fields"]
         self.output = arguments["output"]
 
     def __call__(self, row):
         """This class is called on each row.
-        
+
         Arguments:
             row {dict} -- The complete row
-        
+
         Returns:
             dict -- The row, including the extra output column
         """
@@ -33,13 +34,14 @@ class Add:
 
 
 class Min:
+    title = "Calculate {field_a} - {field_b}"
     fields = {
         "field_a": {"name": "Field 1", "type": "string", "help": "The field that should be subtracted from",
-                    "required": True, "input": "column", "multiple": False},
+                    "required": True, "input": "column", "multiple": False, "default": ""},
         "field_b": {"name": "Field 2", "type": "string", "help": "The field that should be subtracted",
-                    "required": True, "input": "column", "multiple": False},
+                    "required": True, "input": "column", "multiple": False, "default": ""},
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
-                   "help": "The name of the (newly created) column that contains the results"},
+                   "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
     def __init__(self, arguments):
@@ -67,13 +69,14 @@ class Min:
 
 
 class Divide:
+    title = "Calculate {field_a} / {field_b}"
     fields = {
         "field_a": {"name": "Numerator", "type": "string", "help": "The numerator",
-                    "required": True, "input": "column", "multiple": False},
+                    "required": True, "input": "column", "multiple": False, "default": ""},
         "field_b": {"name": "Denominator", "type": "string", "help": "The denominator",
-                    "required": True, "input": "column", "multiple": False},
+                    "required": True, "input": "column", "multiple": False, "default": ""},
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
-                   "help": "The name of the (newly created) column that contains the results"},
+                   "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
     def __init__(self, arguments):
@@ -102,11 +105,12 @@ class Divide:
 
 
 class Multiply:
+    title = "Multiply {fields}"
     fields = {
         "fields": {"name": "Fields", "type": "list<string>", "help": "The fields to add to each other",
-                   "required": True, "input": "column", "multiple": True},
+                   "required": True, "input": "column", "multiple": True, "default": ""},
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
-                   "help": "The name of the (newly created) column that contains the results"},
+                   "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
     def __init__(self, arguments):
@@ -136,46 +140,3 @@ class Multiply:
 
         row[self.output] = total
         return row
-
-
-class Convert:
-    fields = {
-        "field": {"name": "Field", "type": "string", "help": "The field to convert", "required": True,
-                  "input": "column", "multiple": False},
-        "to": {"name": "To", "type": "string", "help": "To which data type to convert", "required": True,
-               "input": "select", "multiple": False,
-               "options": {"int": "Integer", "float": "Floating point number", "string": "Text"}}
-    }
-
-    def __init__(self, arguments):
-        """Initialize the transformation with the given parameters.
-
-        Arguments:
-            arguments {dict} -- The arguments
-        """
-        self.field = arguments["field"]
-        self.to = arguments["to"]
-
-    def __call__(self, row):
-        """This class is called on each row.
-
-        Arguments:
-            row {dict} -- The complete row
-
-        Returns:
-            dict -- The row, including the extra output column
-        """
-        if self.to == "int":
-            row[self.field] = int(row[self.field])
-        elif self.to == "float" or self.to == 'Floating point number':
-            row[self.field] = float(row[self.field])
-        return row
-
-
-TRANSFORMATION_MAP = {
-    "add": Add,
-    "min": Min,
-    "convert": Convert,
-    "multiply": Multiply,
-    "divide": Divide,
-}

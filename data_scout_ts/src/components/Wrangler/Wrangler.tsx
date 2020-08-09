@@ -11,10 +11,7 @@ import { ReactSortable, Sortable, SortableEvent } from "react-sortablejs";
 import { Transformation, TRANSFORMATIONS } from "./Transformation"
 import { TransformationButton } from "./TransformationButton"
 import { TransformationDialog } from "./TransformationDialog"
-import { MathPanel } from "./panels/MathPanel"
-import { TextPanel } from "./panels/TextPanel"
-import { CustomPanel } from "./panels/CustomPanel"
-import { SettingsPanel } from "./panels/SettingsPanel"
+import { TransformationPanel } from "./panels/TransformationPanel"
 
 const DUMMY_DATA = [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]];
 const DUMMY_COLUMNS = ["Loading", "Loading", "Loading", "Loading"]
@@ -316,14 +313,7 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
             <Grid fluid>
                 <Row>
                     <Col md={12}>
-                        <Tabs id="TabsExample" animate={true} key={"horizontal"} renderActiveTabPanelOnly={true} vertical={false}>
-                            <Tab id="panel-math" title="Math" panel={<MathPanel newTransformation={this.newTransformation} />} />
-                            <Tab id="panel-text" title="Text" panel={<TextPanel newTransformation={this.newTransformation} />} panelClassName="ember-panel" />
-                            <Tab id="panel-custom" title="Custom" panel={<CustomPanel newTransformation={this.newTransformation} />} />
-                            <Tab id="panel-settings" title="Settings" panel={<SettingsPanel newTransformation={this.newTransformation} />} />
-                            <Tabs.Expander />
-                            <input className="bp3-input" type="text" placeholder="Search help" />
-                        </Tabs>
+                        <TransformationPanel newTransformation={this.newTransformation} /> 
                     </Col>
                 </Row>
                 <Divider />
