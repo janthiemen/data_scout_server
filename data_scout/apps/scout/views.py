@@ -5,8 +5,9 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 
 from django.contrib.auth.models import User, Group
-from rest_framework import viewsets, views, response
+from rest_framework import viewsets, views, response, status
 from rest_framework import permissions, authentication
+from rest_framework.response import Response
 
 from apps.scout import transformations
 from apps.scout.transformations import TRANSFORMATION_MAP
@@ -74,6 +75,17 @@ class TransformationViewSet(viewsets.ModelViewSet):
     queryset = Transformation.objects.all()
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = TransformationSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        transformation = self.get_object()
+        try:
+            transformation_next = transformation.next.get()
+            transformation_next.previous = transformation.previous
+            transformation_next.save()
+        except ObjectDoesNotExist as e:
+            pass
+        transformation.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get_serializer_class(self):
         """
