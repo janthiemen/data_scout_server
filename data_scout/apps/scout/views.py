@@ -11,6 +11,7 @@ from rest_framework.response import Response
 
 from apps.scout import transformations
 from apps.scout.transformations import TRANSFORMATION_MAP
+from apps.scout.transformations.data import CleanJSON
 from .serializers import DataSourceSerializer, RecipeSerializer, TransformationSerializer, FlowSerializer, \
     JoinSerializer, FlowStepSerializer, TransformationSerializerUpdate
 from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep
@@ -172,8 +173,9 @@ def data(request, recipe: int, step: int):
         return JsonResponse({"success": False, "messages": messages})
 
     records_export = []
+    clean_func = CleanJSON()
     for record in records:
-        records_export.append(list(record.values()))
+        records_export.append(list(clean_func(record).values()))
 
     return JsonResponse({"success": True, "data": {'records': records_export, "columns": list(records[0].keys())}})
 

@@ -1,3 +1,6 @@
+import math
+
+
 class Convert:
     title = "Convert {field} to {to}"
     fields = {
@@ -26,8 +29,31 @@ class Convert:
         Returns:
             dict -- The row, including the extra output column
         """
-        if self.to == "int":
-            row[self.field] = int(row[self.field])
-        elif self.to == "float" or self.to == 'Floating point number':
-            row[self.field] = float(row[self.field])
+        try:
+            if self.to == "int":
+                row[self.field] = int(row[self.field])
+            elif self.to == "float" or self.to == 'Floating point number':
+                row[self.field] = float(row[self.field])
+        except ValueError as e:
+            row[self.field] = math.nan
+        return row
+
+
+class CleanJSON:
+    """
+    This transformation cleans to object to present valid JSON. It's NOT meant to be used by the user. This is only for
+    internal usage.
+    """
+    def __call__(self, row):
+        """This class is called on each row.
+
+        Arguments:
+            row {dict} -- The complete row
+
+        Returns:
+            dict -- The row, including the extra output column
+        """
+        for key, value in row.items():
+            if value is math.nan:
+                row[key] = "NaN"
         return row
