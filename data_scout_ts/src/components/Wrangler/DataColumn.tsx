@@ -20,9 +20,9 @@ export class DataColumn extends AbstractSortableColumn {
 		return (
 			<Menu>
 				<MenuItem icon="translate" text="Convert">
-					<MenuItem onClick={() => this.createTransformation("convert", {to: "int", field: this.name })} text="Integer" />
-					<MenuItem onClick={() => this.createTransformation("convert", {to: "float", field: this.name })} text="Floating point number" />
-					<MenuItem onClick={() => this.createTransformation("convert", {to: "string", field: this.name })} text="Text" />
+					<MenuItem onClick={() => this.createTransformation("data-convert", {to: "int", field: this.name })} text="Integer" />
+					<MenuItem onClick={() => this.createTransformation("data-convert", {to: "float", field: this.name })} text="Floating point number" />
+					<MenuItem onClick={() => this.createTransformation("data-convert", {to: "string", field: this.name })} text="Text" />
 				</MenuItem>
 			</Menu>
 		);
