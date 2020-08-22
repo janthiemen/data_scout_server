@@ -1,4 +1,5 @@
-from . import math, data, format, count
+from . import math, data, format, count, replace
+
 
 TRANSFORMATION_MAP = {
     "data-convert": data.Convert,
@@ -19,4 +20,10 @@ TRANSFORMATION_MAP = {
     "count-exact": count.CountExact,
     "count-pattern": count.CountRegex,
     "count-delimiters": count.CountDelimiters,
+    "replace-text": replace.ReplaceText,
+    "replace-regex": replace.ReplaceRegex,
+    "replace-delimiters": replace.ReplaceDelimiters,
+    "replace-positions": replace.ReplacePositions,
+    "replace-mismatched": replace.ReplaceMismatched,
+    "replace-missing": replace.ReplaceMissing,
 }
