@@ -1,4 +1,4 @@
-from . import math, data, format, count, replace
+from . import math, data, format, count, replace, filter
 
 
 TRANSFORMATION_MAP = {
@@ -26,4 +26,16 @@ TRANSFORMATION_MAP = {
     "replace-positions": replace.ReplacePositions,
     "replace-mismatched": replace.ReplaceMismatched,
     "replace-missing": replace.ReplaceMissing,
+    "filter-value-missing": filter.FilterMissing,
+    "filter-value-mismatched": filter.FilterMismatched,
+    "filter-value-is": filter.FilterIs,
+    "filter-value-isnot": filter.FilterIsNot,
+    "filter-value-isoneof": filter.FilterIsOneOf,
+    "filter-value-isnotoneof": filter.FilterIsnotOneOf,
+    "filter-value-between": filter.FilterBetween,
+    "filter-value-notbetween": filter.FilterNotBetween,
+    "filter-value-contains": filter.FilterContains,
+    "filter-value-startswith": filter.FilterStartsWith,
+    "filter-value-endswith": filter.FilterEndsWith,
+    "filter-value-pattern": filter.FilterRegex,
 }

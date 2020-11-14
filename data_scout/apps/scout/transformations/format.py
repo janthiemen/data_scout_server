@@ -1,8 +1,10 @@
 import re
 from text_unidecode import unidecode
 
+from apps.scout.transformations.transformation import Transformation
 
-class Format:
+
+class Format(Transformation):
     fields = {
         "fields": {"name": "Columns", "type": "list<string>", "help": "The fields to re-format",
                    "required": True, "input": "column", "multiple": True, "default": ""},
@@ -15,6 +17,9 @@ class Format:
             arguments {dict} -- The arguments
         """
         self.fields = arguments["fields"]
+
+    def __call__(self, row):
+        raise NotImplementedError
 
 
 class UpperCase(Format):
@@ -47,7 +52,7 @@ class ProperCase(Format):
         return row
 
 
-class Trim:
+class Trim(Transformation):
     character = None
     fields = {
         "fields": {"name": "Columns", "type": "list<string>", "help": "The fields to trim",
@@ -127,7 +132,7 @@ class RemoveAccents(Format):
         return row
 
 
-class AddFix:
+class AddFix(Transformation):
     fields = {
         "fields": {"name": "Columns", "type": "list<string>", "help": "The fields to trim",
                    "required": True, "input": "column", "multiple": True, "default": ""},
@@ -138,6 +143,9 @@ class AddFix:
     def __init__(self, arguments):
         self.fields = arguments["fields"]
         self.text = arguments["text"]
+
+    def __call__(self, row):
+        raise NotImplementedError
 
 
 class AddPrefix(AddFix):
@@ -160,7 +168,7 @@ class AddSuffix(AddFix):
         return row
 
 
-class Pad:
+class Pad(Transformation):
     title = "Pad {fields} {side} to {length} characters with {character}"
     fields = {
         "fields": {"name": "Columns", "type": "list<string>", "help": "The fields to trim",

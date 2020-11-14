@@ -1,4 +1,7 @@
-class Add:
+from apps.scout.transformations.transformation import Transformation
+
+
+class Add(Transformation):
     title = "Sum {fields}"
     fields = {
         "fields": {"name": "Columns", "type": "list<string>", "help": "The fields to add to each other",
@@ -33,7 +36,7 @@ class Add:
         return row
 
 
-class Min:
+class Min(Transformation):
     title = "Calculate {field_a} - {field_b}"
     fields = {
         "field_a": {"name": "Field 1", "type": "string", "help": "The field that should be subtracted from",
@@ -68,7 +71,7 @@ class Min:
         return row
 
 
-class Divide:
+class Divide(Transformation):
     title = "Calculate {field_a} / {field_b}"
     fields = {
         "field_a": {"name": "Numerator", "type": "string", "help": "The numerator",
@@ -104,7 +107,7 @@ class Divide:
         return row
 
 
-class Multiply:
+class Multiply(Transformation):
     title = "Multiply {fields}"
     fields = {
         "fields": {"name": "Fields", "type": "list<string>", "help": "The fields to add to each other",

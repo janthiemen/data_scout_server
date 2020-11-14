@@ -1,7 +1,9 @@
 import math
 
+from apps.scout.transformations.transformation import Transformation
 
-class Convert:
+
+class Convert(Transformation):
     title = "Convert {field} to {to}"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The field to convert", "required": True,

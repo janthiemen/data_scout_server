@@ -141,6 +141,9 @@ def data(request, recipe: int, step: int):
     except ObjectDoesNotExist as e:
         transformation = None
 
+    def _is_false(value):
+        return value != False
+
     # do ... while
     t = 1
     records = df.to_dict('records')
@@ -159,6 +162,8 @@ def data(request, recipe: int, step: int):
                 t_func = TRANSFORMATION_MAP[transformation.transformation](json.loads(transformation.kwargs))
                 for i, record in enumerate(records):
                     records[i] = t_func(record)
+                if t_func.filter:
+                    records = filter(_is_false, records)
             transformation = transformation.next.get()
             t += 1
         except ObjectDoesNotExist:

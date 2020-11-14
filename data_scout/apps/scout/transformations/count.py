@@ -1,7 +1,9 @@
 import re
 
+from apps.scout.transformations.transformation import Transformation
 
-class CountExact:
+
+class CountExact(Transformation):
     title = "Count exact matches of {search} in {field} as {output}"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
@@ -23,7 +25,7 @@ class CountExact:
         return row
 
 
-class CountRegex:
+class CountRegex(Transformation):
     title = "Count exact matches of the regex {pattern} in {field} as {output}"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
@@ -46,7 +48,7 @@ class CountRegex:
         return row
 
 
-class CountDelimiters:
+class CountDelimiters(Transformation):
     title = "Count the number of strings between delimiter {delimiter} in {field} as {output}"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",

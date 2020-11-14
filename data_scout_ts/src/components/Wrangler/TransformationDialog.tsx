@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Transformation, TRANSFORMATIONS, transformationMakeTitle } from "./Transformation"
-import { HTMLSelect, FormGroup, Button, Dialog, Classes, Intent, InputGroup, NumericInput } from "@blueprintjs/core";
+import { HTMLSelect, FormGroup, Button, Dialog, Classes, Intent, InputGroup, NumericInput, TextArea } from "@blueprintjs/core";
 import { WranglerService } from "../../helpers/userService";
 import { ColumnsSelect } from "./ColumnsSelect"
 import { NumberInput } from "./NumberInput"; 
@@ -73,7 +73,7 @@ export class TransformationDialog extends React.Component<TransformationDialogPr
      * Called when an input (text or select) has been changed.
      * @param e The event
      */
-    private onInputChange(e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) {
+    private onInputChange(e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement>) {
         if (e.target.dataset["field"] !== undefined) {
             this.onValueChange(e.target.dataset["field"], e.target.value);
         }
@@ -132,6 +132,8 @@ export class TransformationDialog extends React.Component<TransformationDialogPr
             </HTMLSelect>
         } else if (field["input"] === "text") {
             return <InputGroup value={this.state.fieldValues[key]} key={`transformation-input-${key}`} data-field={key} onChange={this.onInputChange} id={`transformation-input-${key}`} />
+        } else if (field["input"] === "text-area") {
+            return <TextArea key={`transformation-input-${key}`} data-field={key} id={`transformation-input-${key}`} growVertically={true} large={true} onChange={this.onInputChange} value={this.state.fieldValues[key]} />
         } else if (field["input"] === "number") {
             // return <NumericInput min={0} minorStepSize={1} value={this.state.fieldValues[key]} key={`transformation-input-${key}`} data-field={key} onValueChange={this.onNumericValueChange} id={`transformation-input-${key}`} />
             return <NumberInput field={key} value={this.state.fieldValues[key]} onValueChange={this.onValueChange} />

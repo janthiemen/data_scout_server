@@ -1,8 +1,10 @@
 import math
 import re
 
+from apps.scout.transformations.transformation import Transformation
 
-class ReplaceText:
+
+class ReplaceText(Transformation):
     title = "Replace exact matches of {old} with {new} in {field} as {output}"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
@@ -27,7 +29,7 @@ class ReplaceText:
         return row
 
 
-class ReplaceRegex:
+class ReplaceRegex(Transformation):
     title = "Replace matches of the regex {pattern} with {new} in {field} as {output}"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
@@ -53,7 +55,7 @@ class ReplaceRegex:
         return row
 
 
-class ReplaceDelimiters:
+class ReplaceDelimiters(Transformation):
     title = "Replace all characters between the delimiter: {delimiter} in {field} as {output}"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
@@ -78,7 +80,7 @@ class ReplaceDelimiters:
         return row
 
 
-class ReplacePositions:
+class ReplacePositions(Transformation):
     title = "Replace all characters between pos. {start} - {end} with {new} into {output}"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
@@ -106,7 +108,7 @@ class ReplacePositions:
         return row
 
 
-class ReplaceMismatched:
+class ReplaceMismatched(Transformation):
     title = "Replace mismatched values in {field} with {new}"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
@@ -125,7 +127,7 @@ class ReplaceMismatched:
         return row
 
 
-class ReplaceMissing:
+class ReplaceMissing(Transformation):
     title = "Replace missing values in {field} with {new}"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
