@@ -58,4 +58,5 @@ class CleanJSON:
         for key, value in row.items():
             if value is math.nan:
                 row[key] = "NaN"
+
         return row

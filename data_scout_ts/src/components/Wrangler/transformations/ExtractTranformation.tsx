@@ -10,9 +10,8 @@ const ExtractTranformationMenu: React.FunctionComponent<ExtractTranformationMenu
         <MenuItem onClick={() => props.newTransformation("extract-numbers")} text="Numbers" />
         <MenuItem onClick={() => props.newTransformation("extract-httpquerystrings")} text="HTTP Query strings" />
         <MenuItem onClick={() => props.newTransformation("extract-regex")} text="Pattern (regex)" />
-        <MenuItem onClick={() => props.newTransformation("extract-datetime")} text="Datetime" />
-        <MenuItem onClick={() => props.newTransformation("extract-characters-first")} text="First character(s)" />
-        <MenuItem onClick={() => props.newTransformation("extract-characters-last")} text="Last character(s)" />
+        {/* <MenuItem onClick={() => props.newTransformation("extract-datetime")} text="Datetime" /> */}
+        <MenuItem onClick={() => props.newTransformation("extract-positions")} text="Between positions" />
     </Menu>
 );
 

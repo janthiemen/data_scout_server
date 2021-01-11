@@ -8,7 +8,7 @@ interface ReplaceTranformationMenuProps extends IProps {
 const ReplaceTranformationMenu: React.FunctionComponent<ReplaceTranformationMenuProps> = props => (
     <Menu>
         <MenuItem onClick={() => props.newTransformation("replace-text")} text="Text" />
-        <MenuItem onClick={() => props.newTransformation("replace-pattern")} text="Pattern (RegEx)" />
+        <MenuItem onClick={() => props.newTransformation("replace-regex")} text="Pattern (RegEx)" />
         <MenuItem onClick={() => props.newTransformation("replace-delimiters")} text="Between delimiters" />
         <MenuItem onClick={() => props.newTransformation("replace-positions")} text="Between positions" />
         <MenuItem onClick={() => props.newTransformation("replace-mismatched")} text="Mismatched values" />

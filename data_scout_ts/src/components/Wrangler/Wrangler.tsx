@@ -233,7 +233,10 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
                 message: `No recipe has been loaded yet.`,
             });
         } else if (transformationType in TRANSFORMATIONS) {
-            let previous = this.state.recipeObject.transformations[this.state.recipeObject.transformations.length - 1].id
+            let previous = null;
+            if (this.state.recipeObject.transformations.length > 0) {
+                previous = this.state.recipeObject.transformations[this.state.recipeObject.transformations.length - 1].id
+            }
 
             // Initialize the kwargs with their default values
             let kwargs: { [key: string]: any } = {};

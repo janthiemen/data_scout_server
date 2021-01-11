@@ -1,5 +1,4 @@
-from . import math, data, format, count, replace, filter
-
+from . import math, data, format, count, replace, filter, extract
 
 TRANSFORMATION_MAP = {
     "data-convert": data.Convert,
@@ -26,6 +25,11 @@ TRANSFORMATION_MAP = {
     "replace-positions": replace.ReplacePositions,
     "replace-mismatched": replace.ReplaceMismatched,
     "replace-missing": replace.ReplaceMissing,
+    "extract-numbers": extract.ExtractNumbers,
+    "extract-httpquerystrings": extract.ExtractHttpQueryString,
+    "extract-regex": extract.ExtractRegex,
+    "extract-delimiters": extract.ExtractDelimiters,
+    "extract-positions": extract.ExtractPositions,
     "filter-value-missing": filter.FilterMissing,
     "filter-value-mismatched": filter.FilterMismatched,
     "filter-value-is": filter.FilterIs,

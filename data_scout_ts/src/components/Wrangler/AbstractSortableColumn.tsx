@@ -15,7 +15,7 @@ export abstract class AbstractSortableColumn {
 
 	public getColumn(getCellData: ICellLookup, sortColumn: ISortCallback) {
 		const cellRenderer = (rowIndex: number, columnIndex: number) => (
-			<Cell>{getCellData(rowIndex, columnIndex)}</Cell>
+			<Cell>{JSON.stringify(getCellData(rowIndex, columnIndex))}</Cell>
 		);
 		const menuRenderer = this.renderMenu.bind(this, sortColumn, "test");
 		const columnHeaderCellRenderer = () => <ColumnHeaderCell name={this.name} menuRenderer={menuRenderer} />;
