@@ -16,7 +16,7 @@ const FilterTranformationMenu: React.FunctionComponent<TranformationProps> = pro
         <MenuItem onClick={() => props.newTransformation("filter-value-startswith", {})} text="Starts with" />
         <MenuItem onClick={() => props.newTransformation("filter-value-endswith", {})} text="Ends with" />
         <MenuItem onClick={() => props.newTransformation("filter-value-pattern", {})} text="Pattern (regex)" />
-        <MenuItem onClick={() => props.newTransformation("filter-duplicate-rows", {})} text="Duplicate rows" />
+        <MenuItem onClick={() => props.newTransformation("filter-rows-duplicate", {})} text="Duplicate rows" />
         <MenuItem onClick={() => props.newTransformation("filter-rows-top", {})} text="From top" />
         <MenuItem onClick={() => props.newTransformation("filter-rows-range", {})} text="In range" />
         <MenuItem onClick={() => props.newTransformation("filter-rows-interval", {})} text="At regular intervals" />

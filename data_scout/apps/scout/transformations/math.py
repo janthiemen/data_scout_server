@@ -10,7 +10,7 @@ class Add(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         """Initialize the transformation with the given parameters.
 
         Arguments:
@@ -19,7 +19,7 @@ class Add(Transformation):
         self.fields = arguments["fields"]
         self.output = arguments["output"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         """This class is called on each row.
 
         Arguments:
@@ -29,11 +29,11 @@ class Add(Transformation):
             dict -- The row, including the extra output column
         """
         total = 0
-        for field in self.fields:
+        for field in [f for f in self.fields if f in row]:
             total += row[field]
 
         row[self.output] = total
-        return row
+        return row, index
 
 
 class Min(Transformation):
@@ -47,7 +47,7 @@ class Min(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         """Initialize the transformation with the given parameters.
 
         Arguments:
@@ -57,7 +57,7 @@ class Min(Transformation):
         self.field_b = arguments["field_b"]
         self.output = arguments["output"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         """This class is called on each row.
 
         Arguments:
@@ -66,9 +66,11 @@ class Min(Transformation):
         Returns:
             dict -- The row, including the extra output column
         """
+        if self.field_a not in row or self.field_b not in row:
+            return row, index
 
         row[self.output] = row[self.field_a] - row[self.field_b]
-        return row
+        return row, index
 
 
 class Divide(Transformation):
@@ -82,7 +84,7 @@ class Divide(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         """Initialize the transformation with the given parameters.
 
         Arguments:
@@ -92,7 +94,7 @@ class Divide(Transformation):
         self.field_b = arguments["field_b"]
         self.output = arguments["output"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         """This class is called on each row.
 
         Arguments:
@@ -103,8 +105,10 @@ class Divide(Transformation):
         """
 
         # TODO: Add check on division by 0?
+        if self.field_a not in row or self.field_b not in row:
+            return row, index
         row[self.output] = row[self.field_a] / row[self.field_b]
-        return row
+        return row, index
 
 
 class Multiply(Transformation):
@@ -116,7 +120,7 @@ class Multiply(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         """Initialize the transformation with the given parameters.
 
         Arguments:
@@ -125,7 +129,7 @@ class Multiply(Transformation):
         self.fields = arguments["fields"]
         self.output = arguments["output"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         """This class is called on each row.
 
         Arguments:
@@ -135,11 +139,11 @@ class Multiply(Transformation):
             dict -- The row, including the extra output column
         """
         total = None
-        for field in self.fields:
+        for field in [f for f in self.fields if f in row]:
             if total is None:
                 total = row[field]
             else:
                 total *= row[field]
 
         row[self.output] = total
-        return row
+        return row, index

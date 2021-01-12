@@ -15,11 +15,11 @@ class ExtractNumbers(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.field = arguments["field"]
         self.output = arguments["output"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         numbers = []
         for t in row[self.field].split():
             try:
@@ -28,7 +28,7 @@ class ExtractNumbers(Transformation):
                 pass
 
         row[self.output] = numbers
-        return row
+        return row, index
 
 
 class ExtractHttpQueryString(Transformation):
@@ -40,18 +40,18 @@ class ExtractHttpQueryString(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.field = arguments["field"]
         self.output = arguments["output"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         try:
             parsed = urlparse.urlparse(row[self.field])
             row[self.output] = parse_qs(parsed.query)
         except:
             row[self.output] = {}
 
-        return row
+        return row, index
 
 
 class ExtractRegex(Transformation):
@@ -68,18 +68,18 @@ class ExtractRegex(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.field = arguments["field"]
         self.pattern = re.compile(arguments["pattern"])
         self.output = arguments["output"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         try:
             row[self.output] = self.pattern.findall(row[self.field])
         except:
             row[self.output] = []
 
-        return row
+        return row, index
 
 
 class ExtractDelimiters(ExtractRegex):
@@ -93,9 +93,9 @@ class ExtractDelimiters(ExtractRegex):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         arguments["pattern"] = '{delimiter}.*{delimiter}'.format(delimiter=arguments["delimiter"])
-        super().__init__(arguments)
+        super().__init__(arguments, sample_size, example)
         self.pattern = re.compile(arguments["pattern"], flags=re.DOTALL)
 
 
@@ -112,18 +112,18 @@ class ExtractPositions(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.field = arguments["field"]
         self.start = int(arguments["start"])
         self.end = int(arguments["end"])
         self.output = arguments["output"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         try:
             row[self.output] = row[self.field][self.start:self.end]
         except:
             row[self.output] = ""
 
-        return row
+        return row, index
 
 

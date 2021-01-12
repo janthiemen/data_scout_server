@@ -1,4 +1,5 @@
 import math
+import numpy as np
 from datetime import datetime
 
 from apps.scout.transformations.transformation import Transformation
@@ -14,7 +15,7 @@ class Convert(Transformation):
                "options": {"int": "Integer", "float": "Floating point number", "string": "Text"}}
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         """Initialize the transformation with the given parameters.
 
         Arguments:
@@ -23,7 +24,7 @@ class Convert(Transformation):
         self.field = arguments["field"]
         self.to = arguments["to"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         """This class is called on each row.
 
         Arguments:
@@ -32,6 +33,9 @@ class Convert(Transformation):
         Returns:
             dict -- The row, including the extra output column
         """
+        if self.field not in row:
+            return row, index
+
         try:
             if self.to == "int":
                 row[self.field] = int(row[self.field])
@@ -39,7 +43,7 @@ class Convert(Transformation):
                 row[self.field] = float(row[self.field])
         except ValueError as e:
             row[self.field] = math.nan
-        return row
+        return row, index
 
 
 class ConvertDatetime(Transformation):
@@ -51,7 +55,7 @@ class ConvertDatetime(Transformation):
                    "input": "text", "default": "%Y-%m-%d %H:%M"}
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         """Initialize the transformation with the given parameters.
 
         Arguments:
@@ -60,7 +64,7 @@ class ConvertDatetime(Transformation):
         self.field = arguments["field"]
         self.format = arguments["format"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         """This class is called on each row.
 
         Arguments:
@@ -69,8 +73,52 @@ class ConvertDatetime(Transformation):
         Returns:
             dict -- The row, including the extra output column
         """
+        if self.field not in row:
+            return row, index
         row[self.field] = datetime.strptime(row[self.field], self.format)
-        return row
+        return row, index
+
+
+class FieldToColumn(Transformation):
+    title = "Convert {field} to columns"
+    fields = {
+        "field": {"name": "Field", "type": "string", "help": "The field to convert", "required": True,
+                  "input": "column", "multiple": False, "default": ""},
+        "prefix": {"name": "Prefix", "type": "string", "help": "The prefix before the column number.", "required": True,
+                   "input": "text", "default": ""}
+    }
+
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        """Initialize the transformation with the given parameters.
+
+        Arguments:
+            arguments {dict} -- The arguments
+        """
+        self.field = arguments["field"]
+        self.prefix = arguments["prefix"]
+
+    def __call__(self, row, index: int):
+        """This class is called on each row.
+
+        Arguments:
+            row {dict} -- The complete row
+
+        Returns:
+            dict -- The row, including the extra output column
+        """
+        if self.field not in row:
+            return row, index
+
+        if isinstance(row[self.field], list):
+            for i, val in enumerate(row[self.field]):
+                row[f"{self.prefix}-{i}"] = val
+            del row[self.field]
+        elif isinstance(row[self.field], dict):
+            for key, val in row[self.field].items():
+                row[f"{self.prefix}-{key}"] = val
+            del row[self.field]
+
+        return row, index
 
 
 class CleanJSON:
@@ -78,7 +126,7 @@ class CleanJSON:
     This transformation cleans to object to present valid JSON. It's NOT meant to be used by the user. This is only for
     internal usage.
     """
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         """This class is called on each row.
 
         Arguments:
@@ -88,7 +136,7 @@ class CleanJSON:
             dict -- The row, including the extra output column
         """
         for key, value in row.items():
-            if value is math.nan:
+            if value is math.nan or (isinstance(value, float) and np.isnan(value)):
                 row[key] = "NaN"
 
-        return row
+        return row, index

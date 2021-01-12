@@ -21,9 +21,20 @@ class DataSource(models.Model):
 
 
 class Recipe(models.Model):
+    SAMPLING_TECHNIQUE_CHOICES = (
+        ('top', 'Top'),
+        ('random', 'Random'),
+        ('stratified', 'Stratified'),
+    )
+
     name = models.CharField(max_length=512)
     input = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="recipe_input")
     output = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="recipe_output")
+    sampling_technique = models.CharField(
+        max_length=64,
+        choices=SAMPLING_TECHNIQUE_CHOICES,
+        default="top",
+    )
 
     def __str__(self):
         return self.name

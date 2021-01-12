@@ -32,7 +32,7 @@ class Custom(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         """
         Initialize the transformation with the given parameters.
 
@@ -135,7 +135,7 @@ class Custom(Transformation):
         val = self.evaluate_stack(self.expr_stack[:])
         return val
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         """This class is called on each row.
 
         Arguments:

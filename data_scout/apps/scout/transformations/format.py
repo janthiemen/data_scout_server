@@ -10,7 +10,7 @@ class Format(Transformation):
                    "required": True, "input": "column", "multiple": True, "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         """Initialize the transformation with the given parameters.
 
         Arguments:
@@ -18,38 +18,38 @@ class Format(Transformation):
         """
         self.fields = arguments["fields"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         raise NotImplementedError
 
 
 class UpperCase(Format):
     title = "Convert {fields} to uppercase"
 
-    def __call__(self, row):
-        for field in self.fields:
+    def __call__(self, row, index: int):
+        for field in [f for f in self.fields if f in row]:
             row[field] = row[field].upper()
 
-        return row
+        return row, index
 
 
 class LowerCase(Format):
     title = "Convert {fields} to lowercase"
 
-    def __call__(self, row):
-        for field in self.fields:
+    def __call__(self, row, index: int):
+        for field in [f for f in self.fields if f in row]:
             row[field] = row[field].lower()
 
-        return row
+        return row, index
 
 
 class ProperCase(Format):
     title = "Convert {fields} to proper case"
 
-    def __call__(self, row):
-        for field in self.fields:
+    def __call__(self, row, index: int):
+        for field in [f for f in self.fields if f in row]:
             row[field] = row[field].title()
 
-        return row
+        return row, index
 
 
 class Trim(Transformation):
@@ -62,22 +62,22 @@ class Trim(Transformation):
                  "options": {"both": "Both", "left": "Left", "right": "Right"}}
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.fields = arguments["fields"]
         self.side = arguments["side"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         if self.side == "left":
-            for field in self.fields:
+            for field in [f for f in self.fields if f in row]:
                 row[field] = row[field].lstrip(self.character)
         elif self.side == "right":
-            for field in self.fields:
+            for field in [f for f in self.fields if f in row]:
                 row[field] = row[field].rstrip(self.character)
         elif self.side == "both":
-            for field in self.fields:
+            for field in [f for f in self.fields if f in row]:
                 row[field] = row[field].strip(self.character)
 
-        return row
+        return row, index
 
 
 class TrimWhitespace (Trim):
@@ -93,43 +93,43 @@ class TrimQuotes(Trim):
 class RemoveWhitespace(Format):
     title = "Remove whitespace from {fields}"
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         pattern = re.compile(r'\s+')
-        for field in self.fields:
+        for field in [f for f in self.fields if f in row]:
             row[field] = pattern.sub('', row[field])
 
-        return row
+        return row, index
 
 
 class RemoveQuotes(Format):
     title = "Remove quotes from {fields}"
 
-    def __call__(self, row):
-        for field in self.fields:
+    def __call__(self, row, index: int):
+        for field in [f for f in self.fields if f in row]:
             row[field] = row[field].replace("'", "").replace('"', "")
 
-        return row
+        return row, index
 
 
 class RemoveSymbols(Format):
     title = "Remove symbols from {fields}"
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         pattern = re.compile(r'[\W_]+')
-        for field in self.fields:
+        for field in [f for f in self.fields if f in row]:
             row[field] = pattern.sub('', row[field])
 
-        return row
+        return row, index
 
 
 class RemoveAccents(Format):
     title = "Remove accents from {fields}"
 
-    def __call__(self, row):
-        for field in self.fields:
+    def __call__(self, row, index: int):
+        for field in [f for f in self.fields if f in row]:
             row[field] = unidecode(row[field])
 
-        return row
+        return row, index
 
 
 class AddFix(Transformation):
@@ -140,32 +140,32 @@ class AddFix(Transformation):
                  "required": True, "input": "text", "default": ""}
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.fields = arguments["fields"]
         self.text = arguments["text"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         raise NotImplementedError
 
 
 class AddPrefix(AddFix):
     title = "Add the prefix {text} to {fields}"
 
-    def __call__(self, row):
-        for field in self.fields:
+    def __call__(self, row, index: int):
+        for field in [f for f in self.fields if f in row]:
             row[field] = self.text + row[field]
 
-        return row
+        return row, index
 
 
 class AddSuffix(AddFix):
     title = "Add the suffix {text} to {fields}"
 
-    def __call__(self, row):
-        for field in self.fields:
+    def __call__(self, row, index: int):
+        for field in [f for f in self.fields if f in row]:
             row[field] = row[field] + self.text
 
-        return row
+        return row, index
 
 
 class Pad(Transformation):
@@ -182,18 +182,18 @@ class Pad(Transformation):
                  "options": {"left": "Left", "right": "Right"}}
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.fields = arguments["fields"]
         self.character = arguments["character"]
         self.length = arguments["length"]
         self.side = arguments["side"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         if self.side == "left":
-            for field in self.fields:
+            for field in [f for f in self.fields if f in row]:
                 row[field] = row[field].rjust(self.length, self.character)
         else:
-            for field in self.fields:
+            for field in [f for f in self.fields if f in row]:
                 row[field] = row[field].ljust(self.length, self.character)
 
-        return row
+        return row, index

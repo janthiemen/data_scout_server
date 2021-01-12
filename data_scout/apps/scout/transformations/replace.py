@@ -17,16 +17,17 @@ class ReplaceText(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.field = arguments["field"]
         self.old = arguments["old"]
         self.new = arguments["new"]
         self.output = arguments["output"]
 
-    def __call__(self, row):
-        row[self.output] = row[self.field].replace(self.old, self.new)
+    def __call__(self, row, index: int):
+        if self.field in row:
+            row[self.output] = row[self.field].replace(self.old, self.new)
 
-        return row
+        return row, index
 
 
 class ReplaceRegex(Transformation):
@@ -42,17 +43,18 @@ class ReplaceRegex(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.field = arguments["field"]
         self.pattern = re.compile(arguments["pattern"])
         self.new = arguments["new"]
         self.output = arguments["output"]
 
-    def __call__(self, row):
-        # TODO: Check if the regex is correct
-        row[self.output] = re.sub(self.pattern, self.new, row[self.field])
+    def __call__(self, row, index: int):
+        if self.field in row:
+            # TODO: Check if the regex is correct
+            row[self.output] = re.sub(self.pattern, self.new, row[self.field])
 
-        return row
+        return row, index
 
 
 class ReplaceDelimiters(Transformation):
@@ -68,16 +70,17 @@ class ReplaceDelimiters(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.field = arguments["field"]
         self.pattern = re.compile('{delimiter}.*{delimiter}'.format(delimiter=arguments["delimiter"]), flags=re.DOTALL)
         self.new = arguments["new"]
         self.output = arguments["output"]
 
-    def __call__(self, row):
-        # TODO: Check if the regex is correct
-        row[self.output] = re.sub(self.pattern, self.new, row[self.field])
-        return row
+    def __call__(self, row, index: int):
+        if self.field in row:
+            # TODO: Check if the regex is correct
+            row[self.output] = re.sub(self.pattern, self.new, row[self.field])
+        return row, index
 
 
 class ReplacePositions(Transformation):
@@ -95,17 +98,18 @@ class ReplacePositions(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.field = arguments["field"]
         self.start = arguments["start"]
         self.end = arguments["end"]
         self.new = arguments["new"]
         self.output = arguments["output"]
 
-    def __call__(self, row):
-        # TODO: Check if string is long enough and start < end
-        row[self.output] = row[self.field][:self.start] + self.new + row[self.field][self.end:]
-        return row
+    def __call__(self, row, index: int):
+        if self.field in row:
+            # TODO: Check if string is long enough and start < end
+            row[self.output] = row[self.field][:self.start] + self.new + row[self.field][self.end:]
+        return row, index
 
 
 class ReplaceMismatched(Transformation):
@@ -117,14 +121,14 @@ class ReplaceMismatched(Transformation):
                 "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.field = arguments["field"]
         self.new = arguments["new"]
 
-    def __call__(self, row):
-        if row[self.field] is math.nan:
+    def __call__(self, row, index: int):
+        if self.field in row and row[self.field] is math.nan:
             row[self.field] = self.new
-        return row
+        return row, index
 
 
 class ReplaceMissing(Transformation):
@@ -136,13 +140,13 @@ class ReplaceMissing(Transformation):
                 "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.field = arguments["field"]
         self.new = arguments["new"]
 
-    def __call__(self, row):
-        if row[self.field] is None or len(row[self.field]) == 0:
+    def __call__(self, row, index: int):
+        if self.field not in row or row[self.field] is None or len(row[self.field]) == 0:
             row[self.field] = self.new
-        return row
+        return row, index
 
 

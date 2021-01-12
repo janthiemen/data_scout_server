@@ -148,19 +148,19 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
         if (body["success"]) {
             let columns = this.createColumns(body["data"]["columns"], body["data"]["column_types"]);
             this.setState({ columns: columns, data: body["data"]["records"], loading: false });
-        } else {
-            if (body["messages"] != null &&
-                typeof body["messages"][Symbol.iterator] === 'function') {
-                for (let message of body["messages"]) {
-                    this.addToast({
-                        intent: Intent.DANGER,
-                        message: `${message["code"]}: ${message["message"]}`,
-                    });
-                }
-            } else {
-                console.log(body["messages"]);
+        } 
+        if (body["messages"] != null &&
+            typeof body["messages"][Symbol.iterator] === 'function') {
+            for (let message of body["messages"]) {
+                this.addToast({
+                    intent: message["type"] == "info" ? Intent.PRIMARY : message["type"] == "warning" ? Intent.WARNING : Intent.DANGER,
+                    message: `${message["code"]}: ${message["message"]}`,
+                });
             }
+        } else {
+            console.log(body["messages"]);
         }
+        // }
     }
 
     /**

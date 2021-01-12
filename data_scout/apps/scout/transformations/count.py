@@ -14,15 +14,18 @@ class CountExact(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.field = arguments["field"]
         self.search = arguments["search"]
         self.output = arguments["output"]
 
-    def __call__(self, row):
-        row[self.output] = row[self.field].count(self.search)
+    def __call__(self, row, index: int):
+        if self.field in row:
+            row[self.output] = row[self.field].count(self.search)
+        else:
+            row[self.output] = 0
 
-        return row
+        return row, index
 
 
 class CountRegex(Transformation):
@@ -36,16 +39,19 @@ class CountRegex(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.field = arguments["field"]
         self.pattern = re.compile(arguments["pattern"])
         self.output = arguments["output"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         # TODO: Check if the regex is correct
-        row[self.output] = len(re.findall(self.pattern, row[self.field]))
+        if self.field in row:
+            row[self.output] = len(re.findall(self.pattern, row[self.field]))
+        else:
+            row[self.output] = 0
 
-        return row
+        return row, index
 
 
 class CountDelimiters(Transformation):
@@ -59,13 +65,16 @@ class CountDelimiters(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments: dict, example: dict = None):
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.field = arguments["field"]
         self.delimiter = arguments["delimiter"]
         self.output = arguments["output"]
 
-    def __call__(self, row):
+    def __call__(self, row, index: int):
         # TODO: Check if the regex is correct
-        row[self.output] = row[self.field].count(self.delimiter) + 1
+        if self.field in row:
+            row[self.output] = row[self.field].count(self.delimiter) + 1
+        else:
+            row[self.output] = 0
 
-        return row
+        return row, index
