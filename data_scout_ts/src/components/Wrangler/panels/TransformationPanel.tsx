@@ -11,7 +11,7 @@ import { FilterTransformationButton } from "../transformations/FilterTransformat
 import { MergeTransformationButton } from "../transformations/MergeColumnTransformation";
 import { GroupbyTransformationButton } from "../transformations/GroupByTransformation";
 
-export const TransformationPanel: React.SFC<{newTransformation: (transformationType: string) => void}> = (props) => (
+export const TransformationPanel: React.SFC<{newTransformation: (transformationType: string, kwargs: { [key: string]: any }) => void}> = (props) => (
     <div>
         <ButtonGroup vertical={false} alignText="left">
             <Tooltip content="Replace one text with another">

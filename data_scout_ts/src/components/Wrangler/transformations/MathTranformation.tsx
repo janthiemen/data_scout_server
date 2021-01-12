@@ -1,27 +1,21 @@
 import { Button, ButtonGroup, Popover, Position, IProps, Menu, MenuItem } from "@blueprintjs/core";
 import * as React from "react";
+import { TranformationProps } from './BasicTransformation'
 
-interface MathTranformationMenuProps extends IProps {
-    newTransformation: (transformationType: string) => void;
-}
-
-const MathTranformationMenu: React.FunctionComponent<MathTranformationMenuProps> = props => (
+const MathTranformationMenu: React.FunctionComponent<TranformationProps> = props => (
     <Menu>
-        <MenuItem icon="plus" onClick={() => props.newTransformation("math-add")} text="Sum" />
-        <MenuItem icon="minus" onClick={() => props.newTransformation("math-min")} text="Min" />
-        <MenuItem icon="cross" onClick={() => props.newTransformation("math-multiply")} text="Multiply" />
-        <MenuItem icon="slash" onClick={() => props.newTransformation("math-divide")} text="Divide" />
+        <MenuItem icon="plus" onClick={() => props.newTransformation("math-add", {})} text="Sum" />
+        <MenuItem icon="minus" onClick={() => props.newTransformation("math-min", {})} text="Min" />
+        <MenuItem icon="cross" onClick={() => props.newTransformation("math-multiply", {})} text="Multiply" />
+        <MenuItem icon="slash" onClick={() => props.newTransformation("math-divide", {})} text="Divide" />
         {/* TODO: */}
-        <MenuItem icon="edit" onClick={() => props.newTransformation("math-custom")} text="Custom equation" />
+        <MenuItem icon="edit" onClick={() => props.newTransformation("math-custom", {})} text="Custom equation" />
     </Menu>
 );
 
 interface MathTransformationState { }
-interface MathTransformationProps {
-    newTransformation: (transformationType: string) => void;
-}
 
-export class MathTransformationButton extends React.PureComponent<MathTransformationProps, MathTransformationState> {
+export class MathTransformationButton extends React.PureComponent<TranformationProps, MathTransformationState> {
     public state: MathTransformationState = {};
 
     public render() {

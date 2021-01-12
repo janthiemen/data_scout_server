@@ -14,7 +14,7 @@ class CountExact(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.search = arguments["search"]
         self.output = arguments["output"]
@@ -36,7 +36,7 @@ class CountRegex(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.pattern = re.compile(arguments["pattern"])
         self.output = arguments["output"]
@@ -59,7 +59,7 @@ class CountDelimiters(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.delimiter = arguments["delimiter"]
         self.output = arguments["output"]

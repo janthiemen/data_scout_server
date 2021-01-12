@@ -10,7 +10,7 @@ class Add(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         """Initialize the transformation with the given parameters.
 
         Arguments:
@@ -47,7 +47,7 @@ class Min(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         """Initialize the transformation with the given parameters.
 
         Arguments:
@@ -82,7 +82,7 @@ class Divide(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         """Initialize the transformation with the given parameters.
 
         Arguments:
@@ -116,7 +116,7 @@ class Multiply(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         """Initialize the transformation with the given parameters.
 
         Arguments:

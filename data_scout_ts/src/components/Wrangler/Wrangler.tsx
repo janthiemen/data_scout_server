@@ -15,6 +15,7 @@ import { TransformationPanel } from "./panels/TransformationPanel"
 
 const DUMMY_DATA = [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]];
 const DUMMY_COLUMNS = ["Loading", "Loading", "Loading", "Loading"]
+const DUMMY_COLUMN_TYPES = ["float", "float", "float", "float"]
 
 
 interface WranglerState {
@@ -54,7 +55,7 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
             recipeStep: 3,
             transformationsUpdating: [],
             recipeObject: undefined,
-            columns: this.createColumns(DUMMY_COLUMNS),
+            columns: this.createColumns(DUMMY_COLUMNS, DUMMY_COLUMN_TYPES),
             data: DUMMY_DATA,
         };
 
@@ -132,10 +133,10 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
         this.refresh();
     }
 
-    private createColumns(column_names: string[]): DataColumn[] {
+    private createColumns(column_names: string[], column_types: string[]): DataColumn[] {
         let columns: DataColumn[] = [];
         for (let c in column_names) {
-            columns.push(new DataColumn(column_names[c], parseInt(c), this.createTransformation))
+            columns.push(new DataColumn(column_names[c], parseInt(c), column_types[c], this.createTransformation, this.newTransformation))
         }
         return columns;
     }
@@ -145,7 +146,7 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
      */
     public receiveData(body: { [key: string]: any }) {
         if (body["success"]) {
-            let columns = this.createColumns(body["data"]["columns"]);
+            let columns = this.createColumns(body["data"]["columns"], body["data"]["column_types"]);
             this.setState({ columns: columns, data: body["data"]["records"], loading: false });
         } else {
             if (body["messages"] != null &&
@@ -226,7 +227,7 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
      * Creates a new transformation.
      * @param transformation 
      */
-    protected newTransformation(transformationType: string) {
+    protected newTransformation(transformationType: string, kwargs: { [key: string]: any }) {
         if (this.state.recipeObject === undefined) {
             this.addToast({
                 intent: Intent.DANGER,
@@ -239,9 +240,10 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
             }
 
             // Initialize the kwargs with their default values
-            let kwargs: { [key: string]: any } = {};
             for (let [key, value] of Object.entries(TRANSFORMATIONS[transformationType]["fields"])) {
-                kwargs[key] = value["default"];
+                if (!(key in kwargs)) {
+                    kwargs[key] = value["default"];
+                }
             }
 
             let transformation: Transformation = { id: -1, kwargs: JSON.stringify(kwargs), previous: previous, next: [], recipe: this.state.recipe, transformation: transformationType };

@@ -1,24 +1,18 @@
 import { Button, ButtonGroup, Popover, Position, IProps, Menu, MenuItem } from "@blueprintjs/core";
 import * as React from "react";
+import { TranformationProps } from './BasicTransformation'
 
-interface CountTranformationMenuProps extends IProps {
-    newTransformation: (transformationType: string) => void;
-}
-
-const CountTranformationMenu: React.FunctionComponent<CountTranformationMenuProps> = props => (
+const CountTranformationMenu: React.FunctionComponent<TranformationProps> = props => (
     <Menu>
-        <MenuItem onClick={() => props.newTransformation("count-exact")} text="Text" />
-        <MenuItem onClick={() => props.newTransformation("count-pattern")} text="Pattern (RegEx)" />
-        <MenuItem onClick={() => props.newTransformation("count-delimiters")} text="Between delimiters" />
+        <MenuItem onClick={() => props.newTransformation("count-exact", {})} text="Text" />
+        <MenuItem onClick={() => props.newTransformation("count-pattern", {})} text="Pattern (RegEx)" />
+        <MenuItem onClick={() => props.newTransformation("count-delimiters", {})} text="Between delimiters" />
     </Menu>
 );
 
 interface CountTransformationState { }
-interface CountTransformationProps {
-    newTransformation: (transformationType: string) => void;
-}
 
-export class CountTransformationButton extends React.PureComponent<CountTransformationProps, CountTransformationState> {
+export class CountTransformationButton extends React.PureComponent<TranformationProps, CountTransformationState> {
     public state: CountTransformationState = {};
 
     public render() {

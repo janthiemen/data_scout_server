@@ -1,13 +1,16 @@
-from . import math, data, format, count, replace, filter, extract
+from . import math, math_custom, data, format, count, replace, filter, extract, extract_datetime
 
 TRANSFORMATION_MAP = {
     "data-convert": data.Convert,
+    "data-convert-datetime": data.ConvertDatetime,
     "math-add": math.Add,
     "math-min": math.Min,
     "math-multiply": math.Multiply,
     "math-divide": math.Divide,
+    "math-custom": math_custom.Custom,
     "format-uppercase": format.UpperCase,
     "format-lowercase": format.LowerCase,
+    "format-propercase": format.ProperCase,
     "format-trim-whitespace": format.TrimWhitespace,
     "format-trim-quotes": format.TrimQuotes,
     "format-remove-whitespace": format.RemoveWhitespace,
@@ -30,6 +33,15 @@ TRANSFORMATION_MAP = {
     "extract-regex": extract.ExtractRegex,
     "extract-delimiters": extract.ExtractDelimiters,
     "extract-positions": extract.ExtractPositions,
+    "datetime-extract-year": extract_datetime.ExtractYear,
+    "datetime-extract-month": extract_datetime.ExtractMonth,
+    "datetime-extract-day": extract_datetime.ExtractDay,
+    "datetime-extract-week": extract_datetime.ExtractWeek,
+    "datetime-extract-dayofweek": extract_datetime.ExtractDayOfWeek,
+    "datetime-extract-dayofyear": extract_datetime.ExtractDayOfYear,
+    "datetime-extract-hours": extract_datetime.ExtractHours,
+    "datetime-extract-minutes": extract_datetime.ExtractMinutes,
+    "datetime-extract-seconds": extract_datetime.ExtractSeconds,
     "filter-value-missing": filter.FilterMissing,
     "filter-value-mismatched": filter.FilterMismatched,
     "filter-value-is": filter.FilterIs,

@@ -10,7 +10,7 @@ class Format(Transformation):
                    "required": True, "input": "column", "multiple": True, "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         """Initialize the transformation with the given parameters.
 
         Arguments:
@@ -43,7 +43,7 @@ class LowerCase(Format):
 
 
 class ProperCase(Format):
-    title = "Convert {fields} to lowercase"
+    title = "Convert {fields} to proper case"
 
     def __call__(self, row):
         for field in self.fields:
@@ -62,7 +62,7 @@ class Trim(Transformation):
                  "options": {"both": "Both", "left": "Left", "right": "Right"}}
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.fields = arguments["fields"]
         self.side = arguments["side"]
 
@@ -140,7 +140,7 @@ class AddFix(Transformation):
                  "required": True, "input": "text", "default": ""}
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.fields = arguments["fields"]
         self.text = arguments["text"]
 
@@ -182,7 +182,7 @@ class Pad(Transformation):
                  "options": {"left": "Left", "right": "Right"}}
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.fields = arguments["fields"]
         self.character = arguments["character"]
         self.length = arguments["length"]

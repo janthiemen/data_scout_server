@@ -12,7 +12,7 @@ class FilterMissing(Transformation):
                   "required": True, "input": "column", "multiple": False, "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
 
     def __call__(self, row):
@@ -40,6 +40,14 @@ class FilterMismatched(Transformation):
         return row
 
 
+def convert_search_value(search, example):
+    if isinstance(example, int):
+        return int(search)
+    elif isinstance(example, float):
+        return float(search)
+    return search
+
+
 class FilterIs(Transformation):
     filter = True
     title = "Filter rows where {field} matched {search}"
@@ -50,9 +58,9 @@ class FilterIs(Transformation):
                    "required": True, "input": "text", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
-        self.search = arguments["search"]
+        self.search = convert_search_value(arguments["search"], example[self.field])
 
     def __call__(self, row):
         if row[self.field] == self.search:
@@ -71,9 +79,9 @@ class FilterIsNot(Transformation):
                    "required": True, "input": "text", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
-        self.search = arguments["search"]
+        self.search = convert_search_value(arguments["search"], example[self.field])
 
     def __call__(self, row):
         if row[self.field] != self.search:
@@ -82,9 +90,8 @@ class FilterIsNot(Transformation):
         return row
 
 
-class FilterIsOneOf(Transformation):
+class FilterList(Transformation):
     filter = True
-    title = "Filter rows where {field} is one of"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -92,9 +99,17 @@ class FilterIsOneOf(Transformation):
                    "required": True, "input": "text-area", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.search = arguments["search"].splitlines()
+        if isinstance(example[self.field], int):
+            self.search = [int(item) for item in self.search]
+        elif isinstance(example[self.field], float):
+            self.search = [float(item) for item in self.search]
+
+
+class FilterIsOneOf(FilterList):
+    title = "Filter rows where {field} is one of"
 
     def __call__(self, row):
         if row[self.field] in self.search:
@@ -103,19 +118,8 @@ class FilterIsOneOf(Transformation):
         return row
 
 
-class FilterIsnotOneOf(Transformation):
-    filter = True
+class FilterIsnotOneOf(FilterList):
     title = "Filter rows where {field} is not one of"
-    fields = {
-        "field": {"name": "Input", "type": "string", "help": "The column to use as input",
-                  "required": True, "input": "column", "multiple": False, "default": ""},
-        "search": {"name": "Search", "type": "string", "help": "The values to search for (one per line)",
-                   "required": True, "input": "text-area", "default": ""},
-    }
-
-    def __init__(self, arguments):
-        self.field = arguments["field"]
-        self.search = arguments["search"].splitlines()
 
     def __call__(self, row):
         if row[self.field] not in self.search:
@@ -134,9 +138,9 @@ class FilterLessThan(Transformation):
                       "required": True, "input": "number", "multiple": False, "default": 0},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
-        self.threshold = arguments["threshold"]
+        self.threshold = convert_search_value(arguments["threshold"], example[self.field])
 
     def __call__(self, row):
         if row[self.field] < self.threshold:
@@ -155,9 +159,9 @@ class FilterGreaterThan(Transformation):
                       "required": True, "input": "number", "multiple": False, "default": 0},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
-        self.threshold = arguments["threshold"]
+        self.threshold = convert_search_value(arguments["threshold"], example[self.field])
 
     def __call__(self, row):
         if row[self.field] > self.threshold:
@@ -172,16 +176,16 @@ class FilterBetween(Transformation):
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
-        "min": {"name": "Threshold", "type": "number", "help": "The bottom of the range",
+        "min": {"name": "Min", "type": "number", "help": "The bottom of the range",
                 "required": True, "input": "number", "multiple": False, "default": 0},
-        "max": {"name": "Threshold", "type": "number", "help": "The top of the range",
+        "max": {"name": "Max", "type": "number", "help": "The top of the range",
                 "required": True, "input": "number", "multiple": False, "default": 0},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
-        self.min = arguments["min"]
-        self.max = arguments["max"]
+        self.min = convert_search_value(arguments["min"], example[self.field])
+        self.max = convert_search_value(arguments["max"], example[self.field])
 
     def __call__(self, row):
         if self.min < row[self.field] < self.max:
@@ -196,16 +200,16 @@ class FilterNotBetween(Transformation):
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
-        "min": {"name": "Threshold", "type": "number", "help": "The bottom of the range",
+        "min": {"name": "Min", "type": "number", "help": "The bottom of the range",
                 "required": True, "input": "number", "multiple": False, "default": 0},
-        "max": {"name": "Threshold", "type": "number", "help": "The top of the range",
+        "max": {"name": "Max", "type": "number", "help": "The top of the range",
                 "required": True, "input": "number", "multiple": False, "default": 0},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
-        self.min = arguments["min"]
-        self.max = arguments["max"]
+        self.min = convert_search_value(arguments["min"], example[self.field])
+        self.max = convert_search_value(arguments["max"], example[self.field])
 
     def __call__(self, row):
         if self.min < row[self.field] < self.max:
@@ -224,7 +228,7 @@ class FilterContains(Transformation):
                    "required": True, "input": "text", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.search = arguments["search"]
 
@@ -245,12 +249,12 @@ class FilterStartsWith(Transformation):
                    "required": True, "input": "text", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.search = arguments["search"]
 
     def __call__(self, row):
-        if row[self.field].startswith(self.search):
+        if str(row[self.field]).startswith(self.search):
             return False
 
         return row
@@ -266,12 +270,12 @@ class FilterEndsWith(Transformation):
                    "required": True, "input": "text", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.search = arguments["search"]
 
     def __call__(self, row):
-        if row[self.field].endswith(self.search):
+        if str(row[self.field]).endswith(self.search):
             return False
 
         return row
@@ -287,12 +291,12 @@ class FilterRegex(Transformation):
                    "required": True, "input": "text", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.search = re.compile(arguments["search"])
 
     def __call__(self, row):
-        if self.search.match(row[self.field]):
+        if self.search.match(str(row[self.field])):
             return False
 
         return row

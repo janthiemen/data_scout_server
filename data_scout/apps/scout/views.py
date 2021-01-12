@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 
 from django.contrib.auth.models import User, Group
+from pyparsing import ParseException
 from rest_framework import viewsets, views, response, status
 from rest_framework import permissions, authentication
 from rest_framework.response import Response
@@ -160,11 +161,12 @@ def data(request, recipe: int, step: int):
                     )
                 })
             else:
-                t_func = TRANSFORMATION_MAP[transformation.transformation](json.loads(transformation.kwargs))
+                t_func = TRANSFORMATION_MAP[transformation.transformation](json.loads(transformation.kwargs),
+                                                                           records[0])
                 for i, record in enumerate(records):
                     records[i] = t_func(record)
                 if t_func.filter:
-                    records = filter(_is_false, records)
+                    records = [record for record in filter(_is_false, records)]
             transformation = transformation.next.get()
             t += 1
         except ObjectDoesNotExist:
@@ -172,7 +174,15 @@ def data(request, recipe: int, step: int):
             break
         except TypeError as e:
             success = False
-            messages.append({"code": 2, "message": "Transformation {}: {}".format(t, str(e))})
+            messages.append({"code": 2, "message": f"Transformation {t}: {e}"})
+            break
+        except ParseException as e:
+            success = False
+            messages.append({"code": -1, "message": f"Transformation {t}: There is an error in the equation. {e}"})
+            break
+        except Exception as e:
+            success = False
+            messages.append({"code": -1, "message": f"Transformation {t}: {e}"})
             break
 
     if not success:
@@ -183,7 +193,10 @@ def data(request, recipe: int, step: int):
     for record in records:
         records_export.append(list(clean_func(record).values()))
 
-    return JsonResponse({"success": True, "data": {'records': records_export, "columns": list(records[0].keys())}})
+    return JsonResponse({"success": True, "data": {
+        'records': records_export,
+        "columns": list(records[0].keys()),
+        "column_types": [type(val).__name__ for key, val in records[0].items()]}})
 
 
 def meta_transformations(request):

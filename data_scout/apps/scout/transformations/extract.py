@@ -15,7 +15,7 @@ class ExtractNumbers(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -40,7 +40,7 @@ class ExtractHttpQueryString(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -68,7 +68,7 @@ class ExtractRegex(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.pattern = re.compile(arguments["pattern"])
         self.output = arguments["output"]
@@ -93,7 +93,7 @@ class ExtractDelimiters(ExtractRegex):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         arguments["pattern"] = '{delimiter}.*{delimiter}'.format(delimiter=arguments["delimiter"])
         super().__init__(arguments)
         self.pattern = re.compile(arguments["pattern"], flags=re.DOTALL)
@@ -112,7 +112,7 @@ class ExtractPositions(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.start = int(arguments["start"])
         self.end = int(arguments["end"])

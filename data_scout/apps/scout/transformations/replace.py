@@ -17,7 +17,7 @@ class ReplaceText(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.old = arguments["old"]
         self.new = arguments["new"]
@@ -42,7 +42,7 @@ class ReplaceRegex(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.pattern = re.compile(arguments["pattern"])
         self.new = arguments["new"]
@@ -68,7 +68,7 @@ class ReplaceDelimiters(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.pattern = re.compile('{delimiter}.*{delimiter}'.format(delimiter=arguments["delimiter"]), flags=re.DOTALL)
         self.new = arguments["new"]
@@ -95,7 +95,7 @@ class ReplacePositions(Transformation):
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.start = arguments["start"]
         self.end = arguments["end"]
@@ -117,7 +117,7 @@ class ReplaceMismatched(Transformation):
                 "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.new = arguments["new"]
 
@@ -136,7 +136,7 @@ class ReplaceMissing(Transformation):
                 "default": ""},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict, example: dict = None):
         self.field = arguments["field"]
         self.new = arguments["new"]
 
