@@ -197,3 +197,36 @@ class Pad(Transformation):
                 row[field] = row[field].ljust(self.length, self.character)
 
         return row, index
+
+
+class Number(Transformation):
+    title = "Format {fields} as numbers"
+    fields = {
+        "field": {"name": "Field", "type": "string", "help": "The column to format",
+                  "required": True, "input": "column", "multiple": False, "default": ""},
+        "decimals": {"name": "Length", "type": "number", "help": "What should be the length of the resulting string",
+                     "required": True, "input": "number", "default": 0},
+        "decimal_sep": {"name": "Decimal separator", "type": "string", "required": True, "input": "text",
+                        "help": "The character to use as the decimal separator", "default": ""},
+        "thousands_sep": {"name": "Thousands separator", "type": "string", "required": True, "input": "text",
+                          "help": "The character to use as the thousands separator", "default": ""},
+        "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
+                   "help": "The name of the (newly created) column that contains the results", "default": ""},
+    }
+
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        self.field = arguments["field"]
+        self.decimals = int(arguments["decimals"])
+        self.decimal_sep = str(arguments["decimal_sep"])
+        self.thousands_sep = str(arguments["thousands_sep"])
+        self.output = arguments["output"]
+
+    def __call__(self, row, index: int):
+        row[self.output] = ("{:,." + str(self.decimals) + "f}")\
+            .format(row[self.field])\
+            .replace(",", "THOUSANDS_SEP")\
+            .replace(".", "DECIMAL_SEP")\
+            .replace("DECIMAL_SEP", self.decimal_sep)\
+            .replace("THOUSANDS_SEP", self.thousands_sep)
+
+        return row, index

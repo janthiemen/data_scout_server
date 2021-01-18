@@ -41,53 +41,17 @@ Aggregate Functions
    KTHLARGESTUNIQUEIF Function
    APPROXIMATEPERCENTILE Function
    APPROXIMATEQUARTILE Function
-Logical Functions
-    Logical Operators
-        AND Function
-        OR Function
-        NOT Function
-    Comparison Functions
-        Comparison Operators
-        ISEVEN Function
-        ISODD Function
-        IN Function
-        MATCHES Function
-        EQUAL Function
-        NOTEQUAL Function
-        GREATERTHAN Function
-        GREATERTHANEQUAL Function
-        LESSTHAN Function
-        LESSTHANEQUAL Function
-Math Functions
-    NUMFORMAT Function
-Date Functions
-    DATEADD Function
-    DATEDIF Function
-    UNIXTIMEFORMAT Function
-    MONTHNAME Function
-    UNIXTIME Function
-    NOW Function
-    TODAY Function
-    PARSEDATE Function
-    MINDATE Function
-    MAXDATE Function
-    MODEDATE Function
-    WORKDAY Function
-    WORKDAYINTL Function
-    CONVERTFROMUTC Function
-    CONVERTTOUTC Function
-    CONVERTTIMEZONE Function
-    MINDATEIF Function
-    MAXDATEIF Function
-    MODEDATEIF Function
-    KTHLARGESTDATE Function
-    KTHLARGESTUNIQUEDATE Function
-    KTHLARGESTUNIQUEDATEIF Function
-    KTHLARGESTDATEIF Function
-    WEEKDAYNAME Function
-    EOMONTH Function
-String Functions
-    SUBSTITUTE Function
+   MINDATE Function
+   MAXDATE Function
+   MODEDATE Function
+   MINDATEIF Function
+   MAXDATEIF Function
+   MODEDATEIF Function
+   KTHLARGESTDATE Function
+   KTHLARGESTUNIQUEDATE Function
+   KTHLARGESTUNIQUEDATEIF Function
+   KTHLARGESTDATEIF Function
+
 Nested Functions
     ARRAYCONCAT Function
     ARRAYCROSS Function
@@ -149,7 +113,6 @@ Window Functions
     ROLLINGMAXDATE Function
     ROLLINGMINDATE Function
 Other Functions
-    COALESCE Function
     RAND Function
     RANDBETWEEN Function
     PI Function
@@ -212,3 +175,4 @@ Language Appendices
 
 Literals    -> Create a new column as a literal (string, number, etc.)
 Comparison  -> Compare column A to column B
+If/else/case statements
