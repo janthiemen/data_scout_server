@@ -1,12 +1,7 @@
+import math
+
 from apps.scout.transformations.transformation import Transformation
-
-
-def convert_value(search, example):
-    if isinstance(example, int):
-        return int(search)
-    elif isinstance(example, float):
-        return float(search)
-    return search
+from ._utils import compare_basis, compare_convert_value
 
 
 class CompareValue(Transformation):
@@ -16,9 +11,10 @@ class CompareValue(Transformation):
                   "required": True, "input": "column", "multiple": False, "default": ""},
         "comparison": {"name": "Comparison", "type": "string", "help": "How should the values be compared?",
                        "required": True, "input": "select", "multiple": False, "default": "==",
-                       "options": {"==": "==", ">=": ">=", ">": ">", "<=": "<=", "<": "<", "!=": "!=", "in": "in"}},
-        "value": {"name": "Value", "type": "string", "help": "The value to compare against",
-                  "required": True, "input": "text", "multiple": False, "default": ""},
+                       "options": {"==": "==", ">=": ">=", ">": ">", "<=": "<=", "<": "<", "!=": "!=",
+                                   "in": "in (value in column)", "in_list": "in list (column in list of values)"}},
+        "value": {"name": "Value", "type": "string", "required": True, "input": "text-area", "default": "",
+                  "help": "The value to compare against (one per line to create a list)"},
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
@@ -26,24 +22,11 @@ class CompareValue(Transformation):
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.field = arguments["field"]
         self.comparison = arguments["comparison"]
-        self.value = convert_value(arguments["value"], example[self.field])
+        self.value = compare_convert_value(arguments["value"].splitlines(), example[self.field])
         self.output = arguments["output"]
 
     def __call__(self, row, index: int):
-        if self.comparison == "==":
-            row[self.output] = row[self.field] == self.value
-        elif self.comparison == ">=":
-            row[self.output] = row[self.field] >= self.value
-        elif self.comparison == ">":
-            row[self.output] = row[self.field] > self.value
-        elif self.comparison == "<=":
-            row[self.output] = row[self.field] <= self.value
-        elif self.comparison == "<":
-            row[self.output] = row[self.field] < self.value
-        elif self.comparison == "!=":
-            row[self.output] = row[self.field] != self.value
-        elif self.comparison == "in":
-            row[self.output] = self.value in row[self.field]
+        row[self.output] = compare_basis(row[self.field], self.comparison, self.value)
 
         return row, index
 
@@ -113,6 +96,42 @@ class Parity(Transformation):
         return row, index
 
 
+class Mismatched(Transformation):
+    title = "Check if {field} is mismatched"
+    fields = {
+        "field": {"name": "Field", "type": "string", "help": "The column to check",
+                  "required": True, "input": "column", "multiple": False, "default": ""},
+        "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
+                   "help": "The name of the (newly created) column that contains the results", "default": ""},
+    }
+
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        self.field = arguments["field"]
+        self.output = arguments["output"]
+
+    def __call__(self, row, index: int):
+        row[self.output] = self.field not in row or row[self.field] is math.nan
+        return row, index
+
+
+class Missing(Mismatched):
+    title = "Check if {field} is missing"
+
+    def __call__(self, row, index: int):
+        row[self.output] = self.field not in row or row[self.field] is None or \
+                           row[self.field] is math.nan or \
+                           (hasattr(row[self.field], '__len__') and len(row[self.field]) == 0)
+        return row, index
+
+
+class IsNull(Mismatched):
+    title = "Check if {field} is null"
+
+    def __call__(self, row, index: int):
+        row[self.output] = row[self.field] is None
+        return row, index
+
+
 class Negate(Transformation):
     title = "Negate {field}"
     fields = {
@@ -159,6 +178,64 @@ class Logical(Transformation):
         return row, index
 
 
+class IfElse(Transformation):
+    title = "If else statement using {if}"
+    fields = {
+        "field": {"name": "If", "type": "list<string>", "help": "The column that is used in the if statement (boolean)",
+                  "column_type": ["bool"], "required": True, "input": "column", "multiple": True, "default": ""},
+        "if_value_type": {"name": "If value type", "type": "string", "help": "What type of value should be used?",
+                          "required": True, "input": "select", "multiple": False, "default": "column",
+                          "options": {"column": "column", "string": "string", "integer": "integer", "float": "float"}},
+        "if_value_column": {"name": "If value column", "type": "list<string>", "required": False, "input": "column",
+                            "help": "The column that is used as the value when the if statement evaluates to true",
+                            "multiple": True, "default": ""},
+        "if_value_string": {"name": "If value (string)", "type": "string", "input": "text", "required": False,
+                            "help": "The value that is used when the if statement evaluates to true", "default": ""},
+        "if_value_number": {"name": "If value (number)", "type": "number", "input": "number", "required": False,
+                            "help": "The value that is used when the if statement evaluates to true", "default": ""},
+        "else_value_type": {"name": "Else value type", "type": "string", "help": "What type of value should be used?",
+                            "required": True, "input": "select", "multiple": False, "default": "column",
+                            "options": {"column": "column", "string": "string", "integer": "integer", "float": "float"}
+                            },
+        "else_value_column": {"name": "Else value column", "type": "list<string>", "required": False, "input": "column",
+                              "help": "The column that is used as the value when the if statement evaluates to false",
+                              "multiple": True, "default": ""},
+        "else_value_string": {"name": "Else value (string)", "type": "string", "input": "text", "required": False,
+                              "help": "The value that is used when the if statement evaluates to false", "default": ""},
+        "else_value_number": {"name": "Else value (number)", "type": "number", "input": "number", "required": False,
+                              "help": "The value that is used when the if statement evaluates to false", "default": ""},
+        "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
+                   "help": "The name of the (newly created) column that contains the results", "default": ""},
+    }
+
+    def _get_value(self, value_type, value_string, value_number):
+        if value_type == "string":
+            return str(value_string)
+        elif value_type == "integer":
+            return int(value_number)
+        elif value_type == "float":
+            return float(value_number)
+
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        self.field = arguments["field"]
+        self.if_is_column = arguments["if_value_type"] == "column"
+        self.if_value = self._get_value(arguments["if_value_type"], arguments["if_value_string"],
+                                        arguments["if_value_number"])
+        self.if_column = arguments["if_value_column"]
+        self.else_is_column = arguments["else_value_type"] == "column"
+        self.else_value = self._get_value(arguments["else_value_type"], arguments["else_value_string"],
+                                          arguments["else_value_number"])
+        self.else_column = arguments["else_value_column"]
+        self.output = arguments["output"]
+
+    def __call__(self, row, index: int):
+        if row[self.field]:
+            row[self.output] = row.get(self.if_column) if self.if_is_column else self.if_value
+        else:
+            row[self.output] = row.get(self.else_column) if self.else_is_column else self.else_value
+        return row, index
+
+
 class Min(Transformation):
     title = "Get the minimum of {fields}"
     fields = {
@@ -180,7 +257,7 @@ class Min(Transformation):
             values = self._get_values(row)
             row[self.output] = min(values)
         except:
-            row[self.output] = None
+            row[self.output] = math.nan
         return row, index
 
 
@@ -192,7 +269,7 @@ class Max(Min):
             values = self._get_values(row)
             row[self.output] = max(values)
         except:
-            row[self.output] = None
+            row[self.output] = math.nan
         return row, index
 
 
@@ -204,7 +281,7 @@ class Mean(Min):
             values = self._get_values(row)
             row[self.output] = sum(values) / len(values)
         except:
-            row[self.output] = None
+            row[self.output] = math.nan
         return row, index
 
 
@@ -216,7 +293,7 @@ class Mode(Min):
             values = self._get_values(row)
             row[self.output] = max(set(values), key=values.count)
         except:
-            row[self.output] = None
+            row[self.output] = math.nan
         return row, index
 
 

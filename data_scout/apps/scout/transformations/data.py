@@ -12,7 +12,7 @@ class Convert(Transformation):
                   "input": "column", "multiple": False, "default": ""},
         "to": {"name": "To", "type": "string", "help": "To which data type to convert", "required": True,
                "input": "select", "multiple": False, "default": "",
-               "options": {"int": "Integer", "float": "Floating point number", "string": "Text"}}
+               "options": {"int": "Integer", "float": "Floating point number", "string": "Text", "bool": "Boolean"}}
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
@@ -39,6 +39,10 @@ class Convert(Transformation):
         try:
             if self.to == "int":
                 row[self.field] = int(row[self.field])
+            elif self.to == "bool":
+                row[self.field] = bool(row[self.field])
+            elif self.to == "string":
+                row[self.field] = str(row[self.field])
             elif self.to == "float" or self.to == 'Floating point number':
                 row[self.field] = float(row[self.field])
         except ValueError as e:
@@ -51,7 +55,8 @@ class ConvertDatetime(Transformation):
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The field to convert", "required": True,
                   "input": "column", "multiple": False, "default": ""},
-        "format": {"name": "Format", "type": "string", "help": "The datatime format of the input (according to the Python datetime format codes https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes).", "required": True,
+        "format": {"name": "Format", "type": "string",
+                   "help": "The datatime format of the input (according to the Python datetime format codes https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes).", "required": True,
                    "input": "text", "default": "%Y-%m-%d %H:%M"}
     }
 

@@ -108,6 +108,9 @@ class FilterList(Transformation):
         elif isinstance(example[self.field], float):
             self.search = [float(item) for item in self.search]
 
+    def __call__(self, row, index: int):
+        raise NotImplemented
+
 
 class FilterIsOneOf(FilterList):
     title = "Filter rows where {field} is one of"
