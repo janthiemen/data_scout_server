@@ -1,0 +1,214 @@
+Aggregate Functions
+   ANY Function
+   ANYIF Function
+   AVERAGE Function
+   AVERAGEIF Function
+   COUNTA Function
+   COUNTAIF Function
+   COUNTDISTINCT Function
+   COUNTDISTINCTIF Function
+   COUNT Function
+   COUNTIF Function
+   KTHLARGEST Function
+   KTHLARGESTIF Function
+   KTHLARGESTUNIQUE Function
+   LIST Function
+   LISTIF Function
+   UNIQUE Function
+   MAX Function
+   MAXIF Function
+   MIN Function
+   MINIF Function
+   MODE Function
+   MODEIF Function
+   STDEV Function
+   STDEVIF Function
+   SUM Function
+   SUMIF Function
+   VAR Function
+   VARIF Function
+   STDEVSAMP Function
+   STDEVSAMPIF Function
+   VARSAMP Function
+   VARSAMPIF Function
+   CORREL Function
+   COVAR Function
+   COVARSAMP Function
+   MEDIAN Function
+   PERCENTILE Function
+   QUARTILE Function
+   APPROXIMATEMEDIAN Function
+   KTHLARGESTUNIQUEIF Function
+   APPROXIMATEPERCENTILE Function
+   APPROXIMATEQUARTILE Function
+Logical Functions
+    Logical Operators
+        AND Function
+        OR Function
+        NOT Function
+    Comparison Functions
+        Comparison Operators
+        ISEVEN Function
+        ISODD Function
+        IN Function
+        MATCHES Function
+        EQUAL Function
+        NOTEQUAL Function
+        GREATERTHAN Function
+        GREATERTHANEQUAL Function
+        LESSTHAN Function
+        LESSTHANEQUAL Function
+Math Functions
+    NUMFORMAT Function
+Date Functions
+    DATEADD Function
+    DATEDIF Function
+    UNIXTIMEFORMAT Function
+    MONTHNAME Function
+    UNIXTIME Function
+    NOW Function
+    TODAY Function
+    PARSEDATE Function
+    MINDATE Function
+    MAXDATE Function
+    MODEDATE Function
+    WORKDAY Function
+    WORKDAYINTL Function
+    CONVERTFROMUTC Function
+    CONVERTTOUTC Function
+    CONVERTTIMEZONE Function
+    MINDATEIF Function
+    MAXDATEIF Function
+    MODEDATEIF Function
+    KTHLARGESTDATE Function
+    KTHLARGESTUNIQUEDATE Function
+    KTHLARGESTUNIQUEDATEIF Function
+    KTHLARGESTDATEIF Function
+    WEEKDAYNAME Function
+    EOMONTH Function
+String Functions
+    SUBSTITUTE Function
+Nested Functions
+    ARRAYCONCAT Function
+    ARRAYCROSS Function
+    ARRAYELEMENTAT Function
+    ARRAYINTERSECT Function
+    ARRAYLEN Function
+    ARRAYSTOMAP Function
+    ARRAYUNIQUE Function
+    ARRAYZIP Function
+    FILTEROBJECT Function
+    KEYS Function
+    LISTAVERAGE Function
+    LISTMAX Function
+    LISTMIN Function
+    LISTMODE Function
+    LISTSTDEV Function
+    LISTSUM Function
+    LISTVAR Function
+    ARRAYSORT Function
+    ARRAYINDEXOF Function
+    ARRAYMERGEELEMENTS Function
+    ARRAYRIGHTINDEXOF Function
+    ARRAYSLICE Function
+Type Functions
+    NULL Function
+    IFNULL Function
+    IFMISSING Function
+    IFMISMATCHED Function
+    IFVALID Function
+    ISNULL Function
+    ISMISSING Function
+    ISMISMATCHED Function
+    VALID Function
+    PARSEINT Function
+    PARSEBOOL Function
+    PARSEFLOAT Function
+Window Functions
+    PREV Function
+    NEXT Function
+    FILL Function
+    ROLLINGAVERAGE Function
+    ROLLINGMODE Function
+    ROLLINGMAX Function
+    ROLLINGMIN Function
+    ROLLINGSUM Function
+    ROLLINGSTDEV Function
+    ROLLINGVAR Function
+    ROLLINGCOUNTA Function
+    ROLLINGKTHLARGEST Function
+    ROLLINGKTHLARGESTUNIQUE Function
+    ROLLINGLIST Function
+    ROWNUMBER Function
+    SESSION Function
+    RANK Function
+    DENSERANK Function
+    ROLLINGSTDEVSAMP Function
+    ROLLINGVARSAMP Function
+    ROLLINGMODEDATE Function
+    ROLLINGMAXDATE Function
+    ROLLINGMINDATE Function
+Other Functions
+    COALESCE Function
+    RAND Function
+    RANDBETWEEN Function
+    PI Function
+    SOURCEROWNUMBER Function
+    IF Function
+    CASE Function
+Ternary Operators
+    IPTOINT Function
+    IPFROMINT Function
+    RANGE Function
+    HOST Function
+    DOMAIN Function
+    SUBDOMAIN Function
+    SUFFIX Function
+    URLPARAMS Function
+Other Language Topics
+    Text Matching
+        Escaping Strings in Transformations
+        Pattern Clause Position Matching
+        String Collation Rules
+        Supported Special Regular Expression Characters
+    Capture Group References
+    Valid Data Type Strings
+    Data Type Validation Patterns
+    Structure of a URL
+    Language Documentation Syntax Notes
+    Source Metadata References
+Language Index
+Language Appendices
+    Transforms
+        Case Transform
+        Comment Transform
+        Countpattern Transform
+        Deduplicate Transform
+        Delete Transform
+        Derive Transform
+        Drop Transform
+        Extract Transform
+        Extractkv Transform
+        Extractlist Transform
+        Filter Transform
+        Flatten Transform
+        Header Transform
+        Keep Transform
+        Merge Transform
+        Move Transform
+        Nest Transform
+        Pivot Transform
+        Rename Transform
+        Replace Transform
+        Set Transform
+        Settype Transform
+        Sort Transform
+        Split Transform
+        Splitrows Transform
+        Unnest Transform
+        Unpivot Transform
+        Valuestocols Transform
+        Window Transform
+
+Literals    -> Create a new column as a literal (string, number, etc.)
+Comparison  -> Compare column A to column B

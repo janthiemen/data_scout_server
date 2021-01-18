@@ -61,10 +61,11 @@ class Custom(Transformation):
         minus = Literal("-")
         mult = Literal("*")
         div = Literal("/")
+        mod = Literal("%")
         lpar = Literal("(").suppress()
         rpar = Literal(")").suppress()
         addop = plus | minus
-        multop = mult | div
+        multop = mult | div | mod
         expop = Literal("^")
         pi = CaselessLiteral("PI")
         expr = Forward()
@@ -91,17 +92,29 @@ class Custom(Transformation):
         self.opn = {"+": operator.add,
                     "-": operator.sub,
                     "*": operator.mul,
+                    "%": operator.mod,
                     "/": operator.truediv,
                     "^": operator.pow}
+        self.expr_stack = None
         self.fn = {"sin": math.sin,
+                   "sinh": math.sinh,
                    "cos": math.cos,
+                   "cosh": math.cosh,
                    "tan": math.tan,
+                   "tanh": math.tanh,
                    "exp": math.exp,
+                   "sqrt": math.sqrt,
+                   "radians": math.radians,
+                   "degrees": math.degrees,
+                   "sign": lambda x: 0 if x == 0 else x / abs(x),
+                   "log": math.log10,
+                   "ln": math.log,
                    "abs": abs,
                    "trunc": lambda a: int(a),
                    "round": round,
+                   "floor": math.floor,
+                   "ceil": math.ceil,
                    "sgn": lambda a: abs(a) > epsilon and cmp(a, 0) or 0}
-        self.expr_stack = None
 
     def push_first(self, strg, loc, toks):
         self.expr_stack.append(toks[0])
@@ -114,7 +127,7 @@ class Custom(Transformation):
         op = s.pop()
         if op == 'unary -':
             return -self.evaluate_stack(s)
-        if op in "+-*/^":
+        if op in "+-*/^%":
             op2 = self.evaluate_stack(s)
             op1 = self.evaluate_stack(s)
             return self.opn[op](op1, op2)
@@ -147,3 +160,7 @@ class Custom(Transformation):
         row[self.output] = self.eval(re.sub(r'{(\w+)}', lambda x: str(row.get(x.group(1), 0)), self.equation))
 
         return row
+
+
+mc = Custom({"equation": "round(10.12421473, 3)", "output": "test"}, 1)
+print(mc({}, 1))

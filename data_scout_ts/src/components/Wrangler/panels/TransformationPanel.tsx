@@ -1,11 +1,10 @@
 import * as React from "react";
 
 import { ButtonGroup, Tooltip, Divider } from "@blueprintjs/core";
-import { ReplaceTransformationButton } from "../transformations/ReplaceTranformation";
+import { StringTransformationButton } from "../transformations/StringTranformation";
 import { CountTransformationButton } from "../transformations/CountTransformation";
 import { MathTransformationButton } from "../transformations/MathTranformation";
-import { FormatTransformationButton } from "../transformations/FormatTransformation";
-import { ExtractTransformationButton } from "../transformations/ExtractTranformation";
+// import { ExtractTransformationButton } from "../transformations/ExtractTranformation";
 import { SplitTransformationButton } from "../transformations/SplitColumnTransformation";
 import { FilterTransformationButton } from "../transformations/FilterTransformation";
 import { MergeTransformationButton } from "../transformations/MergeColumnTransformation";
@@ -14,14 +13,11 @@ import { GroupbyTransformationButton } from "../transformations/GroupByTransform
 export const TransformationPanel: React.SFC<{newTransformation: (transformationType: string, kwargs: { [key: string]: any }) => void}> = (props) => (
     <div>
         <ButtonGroup vertical={false} alignText="left">
-            <Tooltip content="Replace one text with another">
-                <ReplaceTransformationButton newTransformation={props.newTransformation} />
-            </Tooltip>
-            <ExtractTransformationButton newTransformation={props.newTransformation} />
+            <StringTransformationButton newTransformation={props.newTransformation} />
+            {/* <ExtractTransformationButton newTransformation={props.newTransformation} /> */}
             <Tooltip content="Count the number of occurances">
                 <CountTransformationButton newTransformation={props.newTransformation} />
             </Tooltip>
-            <FormatTransformationButton newTransformation={props.newTransformation} />
             <MathTransformationButton newTransformation={props.newTransformation} />
             <SplitTransformationButton newTransformation={props.newTransformation} />
             <FilterTransformationButton newTransformation={props.newTransformation} />

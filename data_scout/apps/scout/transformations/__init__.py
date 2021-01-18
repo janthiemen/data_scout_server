@@ -1,4 +1,5 @@
-from . import math, math_custom, data, format, count, replace, filter, extract, extract_datetime
+from . import math, math_custom, data, format, count, replace, filter, extract, extract_datetime, string
+
 
 TRANSFORMATION_MAP = {
     "data-convert": data.Convert,
@@ -9,6 +10,31 @@ TRANSFORMATION_MAP = {
     "math-multiply": math.Multiply,
     "math-divide": math.Divide,
     "math-custom": math_custom.Custom,
+
+    "string-substring-left": string.SubstringLeft,
+    "string-substring-right": string.SubstringRight,
+    "string-substring": string.Substring,
+
+    "string-find-left": string.FindLeft,
+    "string-find-right": string.FindRight,
+
+    "string-length": string.Length,
+    "string-merge": string.Merge,
+    "string-repeat": string.Repeat,
+
+    "string-test-contains": string.TestContains,
+    "string-test-startswith": string.TestStartsWith,
+    "string-test-endswith": string.TestEndsWith,
+    "string-test-regex": string.TestRegex,
+    "string-test-exact": string.TestExact,
+    "string-test-greater": string.TestGreater,
+    "string-test-greater-equal": string.TestGreaterEqual,
+    "string-test-less": string.TestLess,
+    "string-test-less-equal": string.TestLessEqual,
+
+    "string-base64-encode": string.Base64Encode,
+    "string-base64-decode": string.Base64Decode,
+
     "format-uppercase": format.UpperCase,
     "format-lowercase": format.LowerCase,
     "format-propercase": format.ProperCase,
