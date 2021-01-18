@@ -53,41 +53,8 @@ Aggregate Functions
    KTHLARGESTDATEIF Function
 
 Nested Functions
-    ARRAYCONCAT Function
     ARRAYCROSS Function
-    ARRAYELEMENTAT Function
-    ARRAYINTERSECT Function
-    ARRAYLEN Function
-    ARRAYSTOMAP Function
-    ARRAYUNIQUE Function
-    ARRAYZIP Function
-    FILTEROBJECT Function
-    KEYS Function
-    LISTAVERAGE Function
-    LISTMAX Function
-    LISTMIN Function
-    LISTMODE Function
-    LISTSTDEV Function
-    LISTSUM Function
-    LISTVAR Function
-    ARRAYSORT Function
-    ARRAYINDEXOF Function
-    ARRAYMERGEELEMENTS Function
-    ARRAYRIGHTINDEXOF Function
-    ARRAYSLICE Function
-Type Functions
-    NULL Function
-    IFNULL Function
-    IFMISSING Function
-    IFMISMATCHED Function
-    IFVALID Function
-    ISNULL Function
-    ISMISSING Function
-    ISMISMATCHED Function
-    VALID Function
-    PARSEINT Function
-    PARSEBOOL Function
-    PARSEFLOAT Function
+
 Window Functions
     PREV Function
     NEXT Function
@@ -113,34 +80,7 @@ Window Functions
     ROLLINGMAXDATE Function
     ROLLINGMINDATE Function
 Other Functions
-    RAND Function
-    RANDBETWEEN Function
-    PI Function
     SOURCEROWNUMBER Function
-    IF Function
-    CASE Function
-Ternary Operators
-    IPTOINT Function
-    IPFROMINT Function
-    RANGE Function
-    HOST Function
-    DOMAIN Function
-    SUBDOMAIN Function
-    SUFFIX Function
-    URLPARAMS Function
-Other Language Topics
-    Text Matching
-        Escaping Strings in Transformations
-        Pattern Clause Position Matching
-        String Collation Rules
-        Supported Special Regular Expression Characters
-    Capture Group References
-    Valid Data Type Strings
-    Data Type Validation Patterns
-    Structure of a URL
-    Language Documentation Syntax Notes
-    Source Metadata References
-Language Index
 Language Appendices
     Transforms
         Case Transform
@@ -173,6 +113,4 @@ Language Appendices
         Valuestocols Transform
         Window Transform
 
-Literals    -> Create a new column as a literal (string, number, etc.)
-Comparison  -> Compare column A to column B
-If/else/case statements
+Drop column
