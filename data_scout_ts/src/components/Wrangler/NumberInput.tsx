@@ -18,7 +18,6 @@ export class NumberInput extends React.PureComponent<NumberInputProps, NumberInp
 
     constructor(props: NumberInputProps) {
         super(props);
-        console.log(props);
         this.onValueChange = props.onValueChange;
         this.state = {
             field: props.field,

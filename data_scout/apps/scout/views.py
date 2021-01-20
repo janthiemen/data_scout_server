@@ -1,4 +1,5 @@
 import json
+from typing import List
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -19,6 +20,7 @@ from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep
 from . import data_sources
 from django.core.exceptions import ObjectDoesNotExist
 
+from .transformations import _utils
 from .transformations.filter import IndexFilterException
 
 import pandas as pd
@@ -194,7 +196,7 @@ def data(request, recipe: int, step: int):
 
     success = True
     # Load the data
-    # TODO:
+    # TODO: Get this from the database
     csv = data_sources.CSV({"filename": "test.csv", "delimiter": ",", "has_header": True, "encoding": "utf-8"})
     df = csv(True, sampling_technique)
 
@@ -202,12 +204,16 @@ def data(request, recipe: int, step: int):
         return value != False
 
     records = df.to_dict('records')
+    columns = []
     sample_size = len(records)
     for t, transformation, t_class in transformation_list:
         # Execute the transformation on the data set
         try:
+            # Before each transformation we create a list of columns and column types that are available at that point
+            columns.append(_utils.get_columns(records))
             t_func = t_class(json.loads(transformation.kwargs), sample_size, records[0])
             # If it's a global transformation, we'll call it on all records, if it isn't, we call it one-at-a-time
+            # TODO: Check if we could do all of this in a DF apply?
             if t_func.is_global:
                 records, _ = t_func(records, -1)
             else:
@@ -238,14 +244,15 @@ def data(request, recipe: int, step: int):
     records_export = []
     clean_func = CleanJSON()
     records_df = pd.DataFrame(records).to_dict(orient="records")
-    column_types = [type(val).__name__ for key, val in records_df[0].items()]
+    # column_types = [type(val).__name__ for key, val in records_df[0].items()]
+    columns.append(_utils.get_columns(records))
     for i, record in enumerate(records_df):
         records_export.append(list(clean_func(record, i)[0].values()))
 
     return JsonResponse({"success": True, "messages": messages, "data": {
         'records': records_export,
-        "columns": list(records_df[0].keys()),
-        "column_types": column_types}})
+        "columns": columns
+    }})
 
 
 def meta_transformations(request):

@@ -5,6 +5,7 @@ from text_unidecode import unidecode
 from apps.scout.transformations.transformation import Transformation
 
 
+# TODO: Should we combine all of these into one transformation?
 class Literal(Transformation):
     fields = {
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,

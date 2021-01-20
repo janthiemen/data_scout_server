@@ -1,4 +1,5 @@
-from . import math, math_custom, data, format, count, replace, filter, extract, datetime, string, groupby
+from . import math, math_custom, data, format, count, replace, filter, extract, datetime, string, groupby, array, \
+    comparison, dictionary, literal
 
 TRANSFORMATION_MAP = {
     "data-convert": data.Convert,
@@ -45,6 +46,7 @@ TRANSFORMATION_MAP = {
     "format-add-prefix": format.AddPrefix,
     "format-add-suffix": format.AddSuffix,
     "format-pad": format.Pad,
+
     "count-exact": count.CountExact,
     "count-pattern": count.CountRegex,
     "count-delimiters": count.CountDelimiters,
@@ -59,18 +61,20 @@ TRANSFORMATION_MAP = {
     "extract-regex": extract.ExtractRegex,
     "extract-delimiters": extract.ExtractDelimiters,
     "extract-positions": extract.ExtractPositions,
+
     "datetime-extract-year": datetime.ExtractYear,
     "datetime-extract-month": datetime.ExtractMonth,
+    "datetime-extract-monthname": datetime.ExtractMonthName,
+    "datetime-extract-endofmonth": datetime.ExtractEndOfMonth,
     "datetime-extract-day": datetime.ExtractDay,
     "datetime-extract-week": datetime.ExtractWeek,
     "datetime-extract-dayofweek": datetime.ExtractDayOfWeek,
+    "datetime-extract-dayofweekname": datetime.ExtractDayOfWeekName,
     "datetime-extract-dayofyear": datetime.ExtractDayOfYear,
     "datetime-extract-hours": datetime.ExtractHours,
     "datetime-extract-minutes": datetime.ExtractMinutes,
     "datetime-extract-seconds": datetime.ExtractSeconds,
     "datetime-extract-timestamp": datetime.ExtractTimestamp,
-
-
 
     "filter-value-missing": filter.FilterMissing,
     "filter-value-mismatched": filter.FilterMismatched,
@@ -89,4 +93,58 @@ TRANSFORMATION_MAP = {
     "filter-rows-top": filter.FilterRowsTop,
     "filter-rows-duplicate": filter.FilterRowsDuplicates,
     "groupby": groupby.GroupBy,
+
+
+    "array-index": array.Index,
+    "array-at-index": array.AtIndex,
+    "array-slice": array.Slice,
+    "array-length": array.Length,
+    "array-mean": array.Mean,
+    "array-sum": array.Sum,
+    "array-min": array.Min,
+    "array-max": array.Max,
+    "array-mode": array.Mode,
+    "array-std": array.Std,
+    "array-var": array.Var,
+    "array-sort": array.Sort,
+    "array-concat": array.Concat,
+    "array-intersect": array.Intersect,
+    "array-unique": array.Unique,
+    "array-filter": array.Filter,
+    "array-to-dict": array.ToDict,
+    "array-merge": array.Merge,
+
+    "dict-keys": dictionary.Keys,
+    "dict-values": dictionary.Values,
+    "dict-get": dictionary.Get,
+
+    "comparison-compare-value": comparison.CompareValue,
+    "comparison-compare-columns": comparison.CompareColumns,
+    "comparison-parity": comparison.Parity,
+    "comparison-mismatched": comparison.Mismatched,
+    "comparison-missing": comparison.Missing,
+    "comparison-is-null": comparison.IsNull,
+    "comparison-negate": comparison.Negate,
+    "comparison-logical": comparison.Logical,
+    "comparison-if-else": comparison.IfElse,
+    "comparison-min": comparison.Min,
+    "comparison-max": comparison.Max,
+    "comparison-mean": comparison.Mean,
+    "comparison-mode": comparison.Mode,
+    "comparison-coalesce": comparison.Coalesce,
+
+    "datetime-date-add": datetime.DateAdd,
+    "datetime-date-diff": datetime.DateDiff,
+    "datetime-now": datetime.Now,
+    "datetime-today": datetime.Today,
+
+    "format-number": format.Number,
+
+    "literal-string": literal.String,
+    "literal-Integer": literal.Integer,
+    "literal-float": literal.Float,
+    "literal-null": literal.Null,
+    "literal-rand-between": literal.RandBetween,
+    "literal-rand-int": literal.RandInt,
+
 }

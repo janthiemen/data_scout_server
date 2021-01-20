@@ -5,7 +5,8 @@ class Add(Transformation):
     title = "Sum {fields}"
     fields = {
         "fields": {"name": "Columns", "type": "list<string>", "help": "The fields to add to each other",
-                   "required": True, "input": "column", "multiple": True, "default": ""},
+                   "required": True, "input": "column", "multiple": True, "default": "",
+                   "column_type": ["int", "float"]},
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
@@ -40,9 +41,11 @@ class Min(Transformation):
     title = "Calculate {field_a} - {field_b}"
     fields = {
         "field_a": {"name": "Field 1", "type": "string", "help": "The field that should be subtracted from",
-                    "required": True, "input": "column", "multiple": False, "default": ""},
+                    "required": True, "input": "column", "multiple": False, "default": "",
+                    "column_type": ["int", "float"]},
         "field_b": {"name": "Field 2", "type": "string", "help": "The field that should be subtracted",
-                    "required": True, "input": "column", "multiple": False, "default": ""},
+                    "required": True, "input": "column", "multiple": False, "default": "",
+                    "column_type": ["int", "float"]},
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
@@ -76,10 +79,10 @@ class Min(Transformation):
 class Divide(Transformation):
     title = "Calculate {field_a} / {field_b}"
     fields = {
-        "field_a": {"name": "Numerator", "type": "string", "help": "The numerator",
-                    "required": True, "input": "column", "multiple": False, "default": ""},
-        "field_b": {"name": "Denominator", "type": "string", "help": "The denominator",
-                    "required": True, "input": "column", "multiple": False, "default": ""},
+        "field_a": {"name": "Numerator", "type": "string", "help": "The numerator", "required": True, "input": "column",
+                    "multiple": False, "default": "", "column_type": ["int", "float"]},
+        "field_b": {"name": "Denominator", "type": "string", "help": "The denominator", "required": True,
+                    "input": "column", "multiple": False, "default": "", "column_type": ["int", "float"]},
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
@@ -115,7 +118,8 @@ class Multiply(Transformation):
     title = "Multiply {fields}"
     fields = {
         "fields": {"name": "Fields", "type": "list<string>", "help": "The fields to add to each other",
-                   "required": True, "input": "column", "multiple": True, "default": ""},
+                   "required": True, "input": "column", "multiple": True, "default": "",
+                   "column_type": ["int", "float"]},
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }

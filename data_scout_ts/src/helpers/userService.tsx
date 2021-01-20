@@ -149,7 +149,6 @@ export class APICaller {
 export class DataSourceService extends APICaller {
 
     getTypes(callback: (body: {}) => void) {
-        console.log("Types:");
         this.call("/scout/datasource_types/", "GET", {}, callback);
     }
 

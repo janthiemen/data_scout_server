@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Popover, Position, IProps, Menu, MenuItem } from "@blueprintjs/core";
 import * as React from "react";
-import { TranformationProps } from './BasicTransformation'
+import { TranformationProps, TransformationState } from './BasicTransformation'
 
 const StringTranformationMenu: React.FunctionComponent<TranformationProps> = props => (
     <Menu>
@@ -66,10 +66,8 @@ const StringTranformationMenu: React.FunctionComponent<TranformationProps> = pro
     </Menu>
 );
 
-interface StringTransformationState { }
-
-export class StringTransformationButton extends React.PureComponent<TranformationProps, StringTransformationState> {
-    public state: StringTransformationState = {};
+export class StringTransformationButton extends React.PureComponent<TranformationProps, TransformationState> {
+    public state: TransformationState = {};
 
     public render() {
         return (

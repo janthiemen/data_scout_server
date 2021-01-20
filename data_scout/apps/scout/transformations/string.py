@@ -169,7 +169,6 @@ class TestContains(Transformation):
         row[self.output] = self.field in row and self.search in row[self.field]
         return row, index
 
-
 class TestStartsWith(Transformation):
     title = "Test if {field} starts with {search} into {output}"
     fields = {
@@ -232,6 +231,7 @@ class TestRegex(Transformation):
         row[self.output] = self.field in row and self.regex.match(str(row[self.field]))
         return row, index
 
+# TODO: Can we replace all of these by the one comparison transform?
 
 class TestExact(Transformation):
     title = "Test if {field} == {search} into {output}"

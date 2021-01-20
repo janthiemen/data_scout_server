@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Popover, Position, IProps, Menu, MenuItem } from "@blueprintjs/core";
 import * as React from "react";
-import { TranformationProps } from './BasicTransformation'
+import { TranformationProps, TransformationState } from './BasicTransformation'
 
 const CountTranformationMenu: React.FunctionComponent<TranformationProps> = props => (
     <Menu>
@@ -10,10 +10,8 @@ const CountTranformationMenu: React.FunctionComponent<TranformationProps> = prop
     </Menu>
 );
 
-interface CountTransformationState { }
-
-export class CountTransformationButton extends React.PureComponent<TranformationProps, CountTransformationState> {
-    public state: CountTransformationState = {};
+export class CountTransformationButton extends React.PureComponent<TranformationProps, TransformationState> {
+    public state: TransformationState = {};
 
     public render() {
         return (

@@ -214,6 +214,7 @@ class GroupBy(Transformation):
         #         self.aggregations[agg["name"]] = (agg["field"], lambda x: x.ohlc())
 
     def __call__(self, rows: List[dict], index: int):
+        # TODO: Check if something breaks when there's a column name containing numbers
         # TODO: Check if all these transforms are possible in Spark
         return pd.DataFrame(rows)\
                    .groupby(self.fields)\

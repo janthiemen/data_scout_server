@@ -20,6 +20,7 @@ const DUMMY_COLUMN_TYPES = ["float", "float", "float", "float"]
 
 interface WranglerState {
     columns: DataColumn[];
+    columnInfo: { [key: string]: string}[];
     isOpen: boolean;
     loading: boolean;
     recipe: number;
@@ -56,6 +57,7 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
             transformationsUpdating: [],
             recipeObject: undefined,
             columns: this.createColumns(DUMMY_COLUMNS, DUMMY_COLUMN_TYPES),
+            columnInfo: [],
             data: DUMMY_DATA,
         };
 
@@ -109,7 +111,8 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
             transformations.push(transformation);
             transformation = body.transformations.filter((item: any) => item["previous"] !== null && item["previous"] === nextId)[0];
         }
-        body["transformations"] = transformations;
+        // Add the position to the now ordered array and assign it to the recipe body object
+        body["transformations"] = transformations.map((value: any, index: number) => {value["pos"] = index; return value;});
         this.setState({ recipeObject: body as Recipe });
     }
 
@@ -146,8 +149,9 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
      */
     public receiveData(body: { [key: string]: any }) {
         if (body["success"]) {
-            let columns = this.createColumns(body["data"]["columns"], body["data"]["column_types"]);
-            this.setState({ columns: columns, data: body["data"]["records"], loading: false });
+            let last_columns = body["data"]["columns"][body["data"]["columns"].length-1]
+            let columns = this.createColumns(Object.keys(last_columns), Object.values(last_columns));
+            this.setState({ columns: columns, columnInfo: body["data"]["columns"], data: body["data"]["records"], loading: false });
         } 
         if (body["messages"] != null &&
             typeof body["messages"][Symbol.iterator] === 'function') {
@@ -217,7 +221,7 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
                 isOpen={this.state.isOpen}
                 transformation={transformation}
                 onClose={this.handleCloseTransformation} 
-                columns={this.state.columns.map(value => value.getName())}/>
+                columns={this.state.columnInfo[transformation["pos"]]}/>
         } else {
             return <span></span>;
         }
@@ -246,7 +250,15 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
                 }
             }
 
-            let transformation: Transformation = { id: -1, kwargs: JSON.stringify(kwargs), previous: previous, next: [], recipe: this.state.recipe, transformation: transformationType };
+            let transformation: Transformation = { 
+                id: -1, 
+                kwargs: JSON.stringify(kwargs), 
+                previous: previous, 
+                next: [], 
+                recipe: this.state.recipe, 
+                transformation: transformationType,
+                pos: this.state.columnInfo.length - 1
+            };
             this.handleOpenTransformation(transformation);
             this.renderTransformationDialog(transformation); 
         } else {

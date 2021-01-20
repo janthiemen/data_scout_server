@@ -1,11 +1,9 @@
 import { Button, ButtonGroup } from "@blueprintjs/core";
 import * as React from "react";
-import { TranformationProps } from './BasicTransformation'
+import { TranformationProps, TransformationState } from './BasicTransformation'
 
-interface MergeTransformationState { }
-
-export class MergeTransformationButton extends React.PureComponent<TranformationProps, MergeTransformationState> {
-    public state: MergeTransformationState = {};
+export class MergeTransformationButton extends React.PureComponent<TranformationProps, TransformationState> {
+    public state: TransformationState = {};
 
     public render() {
         return (

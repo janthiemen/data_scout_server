@@ -8,7 +8,7 @@ class ExtractBasic(Transformation):
 
     title = "Extract year from {field} into {output}"
     fields = {
-        "field": {"name": "Input", "type": "string", "help": "The column to use as input",
+        "field": {"name": "Input", "type": "string", "help": "The column to use as input", "column_type": ["datetime"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
@@ -168,7 +168,7 @@ class ExtractTimestamp(ExtractBasic):
 class DateAdd(Transformation):
     title = "Move {field} by a certain amount of time"
     fields = {
-        "field": {"name": "Input", "type": "string", "help": "The column to use as input",
+        "field": {"name": "Input", "type": "string", "help": "The column to use as input", "column_type": ["datetime"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
         "weeks": {"name": "Weeks", "type": "number", "help": "The weeks that should be added",
                   "required": True, "input": "number", "multiple": False, "default": 0},
@@ -211,9 +211,9 @@ class DateAdd(Transformation):
 class DateDiff(Transformation):
     title = "Calculate {field_a} - {field_b} in {unit}"
     fields = {
-        "field_a": {"name": "Date 1", "type": "string", "help": "The first date", "column_type": "datetime",
+        "field_a": {"name": "Date 1", "type": "string", "help": "The first date", "column_type": ["datetime"],
                     "required": True, "input": "column", "multiple": False, "default": ""},
-        "field_b": {"name": "Date 2", "type": "string", "help": "The second date", "column_type": "datetime",
+        "field_b": {"name": "Date 2", "type": "string", "help": "The second date", "column_type": ["datetime"],
                     "required": True, "input": "column", "multiple": False, "default": ""},
         "unit": {"name": "Unit", "type": "string", "help": "The unit that should be calculated",
                  "required": True, "input": "select", "multiple": False, "default": "days",
@@ -275,5 +275,6 @@ class Today(Transformation):
         self.output = arguments["output"]
 
     def __call__(self, row, index: int):
-        row[self.output] = date.today()
+        t = date.today()
+        row[self.output] = datetime(t.year, t.month, t.day)
         return row, index

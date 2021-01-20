@@ -1,3 +1,7 @@
+from typing import List
+import pandas as pd
+
+
 def compare_convert_value(search, example):
     if isinstance(example, list):
         example = example[0]
@@ -57,3 +61,19 @@ def get_param_int(param, alternative):
     except:
         val = alternative
     return val
+
+
+def get_columns(records: List[dict]) -> dict:
+    """
+    Get a list of column_name: column_type dicts.
+
+    :param records: A list of all records
+    :return: A list of column names and their types
+    """
+    # TODO: Check if we can do this more efficient (without going back and forth between lists and dfs).
+    records_df = pd.DataFrame(records)
+    type_mappings = {
+        "Timestamp": "datetime"
+    }
+    return {key: type_mappings.get(type(val).__name__, type(val).__name__) for key, val in records_df.to_dict(orient="records")[0].items()}
+

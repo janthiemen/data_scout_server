@@ -61,9 +61,6 @@ class ExtractRegex(Transformation):
                   "required": True, "input": "column", "multiple": False, "default": ""},
         "pattern": {"name": "Pattern", "type": "regex", "help": "The regex pattern that should be extracted",
                     "required": True, "input": "text", "default": ""},
-        # "group": {"name": "Pattern", "type": "integer", "help":
-        #           "The group in the pattern to extract (0 for the whole match)", "required": True, "input": "text",
-        #           "default": 0},
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }

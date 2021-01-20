@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Popover, Position, IProps, Menu, MenuItem } from "@blueprintjs/core";
 import * as React from "react";
-import { TranformationProps } from './BasicTransformation'
+import { TranformationProps, TransformationState } from './BasicTransformation'
 
 const FormatTranformationMenu: React.FunctionComponent<TranformationProps> = props => (
     <Menu>
@@ -17,13 +17,12 @@ const FormatTranformationMenu: React.FunctionComponent<TranformationProps> = pro
         <MenuItem onClick={() => props.newTransformation("format-pad", {})} text="Add padding" />
         {/* This one should only be available for datetime columns */}
         <MenuItem onClick={() => props.newTransformation("format-datetime", {})} text="Change date/time format" />
+        <MenuItem onClick={() => props.newTransformation("format-number", {})} text="Change number format" />
     </Menu>
 );
 
-interface FormatTransformationState { }
-
-export class FormatTransformationButton extends React.PureComponent<TranformationProps, FormatTransformationState> {
-    public state: FormatTransformationState = {};
+export class FormatTransformationButton extends React.PureComponent<TranformationProps, TransformationState> {
+    public state: TransformationState = {};
 
     public render() {
         return (

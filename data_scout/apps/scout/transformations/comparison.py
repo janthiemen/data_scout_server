@@ -73,8 +73,8 @@ class CompareColumns(Transformation):
 class Parity(Transformation):
     title = "Check if {field} is {parity}"
     fields = {
-        "field": {"name": "Field", "type": "string", "help": "The column to check",
-                  "required": True, "input": "column", "multiple": False, "default": ""},
+        "field": {"name": "Field", "type": "string", "help": "The column to check", "required": True, "input": "column",
+                  "multiple": False, "default": "", "column_type": ["int", "float"]},
         "parity": {"name": "Parity", "type": "string", "help": "Even or odd",
                    "required": True, "input": "select", "multiple": False, "default": "==",
                    "options": {"even": "even", "odd": "odd"}},
@@ -151,13 +151,13 @@ class Negate(Transformation):
 
 
 class Logical(Transformation):
-    title = "Compare {fields} using {operator}"
+    title = "Compare {fields} using {comparison}"
     fields = {
         "fields": {"name": "Inputs", "type": "list<string>", "help": "The columns to use as input",
                    "required": True, "input": "column", "multiple": True, "default": ""},
-        "operator": {"name": "Operator", "type": "string", "help": "How should the values be compared?",
-                     "required": True, "input": "select", "multiple": False, "default": "==",
-                     "options": {"and": "and", "or": "or", "xor": "xor"}},
+        "comparison": {"name": "Comparison", "type": "string", "help": "How should the values be compared?",
+                       "required": True, "input": "select", "multiple": False, "default": "and",
+                       "options": {"and": "and", "or": "or", "xor": "xor"}},
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
@@ -186,24 +186,28 @@ class IfElse(Transformation):
         "if_value_type": {"name": "If value type", "type": "string", "help": "What type of value should be used?",
                           "required": True, "input": "select", "multiple": False, "default": "column",
                           "options": {"column": "column", "string": "string", "integer": "integer", "float": "float"}},
-        "if_value_column": {"name": "If value column", "type": "list<string>", "required": False, "input": "column",
+        "if_value_column": {"name": "If value column", "type": "string", "required": False, "input": "column",
                             "help": "The column that is used as the value when the if statement evaluates to true",
-                            "multiple": True, "default": ""},
+                            "multiple": False, "default": "", "optional": {"if_value_type": ["column"]}},
         "if_value_string": {"name": "If value (string)", "type": "string", "input": "text", "required": False,
-                            "help": "The value that is used when the if statement evaluates to true", "default": ""},
+                            "help": "The value that is used when the if statement evaluates to true", "default": "",
+                            "optional": {"if_value_type": ["string"]}},
         "if_value_number": {"name": "If value (number)", "type": "number", "input": "number", "required": False,
-                            "help": "The value that is used when the if statement evaluates to true", "default": ""},
+                            "help": "The value that is used when the if statement evaluates to true", "default": "",
+                            "optional": {"if_value_type": ["int", "float"]}},
         "else_value_type": {"name": "Else value type", "type": "string", "help": "What type of value should be used?",
                             "required": True, "input": "select", "multiple": False, "default": "column",
                             "options": {"column": "column", "string": "string", "integer": "integer", "float": "float"}
                             },
-        "else_value_column": {"name": "Else value column", "type": "list<string>", "required": False, "input": "column",
+        "else_value_column": {"name": "Else value column", "type": "string", "required": False, "input": "column",
                               "help": "The column that is used as the value when the if statement evaluates to false",
-                              "multiple": True, "default": ""},
+                              "multiple": False, "default": "", "optional": {"else_value_type": ["column"]}},
         "else_value_string": {"name": "Else value (string)", "type": "string", "input": "text", "required": False,
-                              "help": "The value that is used when the if statement evaluates to false", "default": ""},
+                              "help": "The value that is used when the if statement evaluates to false", "default": "",
+                              "optional": {"else_value_type": ["string"]}},
         "else_value_number": {"name": "Else value (number)", "type": "number", "input": "number", "required": False,
-                              "help": "The value that is used when the if statement evaluates to false", "default": ""},
+                              "help": "The value that is used when the if statement evaluates to false", "default": "",
+                              "optional": {"else_value_type": ["int", "float"]}},
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }
@@ -240,7 +244,8 @@ class Min(Transformation):
     title = "Get the minimum of {fields}"
     fields = {
         "fields": {"name": "Inputs", "type": "list<string>", "help": "The columns to use as input",
-                   "required": True, "input": "column", "multiple": True, "default": ""},
+                   "required": True, "input": "column", "multiple": True, "default": "",
+                   "column_type": ["int", "float"]},
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
                    "help": "The name of the (newly created) column that contains the results", "default": ""},
     }

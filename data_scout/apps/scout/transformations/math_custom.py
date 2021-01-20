@@ -159,4 +159,4 @@ class Custom(Transformation):
         """
         row[self.output] = self.eval(re.sub(r'{(\w+)}', lambda x: str(row.get(x.group(1), 0)), self.equation))
 
-        return row
+        return row, index

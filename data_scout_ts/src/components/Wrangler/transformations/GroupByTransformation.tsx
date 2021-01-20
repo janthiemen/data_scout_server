@@ -1,11 +1,9 @@
 import { Button, ButtonGroup } from "@blueprintjs/core";
 import * as React from "react";
-import { TranformationProps } from './BasicTransformation'
+import { TranformationProps, TransformationState } from './BasicTransformation'
 
-interface GroupbyTransformationState { }
-
-export class GroupbyTransformationButton extends React.PureComponent<TranformationProps, GroupbyTransformationState> {
-    public state: GroupbyTransformationState = {};
+export class GroupbyTransformationButton extends React.PureComponent<TranformationProps, TransformationState> {
+    public state: TransformationState = {};
 
     public render() {
         return (

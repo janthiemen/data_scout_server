@@ -12,7 +12,7 @@ interface TransformationDialogProps {
     setTransformation: () => void,
     wranglerService: WranglerService,
     isOpen: boolean,
-    columns: string[]
+    columns: { [key: string]: string}
 }
 
 interface TransformationDialogFieldSetProps {
@@ -20,7 +20,7 @@ interface TransformationDialogFieldSetProps {
     fieldName: string,
     fields: { [key: string]: any },
     fieldValues: { [key: string]: any },
-    columns: string[]
+    columns: { [key: string]: string}
 }
 
 interface TransformationDialogState {
@@ -28,13 +28,13 @@ interface TransformationDialogState {
     transformation: Transformation,
     fieldValues: { [key: string]: any },
     isOpen: boolean,
-    columns: string[]
+    columns: { [key: string]: string}
 }
 
 interface TransformationDialogFieldSetState {
     fields: { [key: string]: any },
     fieldValues: { [key: string]: any },
-    columns: string[]
+    columns: { [key: string]: string}
 }
 
 class TransformationDialogFieldSet extends React.Component<TransformationDialogFieldSetProps, TransformationDialogFieldSetState> {
@@ -103,11 +103,17 @@ class TransformationDialogFieldSet extends React.Component<TransformationDialogF
     renderFieldInput(key: string, field: { [key: string]: any }) {
         // let field_values = JSON.parse(this.state.transformation.kwargs);
         if (field["input"] === "column" && field["multiple"]) {
-            return <ColumnsSelect value={this.state.fieldValues[key]} columns={this.state.columns} field={key} onValueChange={this.onValueChange} />
+            return <ColumnsSelect value={this.state.fieldValues[key]} columns={this.state.columns} columnType={field["column_type"]} field={key} onValueChange={this.onValueChange} />
         } else if (field["input"] === "column") {
+            // TODO: Add filter on column type!
             return <HTMLSelect value={this.state.fieldValues[key]} id={`transformation-input-${key}`} data-field={key} onChange={this.onInputChange} key={`transformation-input-${key}`}>
                 <option></option>
-                {this.state.columns.map(column => <option id={column} key={`transformation-input-${key}-option-${column}`}>{column}</option>)}
+                {Object.keys(this.state.columns).map((column: string) => {
+                    if (!("column_type" in field) || field["column_type"].indexOf(this.state.columns[column]) !== -1) {
+                        return <option id={column} key={`transformation-input-${key}-option-${column}`}>{column}</option>
+                    }
+                })}
+                {/* {Object.keys(this.state.columns).map(column => <option id={column} key={`transformation-input-${key}-option-${column}`}>{column}</option>)} */}
             </HTMLSelect>
         } else if (field["input"] === "select") {
             return <HTMLSelect value={this.state.fieldValues[key]} id={`transformation-input-${key}`} data-field={key} onChange={this.onInputChange} key={`transformation-input-${key}`}>
