@@ -160,7 +160,3 @@ class Custom(Transformation):
         row[self.output] = self.eval(re.sub(r'{(\w+)}', lambda x: str(row.get(x.group(1), 0)), self.equation))
 
         return row
-
-
-mc = Custom({"equation": "round(10.12421473, 3)", "output": "test"}, 1)
-print(mc({}, 1))

@@ -227,10 +227,10 @@ def data(request, recipe: int, step: int):
         except IndexFilterException as e:
             messages.append({"code": -1, "type": "warning", "message": f"Transformation {t}: {e}"})
             break
-        except Exception as e:
-            success = False
-            messages.append({"code": -1, "type": "error", "message": f"Transformation {t}: {e}"})
-            break
+        # except Exception as e:
+        #     success = False
+        #     messages.append({"code": -1, "type": "error", "message": f"Transformation {t}: {e}"})
+        #     break
 
     if not success:
         return JsonResponse({"success": False, "messages": messages})

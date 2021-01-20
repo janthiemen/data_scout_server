@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Transformation, TRANSFORMATIONS, transformationMakeTitle } from "./Transformation"
-import { HTMLSelect, FormGroup, Button, Dialog, Classes, Intent, InputGroup, NumericInput, TextArea } from "@blueprintjs/core";
+import { HTMLSelect, FormGroup, Button, Dialog, Classes, Intent, InputGroup, NumericInput, TextArea, Card, Elevation } from "@blueprintjs/core";
 import { WranglerService } from "../../helpers/userService";
 import { ColumnsSelect } from "./ColumnsSelect"
 import { NumberInput } from "./NumberInput"; 
@@ -15,6 +15,14 @@ interface TransformationDialogProps {
     columns: string[]
 }
 
+interface TransformationDialogFieldSetProps {
+    onFieldChange: (field: string, value: any) => void,
+    fieldName: string,
+    fields: { [key: string]: any },
+    fieldValues: { [key: string]: any },
+    columns: string[]
+}
+
 interface TransformationDialogState {
     onClose: () => void,
     transformation: Transformation,
@@ -23,37 +31,37 @@ interface TransformationDialogState {
     columns: string[]
 }
 
-export class TransformationDialog extends React.Component<TransformationDialogProps, TransformationDialogState> {
-    private setTransformation: () => void;
-    private wranglerService: WranglerService;
+interface TransformationDialogFieldSetState {
+    fields: { [key: string]: any },
+    fieldValues: { [key: string]: any },
+    columns: string[]
+}
 
-    constructor(props: TransformationDialogProps) {
+class TransformationDialogFieldSet extends React.Component<TransformationDialogFieldSetProps, TransformationDialogFieldSetState> {
+    protected onFieldChange: (field: string, value: any) => void;
+    protected fieldName: string;
+
+    constructor(props: TransformationDialogFieldSetProps) {
         super(props);
-        console.log(props);
-        this.setTransformation = props.setTransformation;
-        this.wranglerService = props.wranglerService;
         this.state = {
-            transformation: props.transformation,
-            isOpen: props.isOpen,
-            fieldValues: JSON.parse(props.transformation.kwargs),
-            onClose: props.onClose,
+            fields: props.fields,
+            fieldValues: props.fieldValues,
             columns: props.columns
         };
+        this.fieldName = props.fieldName;
+        this.onFieldChange = props.onFieldChange;
         this.onValueChange = this.onValueChange.bind(this);
         this.onInputChange = this.onInputChange.bind(this);
-        this.save = this.save.bind(this);
-        this.finishUpdate = this.finishUpdate.bind(this);
     }
 
     /**
      * Called when new props are received.
      * @param props The new props
      */
-    componentWillReceiveProps(props: TransformationDialogProps) {
+    componentWillReceiveProps(props: TransformationDialogFieldSetProps) {
         this.setState({
-            transformation: props.transformation,
-            fieldValues: JSON.parse(props.transformation.kwargs),
-            isOpen: props.isOpen,
+            fields: props.fields,
+            fieldValues: props.fieldValues,
             columns: props.columns
         });
     }
@@ -67,6 +75,7 @@ export class TransformationDialog extends React.Component<TransformationDialogPr
         let fieldValues = this.state.fieldValues;
         fieldValues[field] = value;
         this.setState({ fieldValues: fieldValues });
+        this.onFieldChange(this.fieldName, {});
     }
 
     /**
@@ -83,6 +92,141 @@ export class TransformationDialog extends React.Component<TransformationDialogPr
         if (e.target.dataset["field"] !== undefined) {
             this.onValueChange(e.target.dataset["field"], valueAsNumber);
         }
+    }
+
+    /**
+     * Renders an input field for a certain field.
+     * @param key The key
+     * @param field The field
+     * @returns  
+     */
+    renderFieldInput(key: string, field: { [key: string]: any }) {
+        // let field_values = JSON.parse(this.state.transformation.kwargs);
+        if (field["input"] === "column" && field["multiple"]) {
+            return <ColumnsSelect value={this.state.fieldValues[key]} columns={this.state.columns} field={key} onValueChange={this.onValueChange} />
+        } else if (field["input"] === "column") {
+            return <HTMLSelect value={this.state.fieldValues[key]} id={`transformation-input-${key}`} data-field={key} onChange={this.onInputChange} key={`transformation-input-${key}`}>
+                <option></option>
+                {this.state.columns.map(column => <option id={column} key={`transformation-input-${key}-option-${column}`}>{column}</option>)}
+            </HTMLSelect>
+        } else if (field["input"] === "select") {
+            return <HTMLSelect value={this.state.fieldValues[key]} id={`transformation-input-${key}`} data-field={key} onChange={this.onInputChange} key={`transformation-input-${key}`}>
+                <option></option>
+                {Object.keys(field["options"]).map(option => <option value={option}>{field["options"][option]}</option>)}
+            </HTMLSelect>
+        } else if (field["input"] === "text") {
+            return <InputGroup value={this.state.fieldValues[key]} key={`transformation-input-${key}`} data-field={key} onChange={this.onInputChange} id={`transformation-input-${key}`} />
+        } else if (field["input"] === "text-area") {
+            return <TextArea key={`transformation-input-${key}`} data-field={key} id={`transformation-input-${key}`} growVertically={true} large={true} onChange={this.onInputChange} value={this.state.fieldValues[key]} />
+        } else if (field["input"] === "number") {
+            // return <NumericInput min={0} minorStepSize={1} value={this.state.fieldValues[key]} key={`transformation-input-${key}`} data-field={key} onValueChange={this.onNumericValueChange} id={`transformation-input-${key}`} />
+            return <NumberInput field={key} value={this.state.fieldValues[key]} onValueChange={this.onValueChange} />
+        }
+    }
+
+    multipleAddRow(field: string) {
+        // Initialize the kwargs with their default values
+        let values: {[key: string]: any} = {};
+        for (let [key, value] of Object.entries(this.state.fields[field]["sub_fields"])) {
+            values[key] = value["default"];
+        }
+        let fieldValues = this.state.fieldValues;
+        fieldValues[field].push(values);
+        this.setState({ fieldValues: fieldValues });
+    }
+
+    multipleDeleteRow(field: string, index: number) {
+        let fieldValues = this.state.fieldValues;
+        fieldValues[field].splice(index, 1);
+        this.setState({ fieldValues: fieldValues });
+    }
+
+    /**
+     * Renders a field
+     * @param key The key
+     * @param field The field
+     * @returns  
+     */
+    renderField(key: string, field: { [key: string]: any }) {
+        let that = this;
+        if ("optional" in field) {
+            for (let optional_field in field["optional"]) {
+                if (this.state.fieldValues[optional_field].indexOf(field["optional"][optional_field]) == -1) {
+                    return;
+                }
+            }
+        }
+
+        if (field["input"] === "multiple") {
+            return <div>
+                <Button onClick={() => that.multipleAddRow(key)}>Add</Button>
+                {this.state.fieldValues[key].map((subKey, i) => 
+                    <Card interactive={false} elevation={Elevation.ONE} className="input-multiple-card">
+                        <TransformationDialogFieldSet 
+                            onFieldChange={that.onFieldChange} 
+                            fieldName={""} 
+                            fields={that.state.fields[key]["sub_fields"]} 
+                            fieldValues={that.state.fieldValues[key][i]} 
+                            columns={that.state.columns} />
+                        <Button intent={Intent.DANGER} rightIcon="delete" onClick={() => that.multipleDeleteRow(key, i)}>Delete</Button>
+                    </Card>
+                )}
+                </div>
+        } else {
+            return <FormGroup
+                helperText={field["help"]}
+                label={field["name"]}
+                labelFor={`transformation-input-${key}`}
+                key={`transformation-label-${key}`}
+                labelInfo={field["required"] ? "(required)" : ""}
+            >
+                {this.renderFieldInput(key, field)}
+            </FormGroup>
+        }
+    }
+
+    /**
+     * Renders transformation dialog.
+     * @returns  
+     */
+    render() {
+        return <div className="transformation-dialog-fields">
+                {Object.keys(this.state.fields).map((key, index) => this.renderField(key, this.state.fields[key]))}
+            </div>
+    }
+}
+
+export class TransformationDialog extends React.Component<TransformationDialogProps, TransformationDialogState> {
+    private setTransformation: () => void;
+    private wranglerService: WranglerService;
+
+    constructor(props: TransformationDialogProps) {
+        super(props);
+        this.setTransformation = props.setTransformation;
+        this.wranglerService = props.wranglerService;
+        this.state = {
+            transformation: props.transformation,
+            isOpen: props.isOpen,
+            fieldValues: JSON.parse(props.transformation.kwargs),
+            onClose: props.onClose,
+            columns: props.columns
+        };
+        this.onFieldChange = this.onFieldChange.bind(this);
+        this.save = this.save.bind(this);
+        this.finishUpdate = this.finishUpdate.bind(this);
+    }
+
+    /**
+     * Called when new props are received.
+     * @param props The new props
+     */
+    componentWillReceiveProps(props: TransformationDialogProps) {
+        this.setState({
+            transformation: props.transformation,
+            fieldValues: JSON.parse(props.transformation.kwargs),
+            isOpen: props.isOpen,
+            columns: props.columns
+        });
     }
 
     /**
@@ -109,54 +253,8 @@ export class TransformationDialog extends React.Component<TransformationDialogPr
         this.state.onClose();
     }
 
-    /**
-     * Renders an input field for a certain field.
-     * @param key The key
-     * @param field The field
-     * @returns  
-     */
-    renderFieldInput(key: string, field: { [key: string]: any }) {
-        let field_values = JSON.parse(this.state.transformation.kwargs);
-
-        if (field["input"] === "column" && field["multiple"]) {
-            return <ColumnsSelect value={field_values[key]} columns={this.state.columns} field={key} onValueChange={this.onValueChange} />
-        } else if (field["input"] === "column") {
-            return <HTMLSelect value={this.state.fieldValues[key]} id={`transformation-input-${key}`} data-field={key} onChange={this.onInputChange} key={`transformation-input-${key}`}>
-                <option></option>
-                {this.state.columns.map(column => <option id={column} key={`transformation-input-${key}-option-${column}`}>{column}</option>)}
-            </HTMLSelect>
-        } else if (field["input"] === "select") {
-            return <HTMLSelect value={this.state.fieldValues[key]} id={`transformation-input-${key}`} data-field={key} onChange={this.onInputChange} key={`transformation-input-${key}`}>
-                <option></option>
-                {Object.keys(field["options"]).map(option => <option value={option}>{field["options"][option]}</option>)}
-            </HTMLSelect>
-        } else if (field["input"] === "text") {
-            return <InputGroup value={this.state.fieldValues[key]} key={`transformation-input-${key}`} data-field={key} onChange={this.onInputChange} id={`transformation-input-${key}`} />
-        } else if (field["input"] === "text-area") {
-            return <TextArea key={`transformation-input-${key}`} data-field={key} id={`transformation-input-${key}`} growVertically={true} large={true} onChange={this.onInputChange} value={this.state.fieldValues[key]} />
-        } else if (field["input"] === "number") {
-            // return <NumericInput min={0} minorStepSize={1} value={this.state.fieldValues[key]} key={`transformation-input-${key}`} data-field={key} onValueChange={this.onNumericValueChange} id={`transformation-input-${key}`} />
-            return <NumberInput field={key} value={this.state.fieldValues[key]} onValueChange={this.onValueChange} />
-        }
-    }
-
-    /**
-     * Renders a field
-     * @param key The key
-     * @param field The field
-     * @returns  
-     */
-    renderField(key: string, field: { [key: string]: any }) {
-        return <FormGroup
-            helperText={field["help"]}
-            label={field["name"]}
-            labelFor={`transformation-input-${key}`}
-            key={`transformation-label-${key}`}
-            labelInfo={field["required"] ? "(required)" : ""}
-        >
-            {this.renderFieldInput(key, field)}
-        </FormGroup>
-
+    onFieldChange(key: string, value: any) {
+        // TODO: Check if we actually need this ...
     }
 
     /**
@@ -165,17 +263,20 @@ export class TransformationDialog extends React.Component<TransformationDialogPr
      */
     render() {
         let transformation_meta = TRANSFORMATIONS[this.state.transformation.transformation]
-        console.log(transformation_meta);
-        console.log(this.state.fieldValues);
         let title = transformationMakeTitle(this.state.transformation);
         return <Dialog icon="info-sign" title={title} {...this.state}>
             <div className={Classes.DIALOG_BODY}>
-                {Object.keys(transformation_meta["fields"]).map((key, index) => this.renderField(key, transformation_meta["fields"][key]))}
+                <TransformationDialogFieldSet 
+                    onFieldChange={this.onFieldChange} 
+                    fieldName={""} 
+                    fields={transformation_meta["fields"]} 
+                    fieldValues={this.state.fieldValues} 
+                    columns={this.state.columns} />
+                {/* {Object.keys(transformation_meta["fields"]).map((key, index) => this.renderField(key, transformation_meta["fields"][key]))} */}
             </div>
             <div className={Classes.DIALOG_FOOTER}>
                 <Button intent={Intent.PRIMARY} onClick={this.save}>Save</Button>
             </div>
         </Dialog>
     }
-
 }

@@ -47,3 +47,13 @@ def compare_basis(test_value_orig, comparison, value):
     return False
 
 
+def get_param_bool(param):
+    return param != "0"
+
+
+def get_param_int(param, alternative):
+    try:
+        val = int(param)
+    except:
+        val = alternative
+    return val

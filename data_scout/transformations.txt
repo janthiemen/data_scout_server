@@ -114,3 +114,7 @@ Language Appendices
         Window Transform
 
 Drop column
+Backfill, forward fill, etc.
+
+Bij elke stap, alle kolommen mee terug geven!
+Filter de kolommen op type!

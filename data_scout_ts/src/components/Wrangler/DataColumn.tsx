@@ -68,7 +68,6 @@ export class DataColumn extends AbstractSortableColumn {
 		let convertStringMethod = this.type == "datetime" ? this.newTransformation : this.createTransformation;
 		let convertStringTransformation = this.type == "datetime" ? "datetime-format": "data-convert";
 		let convertStringKwargs = this.type == "datetime" ? {field: this.name} : {to: "string", field: this.name };
-		console.log(this.name + ": " + this.type);
 		return (
 			<Menu>
 				<MenuItem icon="translate" text="Convert">

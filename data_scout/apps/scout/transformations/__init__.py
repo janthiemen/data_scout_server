@@ -1,5 +1,4 @@
-from . import math, math_custom, data, format, count, replace, filter, extract, datetime, string
-
+from . import math, math_custom, data, format, count, replace, filter, extract, datetime, string, groupby
 
 TRANSFORMATION_MAP = {
     "data-convert": data.Convert,
@@ -89,4 +88,5 @@ TRANSFORMATION_MAP = {
     "filter-rows-range": filter.FilterRowsRange,
     "filter-rows-top": filter.FilterRowsTop,
     "filter-rows-duplicate": filter.FilterRowsDuplicates,
+    "groupby": groupby.GroupBy,
 }
