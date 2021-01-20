@@ -1,5 +1,5 @@
 from . import math, math_custom, data, format, count, replace, filter, extract, datetime, string, groupby, array, \
-    comparison, dictionary, literal
+    comparison, dictionary, literal, preprocessing
 
 TRANSFORMATION_MAP = {
     "data-convert": data.Convert,
@@ -147,4 +147,10 @@ TRANSFORMATION_MAP = {
     "literal-rand-between": literal.RandBetween,
     "literal-rand-int": literal.RandInt,
 
+    "preprocessing-scale": preprocessing.Scale,
+    "preprocessing-categorical-encoding": preprocessing.CategoricalEncoding,
+    "preprocessing-discretize-bin": preprocessing.DiscretizeBin,
+    "preprocessing-binarize": preprocessing.Binarize,
+    "preprocessing-normalize": preprocessing.Normalize,
+    "preprocessing-impute": preprocessing.Impute,
 }

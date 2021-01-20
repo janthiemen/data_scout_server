@@ -1,5 +1,6 @@
 import math
 import re
+import pandas as pd
 
 from apps.scout.transformations.transformation import Transformation
 
@@ -387,13 +388,14 @@ class FilterRowsDuplicates(Transformation):
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.fields = arguments["fields"]
 
-    def __call__(self, rows, index: int):
-        seen = set()
-        seen_add = seen.add
-        filtered_rows = []
-        for row in rows:
-            test = frozenset([row[key] for key in self.fields if key in row])
-            if not (test in seen or seen_add(test)):
-                filtered_rows.append(row)
-        # TODO: Check what happens here in Spark/how to handle this
-        return filtered_rows, index
+    def __call__(self, rows: pd.DataFrame, index: int):
+        return rows.drop_duplicates(subset=['brand']).to_dict(orient="records"), index
+        # seen = set()
+        # seen_add = seen.add
+        # filtered_rows = []
+        # for row in rows:
+        #     test = frozenset([row[key] for key in self.fields if key in row])
+        #     if not (test in seen or seen_add(test)):
+        #         filtered_rows.append(row)
+        # # TODO: Check what happens here in Spark/how to handle this
+        # return filtered_rows, index

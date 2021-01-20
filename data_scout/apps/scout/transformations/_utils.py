@@ -75,5 +75,5 @@ def get_columns(records: List[dict]) -> dict:
     type_mappings = {
         "Timestamp": "datetime"
     }
-    return {key: type_mappings.get(type(val).__name__, type(val).__name__) for key, val in records_df.to_dict(orient="records")[0].items()}
+    return {key: type_mappings.get(type(val).__name__, type(val).__name__) for key, val in records_df.to_dict(orient="records")[0].items()}, records_df
 

@@ -157,7 +157,7 @@ class TransformationDialogFieldSet extends React.Component<TransformationDialogF
         let that = this;
         if ("optional" in field) {
             for (let optional_field in field["optional"]) {
-                if (this.state.fieldValues[optional_field].indexOf(field["optional"][optional_field]) == -1) {
+                if (field["optional"][optional_field].indexOf(this.state.fieldValues[optional_field]) == -1) {
                     return;
                 }
             }

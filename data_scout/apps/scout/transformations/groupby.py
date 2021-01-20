@@ -213,11 +213,10 @@ class GroupBy(Transformation):
         #     elif agg["agg"] == "ohlc":
         #         self.aggregations[agg["name"]] = (agg["field"], lambda x: x.ohlc())
 
-    def __call__(self, rows: List[dict], index: int):
+    def __call__(self, rows: pd.DataFrame, index: int):
         # TODO: Check if something breaks when there's a column name containing numbers
         # TODO: Check if all these transforms are possible in Spark
-        return pd.DataFrame(rows)\
-                   .groupby(self.fields)\
+        return rows.groupby(self.fields)\
                    .agg(**self.aggregations)\
                    .reset_index()\
                    .to_dict(orient="records"), \

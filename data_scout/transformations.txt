@@ -1,13 +1,9 @@
 Aggregate Functions
-   ANY Function
    ANYIF Function
-   AVERAGE Function
    AVERAGEIF Function
    COUNTA Function
    COUNTAIF Function
-   COUNTDISTINCT Function
    COUNTDISTINCTIF Function
-   COUNT Function
    COUNTIF Function
    KTHLARGEST Function
    KTHLARGESTIF Function
@@ -15,17 +11,11 @@ Aggregate Functions
    LIST Function
    LISTIF Function
    UNIQUE Function
-   MAX Function
    MAXIF Function
-   MIN Function
    MINIF Function
-   MODE Function
    MODEIF Function
-   STDEV Function
    STDEVIF Function
-   SUM Function
    SUMIF Function
-   VAR Function
    VARIF Function
    STDEVSAMP Function
    STDEVSAMPIF Function
@@ -34,7 +24,6 @@ Aggregate Functions
    CORREL Function
    COVAR Function
    COVARSAMP Function
-   MEDIAN Function
    PERCENTILE Function
    QUARTILE Function
    APPROXIMATEMEDIAN Function
@@ -115,3 +104,7 @@ Language Appendices
 
 Drop column
 Backfill, forward fill, etc.
+Search function
+Help function
+Improve logout timer
+PolynomialFeatures

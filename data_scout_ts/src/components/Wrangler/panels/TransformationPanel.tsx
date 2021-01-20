@@ -8,6 +8,7 @@ import { DictTransformationButton } from "../transformations/DictTransformation"
 import { LiteralTransformationButton } from "../transformations/LiteralTransformation";
 import { CountTransformationButton } from "../transformations/CountTransformation";
 import { MathTransformationButton } from "../transformations/MathTranformation";
+import { PreprocessingTransformationButton } from "../transformations/PreprocessingTransformation";
 // import { ExtractTransformationButton } from "../transformations/ExtractTranformation";
 import { SplitTransformationButton } from "../transformations/SplitColumnTransformation";
 import { ComparisonTransformationButton } from "../transformations/ComparisonTransformation";
@@ -24,14 +25,15 @@ export const TransformationPanel: React.SFC<{newTransformation: (transformationT
             <DictTransformationButton newTransformation={props.newTransformation} />
             <LiteralTransformationButton newTransformation={props.newTransformation} />
             {/* <ExtractTransformationButton newTransformation={props.newTransformation} /> */}
-            <Tooltip content="Count the number of occurances">
+            {/* <Tooltip content="Count the number of occurances">
                 <CountTransformationButton newTransformation={props.newTransformation} />
-            </Tooltip>
+            </Tooltip> */}
             <MathTransformationButton newTransformation={props.newTransformation} />
             <ComparisonTransformationButton newTransformation={props.newTransformation} />
-            <SplitTransformationButton newTransformation={props.newTransformation} />
+            <PreprocessingTransformationButton newTransformation={props.newTransformation} />
+            {/* <SplitTransformationButton newTransformation={props.newTransformation} /> */}
             <FilterTransformationButton newTransformation={props.newTransformation} />
-            <MergeTransformationButton newTransformation={props.newTransformation} />
+            {/* <MergeTransformationButton newTransformation={props.newTransformation} /> */}
             <GroupbyTransformationButton newTransformation={props.newTransformation} />
         </ButtonGroup>
 

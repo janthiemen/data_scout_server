@@ -210,12 +210,13 @@ def data(request, recipe: int, step: int):
         # Execute the transformation on the data set
         try:
             # Before each transformation we create a list of columns and column types that are available at that point
-            columns.append(_utils.get_columns(records))
+            step_columns, df_records = _utils.get_columns(records)
+            columns.append(step_columns)
             t_func = t_class(json.loads(transformation.kwargs), sample_size, records[0])
             # If it's a global transformation, we'll call it on all records, if it isn't, we call it one-at-a-time
             # TODO: Check if we could do all of this in a DF apply?
             if t_func.is_global:
-                records, _ = t_func(records, -1)
+                records, _ = t_func(df_records, -1)
             else:
                 for i, record in enumerate(records):
                     records[i], _ = t_func(record, i)
@@ -243,9 +244,11 @@ def data(request, recipe: int, step: int):
 
     records_export = []
     clean_func = CleanJSON()
-    records_df = pd.DataFrame(records).to_dict(orient="records")
     # column_types = [type(val).__name__ for key, val in records_df[0].items()]
-    columns.append(_utils.get_columns(records))
+    step_columns, df_records = _utils.get_columns(records)
+    records_df = df_records.to_dict(orient="records")
+
+    columns.append(step_columns)
     for i, record in enumerate(records_df):
         records_export.append(list(clean_func(record, i)[0].values()))
 
