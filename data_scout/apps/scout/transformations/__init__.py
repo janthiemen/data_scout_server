@@ -5,6 +5,7 @@ TRANSFORMATION_MAP = {
     "data-convert": data.Convert,
     "data-convert-datetime": data.ConvertDatetime,
     "data-field-column": data.FieldToColumn,
+    "duplicate-column": data.DuplicateColumn,
     "drop-column": data.DropColumn,
 
     "sortby": sort.SortBy,
@@ -118,6 +119,7 @@ TRANSFORMATION_MAP = {
     "array-filter": array.Filter,
     "array-to-dict": array.ToDict,
     "array-merge": array.Merge,
+    "array-flatten": array.Flatten,
 
     "dict-keys": dictionary.Keys,
     "dict-values": dictionary.Values,

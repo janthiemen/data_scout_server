@@ -22,6 +22,7 @@ const ArrayTranformationMenu: React.FunctionComponent<TranformationProps> = prop
         <MenuItem onClick={() => props.newTransformation("array-filter", {})} text="Filter" />
         <MenuItem onClick={() => props.newTransformation("array-to-dict", {})} text="To dictionary" />
         <MenuItem onClick={() => props.newTransformation("array-merge", {})} text="Merge" />
+        <MenuItem onClick={() => props.newTransformation("array-flatten", {})} text="Flatten" />
     </Menu>
 );
 

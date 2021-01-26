@@ -1,6 +1,7 @@
 import itertools
 import math
 import statistics
+from typing import List, Tuple
 
 from apps.scout.transformations.transformation import Transformation
 from ._utils import compare_basis, compare_convert_value
@@ -397,6 +398,35 @@ class Filter(Transformation):
         except:
             row[self.output] = []
         return row, index
+
+
+class Flatten(Transformation):
+    title = "Flatten {field}"
+    is_flatten = True
+    fields = {
+        "field": {"name": "Field", "type": "string", "required": True,
+                  "help": "The field that should be flattened. This will create one row for each element in the list",
+                  "input": "column", "multiple": False, "default": "", "column_type": ["list"]},
+    }
+
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        self.field = arguments["field"]
+
+    def __call__(self, row, index: int) -> Tuple[List[dict], int]:
+        if self.field not in row or not isinstance(row[self.field], list):
+            return [row], index
+
+        rows = []
+        if len(row[self.field]) == 0:
+            row[self.field] = math.nan
+            rows.append(row)
+        else:
+            for i, val in enumerate(row[self.field]):
+                row_tmp = row.copy()
+                row_tmp[self.field] = val
+                rows.append(row_tmp)
+
+        return rows, index
 
 
 class ToDict(Transformation):

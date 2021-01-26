@@ -1,3 +1,4 @@
+import itertools
 import json
 from typing import List
 
@@ -220,6 +221,9 @@ def data(request, recipe: int, step: int):
             else:
                 for i, record in enumerate(records):
                     records[i], _ = t_func(record, i)
+
+                if t_func.is_flatten:
+                    records = list(itertools.chain.from_iterable(records))
             if t_func.filter:
                 records = [record for record in filter(_is_false, records)]
                 # TODO: Make sure we're still returning records, even if an error occurs

@@ -82,6 +82,7 @@ export class DataColumn extends AbstractSortableColumn {
 				<MenuItem onClick={() => this.newTransformation("array-filter", {field: this.name})} text="Filter" />
 				<MenuItem onClick={() => this.newTransformation("array-to-dict", {field_keys: this.name})} text="To dictionary" />
 				<MenuItem onClick={() => this.newTransformation("array-merge", {field: this.name})} text="Merge" />
+				<MenuItem onClick={() => this.createTransformation("array-flatten", {field: this.name})} text="Flatten" />
 			</MenuItem>
 		}
 		return <MenuItem /*icon="translate"*/ disabled text="List" />;
@@ -105,7 +106,6 @@ export class DataColumn extends AbstractSortableColumn {
 		let convertStringKwargs = this.type == "datetime" ? {field: this.name} : {to: "string", field: this.name };
 		return (
 			<Menu>
-				<MenuItem onClick={() => this.createTransformation("drop-column", {field: this.name })} text="Drop column" />
 				<MenuItem icon="translate" text="Convert">
 					<MenuItem disabled={this.type == "int"} onClick={() => this.createTransformation("data-convert", {to: "int", field: this.name })} text="Integer" />
 					<MenuItem disabled={this.type == "float"} onClick={() => this.createTransformation("data-convert", {to: "float", field: this.name })} text="Floating point number" />
@@ -120,6 +120,8 @@ export class DataColumn extends AbstractSortableColumn {
 					<MenuItem onClick={() => this.createTransformation("filter-value-missing", {field: this.name})} text="Missing" />
 					<MenuItem onClick={() => this.createTransformation("filter-value-mismatched", {field: this.name})} text="Mismatched" />
 				</MenuItem>
+				<MenuItem onClick={() => this.createTransformation("duplicate-column", {field: this.name })} text="Duplicate column" />
+				<MenuItem onClick={() => this.createTransformation("drop-column", {field: this.name })} text="Drop column" />
 			</Menu>
 		);
 	}

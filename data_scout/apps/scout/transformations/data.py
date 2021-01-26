@@ -88,7 +88,7 @@ class FieldToColumn(Transformation):
     title = "Convert {field} to columns"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The field to convert", "required": True,
-                  "input": "column", "multiple": False, "default": ""},
+                  "input": "column", "multiple": False, "default": "", "column_type": ["list", "dict"]},
         "prefix": {"name": "Prefix", "type": "string", "help": "The prefix before the column number.", "required": True,
                    "input": "text", "default": ""}
     }
@@ -122,6 +122,26 @@ class FieldToColumn(Transformation):
             for key, val in row[self.field].items():
                 row[f"{self.prefix}-{key}"] = val
             del row[self.field]
+
+        return row, index
+
+
+class DuplicateColumn(Transformation):
+    title = "Duplicate {field} as {output}"
+    fields = {
+        "field": {"name": "Field", "type": "string", "help": "The column to duplicate", "required": True,
+                  "input": "column", "multiple": False, "default": ""},
+        "output": {"name": "Output", "type": "string", "help": "The name of the new column.", "required": True,
+                   "input": "text", "default": ""}
+    }
+
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        self.field = arguments["field"]
+        self.output = arguments["output"]
+
+    def __call__(self, row, index: int):
+        if self.field in row:
+            row[self.output] = row[self.field]
 
         return row, index
 

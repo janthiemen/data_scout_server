@@ -25,14 +25,6 @@ Other Functions
     SOURCEROWNUMBER Function
 Language Appendices
     Transforms
-        Deduplicate Transform
-        Delete Transform
-        Derive Transform
-        Extract Transform
-        Extractkv Transform
-        Extractlist Transform
-        Filter Transform
-        Flatten Transform
         Header Transform
         Keep Transform
         Merge Transform
@@ -55,6 +47,7 @@ Search function
 Help function
 Improve logout timer
 Store data schemas
+Switch to pandas apply?
 Return result until an error in the recipe
 Multitype input (INPUT_value, INPUT_type)
 
