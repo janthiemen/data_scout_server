@@ -1,10 +1,14 @@
 from . import math, math_custom, data, format, count, replace, filter, extract, datetime, string, groupby, array, \
-    comparison, dictionary, literal, preprocessing
+    comparison, dictionary, literal, preprocessing, sort, window
 
 TRANSFORMATION_MAP = {
     "data-convert": data.Convert,
     "data-convert-datetime": data.ConvertDatetime,
     "data-field-column": data.FieldToColumn,
+    "drop-column": data.DropColumn,
+
+    "sortby": sort.SortBy,
+
     "math-add": math.Add,
     "math-min": math.Min,
     "math-multiply": math.Multiply,
@@ -92,8 +96,9 @@ TRANSFORMATION_MAP = {
     "filter-rows-range": filter.FilterRowsRange,
     "filter-rows-top": filter.FilterRowsTop,
     "filter-rows-duplicate": filter.FilterRowsDuplicates,
-    "groupby": groupby.GroupBy,
 
+    "groupby": groupby.GroupBy,
+    "window": window.Window,
 
     "array-index": array.Index,
     "array-at-index": array.AtIndex,
@@ -153,4 +158,5 @@ TRANSFORMATION_MAP = {
     "preprocessing-binarize": preprocessing.Binarize,
     "preprocessing-normalize": preprocessing.Normalize,
     "preprocessing-impute": preprocessing.Impute,
+    "preprocessing-polynomial": preprocessing.Polynomial,
 }

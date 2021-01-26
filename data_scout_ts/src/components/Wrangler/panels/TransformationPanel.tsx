@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { ButtonGroup, Tooltip, Divider } from "@blueprintjs/core";
+import { ButtonGroup, Tooltip, Divider, Button } from "@blueprintjs/core";
 import { StringTransformationButton } from "../transformations/StringTranformation";
 import { ArrayTransformationButton } from "../transformations/ArrayTransformation";
 import { DatetimeTransformationButton } from "../transformations/DatetimeTransformation";
@@ -35,6 +35,12 @@ export const TransformationPanel: React.SFC<{newTransformation: (transformationT
             <FilterTransformationButton newTransformation={props.newTransformation} />
             {/* <MergeTransformationButton newTransformation={props.newTransformation} /> */}
             <GroupbyTransformationButton newTransformation={props.newTransformation} />
+            <ButtonGroup minimal={true}>
+                <Button onClick={() => props.newTransformation("sortby", {})} text="Sort by" />
+            </ButtonGroup>
+            <ButtonGroup minimal={true}>
+                <Button onClick={() => props.newTransformation("window", {})} text="Window" />
+            </ButtonGroup>
         </ButtonGroup>
 
         <input className="bp3-input" type="text" placeholder="Search help" />

@@ -10,6 +10,7 @@ const PreprocessingTranformationMenu: React.FunctionComponent<TranformationProps
         <MenuItem onClick={() => props.newTransformation("preprocessing-discretize-bin", {})} text="Discretize (binning)" />
         <MenuItem onClick={() => props.newTransformation("preprocessing-binarize", {})} text="Binarize" />
         <MenuItem onClick={() => props.newTransformation("preprocessing-normalize", {})} text="Normalize" />
+        <MenuItem onClick={() => props.newTransformation("preprocessing-polynomial", {})} text="Polynomial features" />
     </Menu>
 );
 

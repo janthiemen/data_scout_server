@@ -105,6 +105,7 @@ export class DataColumn extends AbstractSortableColumn {
 		let convertStringKwargs = this.type == "datetime" ? {field: this.name} : {to: "string", field: this.name };
 		return (
 			<Menu>
+				<MenuItem onClick={() => this.createTransformation("drop-column", {field: this.name })} text="Drop column" />
 				<MenuItem icon="translate" text="Convert">
 					<MenuItem disabled={this.type == "int"} onClick={() => this.createTransformation("data-convert", {to: "int", field: this.name })} text="Integer" />
 					<MenuItem disabled={this.type == "float"} onClick={() => this.createTransformation("data-convert", {to: "float", field: this.name })} text="Floating point number" />

@@ -1,84 +1,33 @@
 Aggregate Functions
-   ANYIF Function
-   AVERAGEIF Function
-   COUNTA Function
-   COUNTAIF Function
-   COUNTDISTINCTIF Function
-   COUNTIF Function
    KTHLARGEST Function
-   KTHLARGESTIF Function
    KTHLARGESTUNIQUE Function
    LIST Function
-   LISTIF Function
    UNIQUE Function
-   MAXIF Function
-   MINIF Function
-   MODEIF Function
-   STDEVIF Function
-   SUMIF Function
-   VARIF Function
    STDEVSAMP Function
-   STDEVSAMPIF Function
    VARSAMP Function
-   VARSAMPIF Function
    CORREL Function
    COVAR Function
    COVARSAMP Function
    PERCENTILE Function
    QUARTILE Function
    APPROXIMATEMEDIAN Function
-   KTHLARGESTUNIQUEIF Function
    APPROXIMATEPERCENTILE Function
    APPROXIMATEQUARTILE Function
    MINDATE Function
    MAXDATE Function
    MODEDATE Function
-   MINDATEIF Function
-   MAXDATEIF Function
-   MODEDATEIF Function
    KTHLARGESTDATE Function
-   KTHLARGESTUNIQUEDATE Function
-   KTHLARGESTUNIQUEDATEIF Function
-   KTHLARGESTDATEIF Function
 
 Nested Functions
     ARRAYCROSS Function
 
-Window Functions
-    PREV Function
-    NEXT Function
-    FILL Function
-    ROLLINGAVERAGE Function
-    ROLLINGMODE Function
-    ROLLINGMAX Function
-    ROLLINGMIN Function
-    ROLLINGSUM Function
-    ROLLINGSTDEV Function
-    ROLLINGVAR Function
-    ROLLINGCOUNTA Function
-    ROLLINGKTHLARGEST Function
-    ROLLINGKTHLARGESTUNIQUE Function
-    ROLLINGLIST Function
-    ROWNUMBER Function
-    SESSION Function
-    RANK Function
-    DENSERANK Function
-    ROLLINGSTDEVSAMP Function
-    ROLLINGVARSAMP Function
-    ROLLINGMODEDATE Function
-    ROLLINGMAXDATE Function
-    ROLLINGMINDATE Function
 Other Functions
     SOURCEROWNUMBER Function
 Language Appendices
     Transforms
-        Case Transform
-        Comment Transform
-        Countpattern Transform
         Deduplicate Transform
         Delete Transform
         Derive Transform
-        Drop Transform
         Extract Transform
         Extractkv Transform
         Extractlist Transform
@@ -102,9 +51,20 @@ Language Appendices
         Valuestocols Transform
         Window Transform
 
-Drop column
-Backfill, forward fill, etc.
 Search function
 Help function
 Improve logout timer
-PolynomialFeatures
+Store data schemas
+Return result until an error in the recipe
+Multitype input (INPUT_value, INPUT_type)
+
+Automatically build the menu
+Custom transformations
+    Hook system?
+Marketplace
+
+Data quality checks
+    Types
+    Bias
+    Drift
+    etc.

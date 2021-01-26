@@ -126,6 +126,21 @@ class FieldToColumn(Transformation):
         return row, index
 
 
+class DropColumn(Transformation):
+    title = "Drop {field}"
+    fields = {
+        "field": {"name": "Field", "type": "string", "help": "The field to convert", "required": True,
+                  "input": "column", "multiple": False, "default": ""},
+    }
+
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        self.field = arguments["field"]
+
+    def __call__(self, row, index: int):
+        del row[self.field]
+        return row, index
+
+
 class CleanJSON:
     """
     This transformation cleans to object to present valid JSON. It's NOT meant to be used by the user. This is only for

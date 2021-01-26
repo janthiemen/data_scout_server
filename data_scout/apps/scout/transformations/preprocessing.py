@@ -154,6 +154,41 @@ class Normalize(Transformation):
         return rows.to_dict(orient="records"), index
 
 
+class Polynomial(Transformation):
+    is_global = True
+    title = "Generate a polynomial feature based on {fields}"
+    fields = {
+        "fields": {"name": "Fields", "type": "list<string>", "help": "The fields to add to each other",
+                   "required": True, "input": "column", "multiple": True, "default": "",
+                   "column_type": ["int", "float"]},
+        "degree": {"name": "Degree", "type": "number", "input": "number", "required": False, "default": 2,
+                   "help": "The degree of the polynomial features"},
+        "interaction_only": {"name": "Interaction only", "type": "string", "input": "select", "multiple": False,
+                             "help": "Only include interaction features", "required": False, "default": "0",
+                             "options": {"1": "Yes", "0": "No"}},
+        "include_bias": {"name": "Include bias", "type": "string", "input": "select", "multiple": False,
+                         "help": "Include a bias column (a column of ones)", "required": False, "default": "1",
+                         "options": {"1": "Yes", "0": "No"}},
+        "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
+                   "help": "The name of the (newly created) column that contains the results", "default": ""},
+    }
+
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        self.fields = arguments["fields"]
+        self.degree = int(arguments["degree"])
+        self.interaction_only = arguments["interaction_only"] == "1"
+        self.include_bias = arguments["include_bias"] == "1"
+        self.output = arguments["output"]
+
+    def __call__(self, rows: pd.DataFrame, index: int):
+        trans = preprocessing.PolynomialFeatures(degree=self.degree, interaction_only=self.interaction_only,
+                                                 include_bias=self.include_bias)
+        rows_trans = pd.DataFrame(trans.fit_transform(rows[self.fields].values[:, :-1]))
+        rows = pd.concat([rows, rows_trans.rename({col: f"{self.output}_{col}" for col in rows_trans.columns}, axis=1)],
+                         axis=1)
+        return rows.to_dict(orient="records"), index
+
+
 class Impute(Transformation):
     title = "Impute {field} through {strategy}"
     is_global = True
@@ -163,7 +198,8 @@ class Impute(Transformation):
         "strategy": {"name": "Strategy", "type": "string", "help": "The strategy to use",
                      "required": True, "input": "select", "multiple": False, "default": "mean",
                      "options": {"mean": "mean", "median": "median", "mode": "most frequent", "max": "max",
-                                 "min": "min", "constant": "constant"}},
+                                 "min": "min", "constant": "constant", "ffill": "Forward fill",
+                                 "bfill": "Backward fill", "interpolate": "Interpolate"}},
         "type": {"name": "Constant type", "type": "string", "help": "The data type of the constant",
                  "required": False, "input": "select", "multiple": False, "default": "string",
                  "options": {"string": "String", "float": "Float", "int": "Integer"},
@@ -203,7 +239,12 @@ class Impute(Transformation):
             rows[self.output] = rows[self.field].fillna(rows[self.field].min())
         elif self.strategy == "constant":
             rows[self.output] = rows[self.field].fillna(self.constant)
-            # TODO: Forward fill & backward fill
+        elif self.strategy == "ffill":
+            rows[self.output] = rows[self.field].ffill()
+        elif self.strategy == "bfill":
+            rows[self.output] = rows[self.field].bfill()
+        elif self.strategy == "interpolate":
+            rows[self.output] = rows[self.field].interpolate()
         else:
             raise ValueError(f"The selected strategy ({self.strategy} is not available")
 

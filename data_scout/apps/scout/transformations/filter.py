@@ -1,6 +1,7 @@
 import math
 import re
 import pandas as pd
+from pandas.core.dtypes.inference import is_hashable
 
 from apps.scout.transformations.transformation import Transformation
 
@@ -17,7 +18,7 @@ class FilterMissing(Transformation):
         self.field = arguments["field"]
 
     def __call__(self, row, index: int):
-        if self.field not in row or row[self.field] is None or row[self.field] is math.nan or \
+        if self.field not in row or pd.isnull(row[self.field]) or \
                 (hasattr(row[self.field], '__len__') and len(row[self.field]) == 0):
             return False, index
 
@@ -382,14 +383,18 @@ class FilterRowsDuplicates(Transformation):
     title = "Filter the duplicates from the dataset"
     fields = {
         "fields": {"name": "Fields", "type": "list<string>", "help": "The fields to check",
-                   "required": True, "input": "column", "multiple": True, "default": ""},
+                   "required": True, "input": "column", "multiple": True, "default": "",
+                   "column_types": ["str", "int", "float", "datetime"]},
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.fields = arguments["fields"]
 
     def __call__(self, rows: pd.DataFrame, index: int):
-        return rows.drop_duplicates(subset=['brand']).to_dict(orient="records"), index
+        for field in self.fields:
+            if not is_hashable(rows[field].iloc[0]):
+                raise TypeError(f"The column type of {field} can't be checked for duplicates")
+        return rows.drop_duplicates(subset=self.fields).to_dict(orient="records"), index
         # seen = set()
         # seen_add = seen.add
         # filtered_rows = []
