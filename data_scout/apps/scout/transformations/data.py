@@ -161,6 +161,24 @@ class DropColumn(Transformation):
         return row, index
 
 
+class RenameColumn(Transformation):
+    title = "Rename {field} to {new}"
+    fields = {
+        "field": {"name": "Column", "type": "string", "help": "The column to rename", "required": True,
+                  "input": "column", "multiple": False, "default": ""},
+        "new": {"name": "New name", "type": "string", "help": "The new name of the column", "required": True,
+                "input": "text", "multiple": False, "default": ""},
+    }
+
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        self.field = arguments["field"]
+        self.new = arguments["new"]
+
+    def __call__(self, row, index: int):
+        row[self.new] = row.pop(self.field)
+        return row, index
+
+
 class CleanJSON:
     """
     This transformation cleans to object to present valid JSON. It's NOT meant to be used by the user. This is only for

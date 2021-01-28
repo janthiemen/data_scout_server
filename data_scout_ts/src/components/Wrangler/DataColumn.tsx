@@ -121,6 +121,7 @@ export class DataColumn extends AbstractSortableColumn {
 					<MenuItem onClick={() => this.createTransformation("filter-value-mismatched", {field: this.name})} text="Mismatched" />
 				</MenuItem>
 				<MenuItem onClick={() => this.createTransformation("duplicate-column", {field: this.name })} text="Duplicate column" />
+				<MenuItem onClick={() => this.newTransformation("rename-column", {field: this.name })} text="Rename column" />
 				<MenuItem onClick={() => this.createTransformation("drop-column", {field: this.name })} text="Drop column" />
 			</Menu>
 		);

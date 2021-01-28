@@ -13,9 +13,6 @@ Aggregate Functions
    APPROXIMATEMEDIAN Function
    APPROXIMATEPERCENTILE Function
    APPROXIMATEQUARTILE Function
-   MINDATE Function
-   MAXDATE Function
-   MODEDATE Function
    KTHLARGESTDATE Function
 
 Nested Functions
@@ -23,22 +20,7 @@ Nested Functions
 
 Other Functions
     SOURCEROWNUMBER Function
-Language Appendices
-    Transforms
-        Header Transform
-        Keep Transform
-        Merge Transform
-        Move Transform
-        
-        Rename Transform
-        Replace Transform
-        Set Transform
-        Settype Transform
-        Sort Transform
-        Split Transform
-        Splitrows Transform
-        Unnest Transform
-        Valuestocols Transform
+
 
 Search function
 Help function

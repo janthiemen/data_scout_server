@@ -7,6 +7,7 @@ TRANSFORMATION_MAP = {
     "data-field-column": data.FieldToColumn,
     "duplicate-column": data.DuplicateColumn,
     "drop-column": data.DropColumn,
+    "rename-column": data.RenameColumn,
 
     "sortby": sort.SortBy,
 
