@@ -258,7 +258,8 @@ def data(request, recipe: int, step: int):
 
     return JsonResponse({"success": True, "messages": messages, "data": {
         'records': records_export,
-        "columns": columns
+        "column_types": columns,
+        "column_names": list(step_columns.keys())
     }})
 
 

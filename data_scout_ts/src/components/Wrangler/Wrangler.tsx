@@ -149,9 +149,11 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
      */
     public receiveData(body: { [key: string]: any }) {
         if (body["success"]) {
-            let last_columns = body["data"]["columns"][body["data"]["columns"].length-1]
-            let columns = this.createColumns(Object.keys(last_columns), Object.values(last_columns));
-            this.setState({ columns: columns, columnInfo: body["data"]["columns"], data: body["data"]["records"], loading: false });
+            // We can't just take the keys of the object, as we need the list to be the same order as the data
+            let columnNames = body["data"]["column_names"];
+            let columnTypes = columnNames.map((column) => body["data"]["column_types"][body["data"]["column_types"].length-1][column]);
+            let columns = this.createColumns(columnNames, columnTypes);
+            this.setState({ columns: columns, columnInfo: body["data"]["column_types"], data: body["data"]["records"], loading: false });
         } 
         if (body["messages"] != null &&
             typeof body["messages"][Symbol.iterator] === 'function') {

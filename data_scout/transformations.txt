@@ -29,8 +29,7 @@ Language Appendices
         Keep Transform
         Merge Transform
         Move Transform
-        Nest Transform
-        Pivot Transform
+        
         Rename Transform
         Replace Transform
         Set Transform
@@ -39,9 +38,7 @@ Language Appendices
         Split Transform
         Splitrows Transform
         Unnest Transform
-        Unpivot Transform
         Valuestocols Transform
-        Window Transform
 
 Search function
 Help function
@@ -55,6 +52,11 @@ Automatically build the menu
 Custom transformations
     Hook system?
 Marketplace
+    Rpository systeem -> CSV file oid.
+    Installation command -> e.g. pip install ...
+    Store installed packages in DB
+        Package name
+        Call method (eval?)
 
 Data quality checks
     Types

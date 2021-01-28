@@ -65,3 +65,27 @@ class Get(Transformation):
         except:
             row[self.output] = None
         return row, index
+
+
+class Create(Transformation):
+    title = "Create a dictionary field"
+    fields = {
+        "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
+                   "help": "The name of the (newly created) column that contains the results", "default": ""},
+        "items": {"name": "Items", "type": "list<agg>", "help": "The items of the dictionary",
+                  "required": True, "input": "multiple", "multiple": True, "default": [],
+                  "sub_fields": {
+                      "name": {"name": "Name", "type": "string", "help": "The key of this column in the dictionary",
+                               "required": True, "input": "text", "multiple": False, "default": ""},
+                      "field": {"name": "Input", "type": "string", "help": "The column to use as input",
+                                "required": True, "input": "column", "multiple": False, "default": ""},
+                  }}
+    }
+
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        self.output = arguments["output"]
+        self.items = arguments["items"]
+
+    def __call__(self, row, index: int):
+        row[self.output] = {item["name"]: row.get(item["field"]) for item in self.items}
+        return row, index

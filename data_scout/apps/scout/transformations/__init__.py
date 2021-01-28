@@ -1,5 +1,5 @@
 from . import math, math_custom, data, format, count, replace, filter, extract, datetime, string, groupby, array, \
-    comparison, dictionary, literal, preprocessing, sort, window
+    comparison, dictionary, literal, preprocessing, sort, window, pivot
 
 TRANSFORMATION_MAP = {
     "data-convert": data.Convert,
@@ -100,6 +100,8 @@ TRANSFORMATION_MAP = {
 
     "groupby": groupby.GroupBy,
     "window": window.Window,
+    "pivot": pivot.Pivot,
+    "unpivot": pivot.Unpivot,
 
     "array-index": array.Index,
     "array-at-index": array.AtIndex,
@@ -124,6 +126,7 @@ TRANSFORMATION_MAP = {
     "dict-keys": dictionary.Keys,
     "dict-values": dictionary.Values,
     "dict-get": dictionary.Get,
+    "dict-create": dictionary.Create,
 
     "comparison-compare-value": comparison.CompareValue,
     "comparison-compare-columns": comparison.CompareColumns,

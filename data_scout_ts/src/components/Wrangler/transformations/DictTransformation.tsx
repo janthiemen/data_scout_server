@@ -7,6 +7,7 @@ const DictTranformationMenu: React.FunctionComponent<TranformationProps> = props
         <MenuItem onClick={() => props.newTransformation("dict-get", {})} text="Get by key" />
         <MenuItem onClick={() => props.newTransformation("dict-keys", {})} text="Keys" />
         <MenuItem onClick={() => props.newTransformation("dict-values", {})} text="Values" />
+        <MenuItem onClick={() => props.newTransformation("dict-create", {})} text="Create" />
     </Menu>
 );
 

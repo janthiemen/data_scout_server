@@ -6,15 +6,11 @@ import { ArrayTransformationButton } from "../transformations/ArrayTransformatio
 import { DatetimeTransformationButton } from "../transformations/DatetimeTransformation";
 import { DictTransformationButton } from "../transformations/DictTransformation";
 import { LiteralTransformationButton } from "../transformations/LiteralTransformation";
-import { CountTransformationButton } from "../transformations/CountTransformation";
 import { MathTransformationButton } from "../transformations/MathTranformation";
 import { PreprocessingTransformationButton } from "../transformations/PreprocessingTransformation";
-// import { ExtractTransformationButton } from "../transformations/ExtractTranformation";
-import { SplitTransformationButton } from "../transformations/SplitColumnTransformation";
+import { DataTransformationButton } from "../transformations/DataTransformation";
 import { ComparisonTransformationButton } from "../transformations/ComparisonTransformation";
 import { FilterTransformationButton } from "../transformations/FilterTransformation";
-import { MergeTransformationButton } from "../transformations/MergeColumnTransformation";
-import { GroupbyTransformationButton } from "../transformations/GroupByTransformation";
 
 export const TransformationPanel: React.SFC<{newTransformation: (transformationType: string, kwargs: { [key: string]: any }) => void}> = (props) => (
     <div>
@@ -34,13 +30,7 @@ export const TransformationPanel: React.SFC<{newTransformation: (transformationT
             {/* <SplitTransformationButton newTransformation={props.newTransformation} /> */}
             <FilterTransformationButton newTransformation={props.newTransformation} />
             {/* <MergeTransformationButton newTransformation={props.newTransformation} /> */}
-            <GroupbyTransformationButton newTransformation={props.newTransformation} />
-            <ButtonGroup minimal={true}>
-                <Button onClick={() => props.newTransformation("sortby", {})} text="Sort by" />
-            </ButtonGroup>
-            <ButtonGroup minimal={true}>
-                <Button onClick={() => props.newTransformation("window", {})} text="Window" />
-            </ButtonGroup>
+            <DataTransformationButton newTransformation={props.newTransformation} />
         </ButtonGroup>
 
         <input className="bp3-input" type="text" placeholder="Search help" />
