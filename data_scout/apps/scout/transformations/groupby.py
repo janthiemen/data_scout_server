@@ -1,8 +1,7 @@
-from typing import List
-
 from apps.scout.transformations._utils import get_param_bool, get_param_int
 from apps.scout.transformations.transformation import Transformation
 import pandas as pd
+import numpy as np
 
 
 class GroupByBase(Transformation):
@@ -21,7 +20,8 @@ class GroupByBase(Transformation):
                                          "last": "Last", "nth": "Nth row", "max": "Max", "min": "Min", "mean": "Mean",
                                          "median": "Median", "sum": "Sum", "prod": "Product", "size": "Size",
                                          "sem": "Standard Error of the Mean", "std": "Standard deviation",
-                                         "var": "Variance"}
+                                         "var": "Variance", "percentile": "Percentile", "list": "List",
+                                         "unique": "Unique"}
                              },
                      "skipna": {"name": "Skip NA", "type": "string", "help": "Skip missing values?", "required": False,
                                 "input": "select", "multiple": False, "default": "1",
@@ -35,6 +35,9 @@ class GroupByBase(Transformation):
                      "n": {"name": "Row index", "type": "number", "input": "number",
                            "help": "The zero-based row number of the row you want to select",
                            "required": False, "default": 0, "optional": {"agg": ["nth"]}},
+                     "q": {"name": "Percentile", "type": "number", "input": "number",
+                           "help": "The percentile to compute (between 0 and 100, inclusive)",
+                           "required": False, "default": 0, "optional": {"agg": ["percentile"]}},
                      "min_count": {"name": "Minimum valid values", "type": "number", "input": "number",
                                    "help": "The minimum number of valid values in the group to computate the value. "
                                            "If it's not reached the result is NA.",
@@ -43,9 +46,10 @@ class GroupByBase(Transformation):
                      "limit": {"name": "Limit", "type": "number", "help": "Limit of how many values to fill",
                                "required": False, "input": "number", "default": "",
                                "optional": {"agg": ["bfill", "ffill"]}},
-                     "ddof": {"name": "Degrees of freedom", "type": "number", "help": "The degrees of freedom",
-                              "required": False, "input": "number", "default": "",
-                              "optional": {"agg": ["sem", "std", "var"]}},
+                     "ddof": {"name": "Delta Degrees of freedom", "type": "number", "required": False,
+                              "help": "Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N "
+                                      "represents the number of elements.",
+                              "input": "number", "default": "", "optional": {"agg": ["sem", "std", "var"]}},
                      "name": {"name": "Name", "type": "string", "help": "The name of the newly created column",
                               "required": True, "input": "text", "multiple": False, "default": ""},
 
@@ -92,6 +96,8 @@ class GroupByBase(Transformation):
                 self._add_aggregation(agg["name"], agg["field"], lambda x: x.median(
                     numeric_only=get_param_bool(agg["numeric_only"])
                 ))
+            elif agg["agg"] == "percentile":
+                self._add_aggregation(agg["name"], agg["field"], lambda x: np.percentile(x, get_param_int(agg["q"], 0)))
             elif agg["agg"] == "sum":
                 self._add_aggregation(agg["name"], agg["field"], lambda x: x.sum(
                     numeric_only=get_param_bool(agg["numeric_only"])
@@ -107,7 +113,11 @@ class GroupByBase(Transformation):
                 self._add_aggregation(agg["name"], agg["field"], lambda x: x.std(ddof=get_param_int(agg["ddof"], 1)))
             elif agg["agg"] == "var":
                 self._add_aggregation(agg["name"], agg["field"], lambda x: x.var(ddof=get_param_int(agg["ddof"], 1)))
-
+            elif agg["agg"] == "list":
+                self._add_aggregation(agg["name"], agg["field"], lambda x: x.tolist())
+            elif agg["agg"] == "unique":
+                self._add_aggregation(agg["name"], agg["field"], lambda x: x.unique().tolist())
+        # TODO: Add percentual change, diff, shift
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
         self.aggregations = {}
         self._create_aggregations(arguments["aggs"])

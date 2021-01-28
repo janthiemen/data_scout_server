@@ -1,7 +1,10 @@
 import math
 import numpy as np
+import pandas as pd
 from datetime import datetime
 
+from apps.scout.transformations._utils import get_param_int
+from apps.scout.transformations.statistics import StatsBase
 from apps.scout.transformations.transformation import Transformation
 
 
@@ -177,6 +180,86 @@ class RenameColumn(Transformation):
     def __call__(self, row, index: int):
         row[self.new] = row.pop(self.field)
         return row, index
+
+
+class Transpose(Transformation):
+    is_global = True
+    title = "Transpose index and columns"
+    fields = {
+        "fields": StatsBase.fields["fields"],
+    }
+
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        self.fields = arguments["fields"]
+
+    def __call__(self, rows: pd.DataFrame, index: int):
+        if len(self.fields) > 0:
+            rows = rows[self.fields]
+        rows = rows.transpose()
+        return rows.reset_index().to_dict(orient="records"), index
+
+
+class Shift(Transformation):
+    is_global = True
+    title = "Shift the values in {fields} by {periods}"
+    fields = {
+        "fields": StatsBase.fields["fields"],
+        "periods": {"name": "Periods", "type": "number", "input": "number", "required": True,
+                    "help": "The number of rows to shift the values (positive or negative)", "default": 1},
+        "fill_value": {"name": "Fill value", "type": "number", "input": "number", "required": False,
+                       "help": "Value to use when a value is missing", "default": ""},
+    }
+
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        self.fields = arguments["fields"]
+        self.periods = get_param_int(arguments["periods"], 1)
+        self.fill_value = get_param_int(arguments["fill_value"], None)
+
+    def __call__(self, rows: pd.DataFrame, index: int):
+        rows[self.fields] = rows[self.fields].shift(periods=self.periods, fill_value=self.fill_value)
+        return rows.to_dict(orient="records"), index
+
+
+class Diff(Transformation):
+    is_global = True
+    title = "Calculate the difference between values in {fields} (vertically)"
+    fields = {
+        "fields": StatsBase.fields["fields"],
+        "periods": Shift.fields["periods"],
+    }
+
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        self.fields = arguments["fields"]
+        self.periods = get_param_int(arguments["periods"], 1)
+
+    def __call__(self, rows: pd.DataFrame, index: int):
+        rows[self.fields] = rows[self.fields].diff(periods=self.periods)
+        return rows.to_dict(orient="records"), index
+
+
+class PctChange(Transformation):
+    is_global = True
+    title = "Calculate the percentual difference between values in {fields} (vertically)"
+    fields = {
+        "fields": StatsBase.fields["fields"],
+        "periods": Shift.fields["periods"],
+        "fill_method": {"name": "Fill NA method", "type": "string", "required": True, "input": "select",
+                        "multiple": False, "help": "How to handle NAs before computing percent changes",
+                        "default": "pad", "options": {"bfill": "Backward fill", "ffill": "Forward fill", "": "None"}},
+        "limit": {"name": "Limit", "type": "number", "input": "number", "required": False, "default": "",
+                  "help": "The maximum number of consecutive NAs to fill before stopping (empty for no limit)."},
+    }
+
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        self.fields = arguments["fields"]
+        self.periods = get_param_int(arguments["periods"], 1)
+        self.fill_method = arguments["fill_method"] if arguments["fill_method"] != "" else None
+        self.limit = get_param_int(arguments["limit"], None)
+
+    def __call__(self, rows: pd.DataFrame, index: int):
+        rows[self.fields] = rows[self.fields].pct_change(periods=self.periods, fill_method=self.fill_method,
+                                                         limit=self.limit)
+        return rows.to_dict(orient="records"), index
 
 
 class CleanJSON:

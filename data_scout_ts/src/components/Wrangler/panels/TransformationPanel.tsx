@@ -11,6 +11,7 @@ import { PreprocessingTransformationButton } from "../transformations/Preprocess
 import { DataTransformationButton } from "../transformations/DataTransformation";
 import { ComparisonTransformationButton } from "../transformations/ComparisonTransformation";
 import { FilterTransformationButton } from "../transformations/FilterTransformation";
+import { StatsTransformationButton } from "../transformations/StatsTransformation";
 
 export const TransformationPanel: React.SFC<{newTransformation: (transformationType: string, kwargs: { [key: string]: any }) => void}> = (props) => (
     <div>
@@ -31,6 +32,7 @@ export const TransformationPanel: React.SFC<{newTransformation: (transformationT
             <FilterTransformationButton newTransformation={props.newTransformation} />
             {/* <MergeTransformationButton newTransformation={props.newTransformation} /> */}
             <DataTransformationButton newTransformation={props.newTransformation} />
+            <StatsTransformationButton newTransformation={props.newTransformation} />
         </ButtonGroup>
 
         <input className="bp3-input" type="text" placeholder="Search help" />

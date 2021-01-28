@@ -1,5 +1,5 @@
 from . import math, math_custom, data, format, count, replace, filter, extract, datetime, string, groupby, array, \
-    comparison, dictionary, literal, preprocessing, sort, window, pivot
+    comparison, dictionary, literal, preprocessing, sort, window, pivot, statistics
 
 TRANSFORMATION_MAP = {
     "data-convert": data.Convert,
@@ -103,6 +103,10 @@ TRANSFORMATION_MAP = {
     "window": window.Window,
     "pivot": pivot.Pivot,
     "unpivot": pivot.Unpivot,
+    "data-transpose": data.Transpose,
+    "data-shift": data.Shift,
+    "data-diff": data.Diff,
+    "data-pctchange": data.PctChange,
 
     "array-index": array.Index,
     "array-at-index": array.AtIndex,
@@ -165,4 +169,24 @@ TRANSFORMATION_MAP = {
     "preprocessing-normalize": preprocessing.Normalize,
     "preprocessing-impute": preprocessing.Impute,
     "preprocessing-polynomial": preprocessing.Polynomial,
+
+    "stats-correlation": statistics.Correlation,
+    "stats-covariance": statistics.Covariance,
+    "stats-cumsum": statistics.CumSum,
+    "stats-cummax": statistics.CumMax,
+    "stats-cummin": statistics.CumMin,
+    "stats-cumprod": statistics.CumProd,
+    "stats-mad": statistics.Mad,
+    "stats-skew": statistics.Skew,
+    "stats-kurtosis": statistics.Kurtosis,
+    "stats-median": statistics.Median,
+    "stats-mode": statistics.Mode,
+    "stats-max": statistics.Max,
+    "stats-min": statistics.Min,
+    "stats-sum": statistics.Sum,
+    "stats-std": statistics.Std,
+    "stats-var": statistics.Var,
+    "stats-sem": statistics.Sem,
+    "stats-nunique": statistics.NUnique,
+    "stats-value-counts": statistics.ValueCounts,
 }

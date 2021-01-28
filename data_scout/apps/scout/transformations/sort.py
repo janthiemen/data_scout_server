@@ -11,7 +11,7 @@ class SortBy(Transformation):
                     "sub_fields": {
                         "field": {"name": "Column", "type": "string", "help": "The column to sort by",
                                   "required": True, "input": "column", "multiple": False, "default": ""},
-                        "order": {"name": "Aggregation", "type": "string", "help": "",
+                        "order": {"name": "Order", "type": "string", "help": "The order to sort in",
                                   "required": True, "input": "select", "multiple": False, "default": "asc",
                                   "options": {"asc": "Ascending", "desc": "Descending"}},
                     }},

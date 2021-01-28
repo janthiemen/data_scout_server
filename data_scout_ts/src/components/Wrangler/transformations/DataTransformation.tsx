@@ -9,6 +9,10 @@ const DataTranformationMenu: React.FunctionComponent<TranformationProps> = props
         <MenuItem onClick={() => props.newTransformation("window", {})} text="Window" />
         <MenuItem onClick={() => props.newTransformation("pivot", {})} text="Pivot" />
         <MenuItem onClick={() => props.newTransformation("unpivot", {})} text="Unpivot" />
+        <MenuItem onClick={() => props.newTransformation("data-transpose", {})} text="Transpose" />
+        <MenuItem onClick={() => props.newTransformation("data-shift", {})} text="Shift" />
+        <MenuItem onClick={() => props.newTransformation("data-diff", {})} text="Diff" />
+        <MenuItem onClick={() => props.newTransformation("data-pctchange", {})} text="Pct. change" />
     </Menu>
 );
 
