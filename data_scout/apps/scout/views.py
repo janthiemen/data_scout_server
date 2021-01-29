@@ -271,7 +271,7 @@ def meta_transformations(request):
     :return:
     """
     return JsonResponse({
-        key: {"title": transformation.title, "fields": transformation.fields}
+        key: {"title": transformation.title, "key": transformation.key, "fields": transformation.fields}
         for key, transformation in TRANSFORMATION_MAP.items()}
     )
 

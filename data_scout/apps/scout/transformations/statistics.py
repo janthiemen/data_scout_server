@@ -28,6 +28,7 @@ class StatsBase(Transformation):
 class Correlation(Transformation):
     is_global = True
     title = "Compute pairwise correlation of {fields}"
+    key = "Correlation"
     fields = {
         "fields": StatsBase.fields["fields"],
         "method": {"name": "Method", "type": "string", "required": True, "input": "select",
@@ -52,6 +53,7 @@ class Correlation(Transformation):
 class Covariance(Transformation):
     is_global = True
     title = "Compute pairwise covariance of {fields}"
+    key = "Covariance"
     fields = {
         "fields": StatsBase.fields["fields"],
         "min_periods": Correlation.fields["min_periods"],
@@ -74,6 +76,7 @@ class Covariance(Transformation):
 
 class CumSum(StatsBase):
     title = "Calculate the cumulative sum of {fields}"
+    key = "Cumulative sum"
 
     def __call__(self, rows: pd.DataFrame, index: int):
         if len(self.fields) > 0:
@@ -83,6 +86,7 @@ class CumSum(StatsBase):
 
 class CumMax(StatsBase):
     title = "Calculate the cumulative maximum of {fields}"
+    key = "Cumulative max"
 
     def __call__(self, rows: pd.DataFrame, index: int):
         if len(self.fields) > 0:
@@ -92,6 +96,7 @@ class CumMax(StatsBase):
 
 class CumMin(StatsBase):
     title = "Calculate the cumulative minimum of {fields}"
+    key = "Cumulative min"
 
     def __call__(self, rows: pd.DataFrame, index: int):
         if len(self.fields) > 0:
@@ -101,6 +106,7 @@ class CumMin(StatsBase):
 
 class CumProd(StatsBase):
     title = "Calculate the cumulative product of {fields}"
+    key = "Cumulative product"
 
     def __call__(self, rows: pd.DataFrame, index: int):
         if len(self.fields) > 0:
@@ -110,16 +116,21 @@ class CumProd(StatsBase):
 
 class Mad(StatsBase):
     title = "Calculate the mean absolute deviation of {fields}"
+    key = "Mean absolute deviation (mad)"
 
     def __call__(self, rows: pd.DataFrame, index: int):
         if len(self.fields) > 0:
             rows = rows[self.fields]
-        return rows.mad(axis=self.axis, skipna=self.skipna).to_dict(orient="records"), index
+
+        rows = rows.mad(axis=self.axis, skipna=self.skipna).rename("mad")
+        rows = rows.reset_index() if self.axis == "index" else rows.to_frame()
+        return rows.to_dict(orient="records"), index
 
 
 class Skew(Transformation):
     is_global = True
     title = "Calculate the unbiased skew of {fields}"
+    key = "Skew"
     fields = {
         "fields": StatsBase.fields["fields"],
         "axis": StatsBase.fields["axis"],
@@ -139,40 +150,40 @@ class Skew(Transformation):
         if len(self.fields) > 0:
             rows = rows[self.fields]
 
-        rows = rows.skew(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only)
-        if self.axis == "index":
-            rows = rows.reset_index()
-
+        rows = rows.skew(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only).rename("skew")
+        rows = rows.reset_index() if self.axis == "index" else rows.to_frame()
         return rows.to_dict(orient="records"), index
 
 
 class Kurtosis(Skew):
     title = "Calculate the unbiased kurtosis of {fields}"
+    key = "Kurtosis"
 
     def __call__(self, rows: pd.DataFrame, index: int):
         if len(self.fields) > 0:
             rows = rows[self.fields]
 
-        rows = rows.kurtosis(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only)
-        if self.axis == "index":
-            rows = rows.reset_index()
-
+        rows = rows.kurtosis(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only).rename("kurtosis")
+        rows = rows.reset_index() if self.axis == "index" else rows.to_frame()
         return rows.to_dict(orient="records"), index
 
 
 class Median(Skew):
     title = "Calculate the median of {fields}"
+    key = "Median"
 
     def __call__(self, rows: pd.DataFrame, index: int):
         if len(self.fields) > 0:
             rows = rows[self.fields]
 
-        rows = rows.mode(axis=self.axis, dropna=self.skipna, numeric_only=self.numeric_only)
+        rows = rows.median(axis=self.axis, dropna=self.skipna, numeric_only=self.numeric_only).rename("median")
+        rows = rows.reset_index() if self.axis == "index" else rows.to_frame()
         return rows.to_dict(orient="records"), index
 
 
 class Mode(Skew):
     title = "Calculate the mode of {fields}"
+    key = "Mode"
 
     def __call__(self, rows: pd.DataFrame, index: int):
         if len(self.fields) > 0:
@@ -182,34 +193,33 @@ class Mode(Skew):
 
 class Max(Skew):
     title = "Calculate the max of {fields}"
+    key = "Max"
 
     def __call__(self, rows: pd.DataFrame, index: int):
         if len(self.fields) > 0:
             rows = rows[self.fields]
 
-        rows = rows.max(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only)
-        if self.axis == "index":
-            rows = rows.reset_index()
-
+        rows = rows.max(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only).rename("max")
+        rows = rows.reset_index() if self.axis == "index" else rows.to_frame()
         return rows.to_dict(orient="records"), index
 
 
 class Min(Skew):
     title = "Calculate the min of {fields}"
+    key = "Min"
 
     def __call__(self, rows: pd.DataFrame, index: int):
         if len(self.fields) > 0:
             rows = rows[self.fields]
 
-        rows = rows.min(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only)
-        if self.axis == "index":
-            rows = rows.reset_index()
-
+        rows = rows.min(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only).rename("min")
+        rows = rows.reset_index() if self.axis == "index" else rows.to_frame()
         return rows.to_dict(orient="records"), index
 
 
 class Sum(Transformation):
     title = "Calculate the sum"
+    key = "Sum"
     fields = {
         "fields": StatsBase.fields["fields"],
         "axis": StatsBase.fields["axis"],
@@ -230,15 +240,15 @@ class Sum(Transformation):
         if len(self.fields) > 0:
             rows = rows[self.fields]
 
-        rows = rows.sum(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only, min_count=self.min_count)
-        if self.axis == "index":
-            rows = rows.reset_index()
-
+        rows = rows.sum(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only, min_count=self.min_count)\
+            .rename("sum")
+        rows = rows.reset_index() if self.axis == "index" else rows.to_frame()
         return rows.to_dict(orient="records"), index
 
 
 class Std(Transformation):
     title = "Calculate the standard deviation of {fields}"
+    key = "Standard Deviation (std)"
     fields = {
         "fields": StatsBase.fields["fields"],
         "axis": StatsBase.fields["axis"],
@@ -258,43 +268,43 @@ class Std(Transformation):
         if len(self.fields) > 0:
             rows = rows[self.fields]
 
-        rows = rows.std(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only, ddof=self.ddof)
-        if self.axis == "index":
-            rows = rows.reset_index()
-
+        rows = rows.std(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only, ddof=self.ddof)\
+            .rename("std")
+        rows = rows.reset_index() if self.axis == "index" else rows.to_frame()
         return rows.to_dict(orient="records"), index
 
 
 class Var(Std):
     title = "Calculate the variance of {fields}"
+    key = "Variance (var)"
 
     def __call__(self, rows: pd.DataFrame, index: int):
         if len(self.fields) > 0:
             rows = rows[self.fields]
 
-        rows = rows.var(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only, ddof=self.ddof)
-        if self.axis == "index":
-            rows = rows.reset_index()
-
+        rows = rows.var(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only, ddof=self.ddof)\
+            .rename("var")
+        rows = rows.reset_index() if self.axis == "index" else rows.to_frame()
         return rows.to_dict(orient="records"), index
 
 
 class Sem(Std):
     title = "Calculate the unbiased standard error of the mean in {fields}"
+    key = "Standard error of mean (sem)"
 
     def __call__(self, rows: pd.DataFrame, index: int):
         if len(self.fields) > 0:
             rows = rows[self.fields]
 
-        rows = rows.sem(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only, ddof=self.ddof)
-        if self.axis == "index":
-            rows = rows.reset_index()
-
+        rows = rows.sem(axis=self.axis, skipna=self.skipna, numeric_only=self.numeric_only, ddof=self.ddof)\
+            .rename("var")
+        rows = rows.reset_index() if self.axis == "index" else rows.to_frame()
         return rows.to_dict(orient="records"), index
 
 
 class NUnique(StatsBase):
     title = "Get the number of unique values in {fields}"
+    key = "Number of unique values (nunique)"
     fields = {
         "fields": StatsBase.fields["fields"],
         "axis": StatsBase.fields["axis"],
@@ -312,15 +322,13 @@ class NUnique(StatsBase):
             rows = rows[self.fields]
 
         rows = rows.nunique(axis=self.axis, dropna=self.skipna).rename(self.output)
-        if self.axis == "index":
-            rows = rows.reset_index()
-        else:
-            rows = rows.to_frame()
+        rows = rows.reset_index() if self.axis == "index" else rows.to_frame()
         return rows.to_dict(orient="records"), index
 
 
 class ValueCounts(Transformation):
-    title = "Get the number of unique values in {fields}"
+    title = "Get the number of values in {fields}"
+    key = "Value counts"
     fields = {
         "fields": StatsBase.fields["fields"],
         "normalize": {"name": "Normalize", "type": "string", "required": True, "input": "select", "default": "0",

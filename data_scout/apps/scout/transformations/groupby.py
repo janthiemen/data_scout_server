@@ -5,6 +5,7 @@ import numpy as np
 
 
 class GroupByBase(Transformation):
+    key = "Group by"
     fields = {
         "fields": {"name": "Fields", "type": "list<string>", "help": "The fields to check",
                    "required": True, "input": "column", "multiple": True, "default": []},

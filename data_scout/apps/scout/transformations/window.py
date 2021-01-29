@@ -7,6 +7,7 @@ import pandas as pd
 class Window(GroupByBase):
     is_global = True
     title = "Create a rolling window"
+    key = "Rolling window"
     fields = {
         "index_type": {"name": "Index type", "type": "string", "required": True, "input": "select", "multiple": False,
                        "help": "What should the windowing be based on?", "default": "observations",

@@ -3,6 +3,7 @@ from apps.scout.transformations.transformation import Transformation
 
 class Add(Transformation):
     title = "Sum {fields}"
+    key = "Math add"
     fields = {
         "fields": {"name": "Columns", "type": "list<string>", "help": "The fields to add to each other",
                    "required": True, "input": "column", "multiple": True, "default": "",
@@ -12,23 +13,10 @@ class Add(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
-        """Initialize the transformation with the given parameters.
-
-        Arguments:
-            arguments {dict} -- The arguments
-        """
         self.fields = arguments["fields"]
         self.output = arguments["output"]
 
     def __call__(self, row, index: int):
-        """This class is called on each row.
-
-        Arguments:
-            row {dict} -- The complete row
-
-        Returns:
-            dict -- The row, including the extra output column
-        """
         total = 0
         for field in [f for f in self.fields if f in row]:
             total += row[field]
@@ -39,6 +27,7 @@ class Add(Transformation):
 
 class Min(Transformation):
     title = "Calculate {field_a} - {field_b}"
+    key = "Math min"
     fields = {
         "field_a": {"name": "Field 1", "type": "string", "help": "The field that should be subtracted from",
                     "required": True, "input": "column", "multiple": False, "default": "",
@@ -51,24 +40,11 @@ class Min(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
-        """Initialize the transformation with the given parameters.
-
-        Arguments:
-            arguments {dict} -- The arguments
-        """
         self.field_a = arguments["field_a"]
         self.field_b = arguments["field_b"]
         self.output = arguments["output"]
 
     def __call__(self, row, index: int):
-        """This class is called on each row.
-
-        Arguments:
-            row {dict} -- The complete row
-
-        Returns:
-            dict -- The row, including the extra output column
-        """
         if self.field_a not in row or self.field_b not in row:
             return row, index
 
@@ -78,6 +54,7 @@ class Min(Transformation):
 
 class Divide(Transformation):
     title = "Calculate {field_a} / {field_b}"
+    key = "Math divide"
     fields = {
         "field_a": {"name": "Numerator", "type": "string", "help": "The numerator", "required": True, "input": "column",
                     "multiple": False, "default": "", "column_type": ["int", "float"]},
@@ -88,25 +65,11 @@ class Divide(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
-        """Initialize the transformation with the given parameters.
-
-        Arguments:
-            arguments {dict} -- The arguments
-        """
         self.field_a = arguments["field_a"]
         self.field_b = arguments["field_b"]
         self.output = arguments["output"]
 
     def __call__(self, row, index: int):
-        """This class is called on each row.
-
-        Arguments:
-            row {dict} -- The complete row
-
-        Returns:
-            dict -- The row, including the extra output column
-        """
-
         # TODO: Add check on division by 0?
         if self.field_a not in row or self.field_b not in row:
             return row, index
@@ -116,6 +79,7 @@ class Divide(Transformation):
 
 class Multiply(Transformation):
     title = "Multiply {fields}"
+    key = "Math multiply"
     fields = {
         "fields": {"name": "Fields", "type": "list<string>", "help": "The fields to add to each other",
                    "required": True, "input": "column", "multiple": True, "default": "",
@@ -125,23 +89,10 @@ class Multiply(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
-        """Initialize the transformation with the given parameters.
-
-        Arguments:
-            arguments {dict} -- The arguments
-        """
         self.fields = arguments["fields"]
         self.output = arguments["output"]
 
     def __call__(self, row, index: int):
-        """This class is called on each row.
-
-        Arguments:
-            row {dict} -- The complete row
-
-        Returns:
-            dict -- The row, including the extra output column
-        """
         total = None
         for field in [f for f in self.fields if f in row]:
             if total is None:

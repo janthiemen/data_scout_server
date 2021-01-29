@@ -8,6 +8,7 @@ from apps.scout.transformations.transformation import Transformation
 
 class ExtractNumbers(Transformation):
     title = "Extract numbers from {field} into {output}"
+    key = "Extract numbers"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -33,6 +34,7 @@ class ExtractNumbers(Transformation):
 
 class ExtractHttpQueryString(Transformation):
     title = "Extract HTTP query string from {field} into {output}"
+    key = "Extract HTTP query"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -56,6 +58,7 @@ class ExtractHttpQueryString(Transformation):
 
 class ExtractRegex(Transformation):
     title = "Extract regex from {field} into {output}"
+    key = "Extract regex"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -81,6 +84,7 @@ class ExtractRegex(Transformation):
 
 class ExtractDelimiters(ExtractRegex):
     title = "Extract the text between the delimiter: {delimiter} in {field} as {output}"
+    key = "Extract between delimiters"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -98,6 +102,7 @@ class ExtractDelimiters(ExtractRegex):
 
 class ExtractPositions(Transformation):
     title = "Extract the characters between pos. {start} - {end} into {output}"
+    key = "Extract between positions"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},

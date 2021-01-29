@@ -25,6 +25,7 @@ class Literal(Transformation):
 
 
 class String(Transformation):
+    key = "String literal"
     title = "Create a string column {output} with the value {value}"
     fields = {
         "value": {"name": "Value", "type": "string", "input": "text", "required": True,
@@ -43,6 +44,7 @@ class String(Transformation):
 
 
 class Integer(Transformation):
+    key = "Integer literal"
     title = "Create an integer column {output} with the value {value}"
     fields = {
         "value": {"name": "Value", "type": "number", "input": "number", "required": True,
@@ -61,6 +63,7 @@ class Integer(Transformation):
 
 
 class Float(Transformation):
+    key = "Float literal"
     title = "Create a float column {output} with the value {value}"
     fields = {
         "value": {"name": "Value", "type": "number", "input": "number", "required": True,
@@ -79,6 +82,7 @@ class Float(Transformation):
 
 
 class Null(Transformation):
+    key = "Null literal"
     title = "Create a column {output} containing only null (None) values"
     fields = {
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
@@ -94,6 +98,7 @@ class Null(Transformation):
 
 
 class RandBetween(Transformation):
+    key = "Random float between"
     title = "Create a float column {output} with a random value between {start} and {end}"
     fields = {
         "start": {"name": "From", "type": "number", "input": "number", "required": True,
@@ -115,6 +120,7 @@ class RandBetween(Transformation):
 
 
 class RandInt(Transformation):
+    key = "Random integer between"
     title = "Create an integer column {output} with a random value between {start} and {end}"
     fields = {
         "start": {"name": "From", "type": "number", "input": "number", "required": True,

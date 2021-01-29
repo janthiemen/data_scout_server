@@ -10,6 +10,7 @@ from apps.scout.transformations.window import Window
 class Pivot(GroupByBase):
     is_global = True
     title = "Pivot the data"
+    key = "Pivot"
     fields = {
         "columns": {"name": "Columns", "type": "list<string>", "required": True, "input": "column", "multiple": True,
                     "help": "The columns whose values are pivoted to columns", "default": []},
@@ -78,6 +79,7 @@ class Pivot(GroupByBase):
 class Unpivot(Transformation):
     is_global = True
     title = "Unpivot the data"
+    key = "Unpivot"
     fields = {
         "id_vars": {"name": "Index columns", "type": "list<string>", "required": True, "input": "column",
                     "multiple": True, "help": "The column(s) to use as identifier variables.", "default": []},

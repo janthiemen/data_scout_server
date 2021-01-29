@@ -3,6 +3,7 @@ from apps.scout.transformations.transformation import Transformation
 
 class Keys(Transformation):
     title = "Get the keys of the dictionary in {field}"
+    key = "Dictionary get keys"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to format", "column_type": ["dict"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -24,6 +25,7 @@ class Keys(Transformation):
 
 class Values(Transformation):
     title = "Get the values of the dictionary in {field}"
+    key = "Dictionary get value"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to format", "column_type": ["dict"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -45,6 +47,7 @@ class Values(Transformation):
 
 class Get(Transformation):
     title = "Get the value of the dictionary in {field} for key {key}"
+    key = "Dictionary get"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to format", "column_type": ["dict"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -69,6 +72,7 @@ class Get(Transformation):
 
 class Create(Transformation):
     title = "Create a dictionary field"
+    key = "Dictionary creat"
     fields = {
         "output": {"name": "Output column", "type": "string", "input": "text", "required": True,
                    "help": "The name of the (newly created) column that contains the results", "default": ""},

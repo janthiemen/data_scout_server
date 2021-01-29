@@ -23,6 +23,7 @@ def convert_value(search, example):
 
 class Index(Transformation):
     title = "Get the {side} index of {value} in the list {field} (-1 if not found)"
+    key = "Array index"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to use", "column_type": ["list"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -54,6 +55,7 @@ class Index(Transformation):
 
 class AtIndex(Transformation):
     title = "Get the element at zero-based index {index} from {field}"
+    key = "Array at index"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to use", "column_type": ["list"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -78,6 +80,7 @@ class AtIndex(Transformation):
 
 class Slice(Transformation):
     title = "Slice the list in {field} from {start} to {end}"
+    key = "Array slice"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to use", "column_type": ["list"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -111,6 +114,7 @@ class Slice(Transformation):
 
 class Length(Transformation):
     title = "Get the length of the list in {field}"
+    key = "Array length"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to use", "column_type": ["list"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -132,6 +136,7 @@ class Length(Transformation):
 
 class Mean(Transformation):
     title = "Get the mean of the list in {field}"
+    key = "Array mean"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to use", "column_type": ["list"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -153,6 +158,7 @@ class Mean(Transformation):
 
 class Sum(Transformation):
     title = "Get the mean of the list in {field}"
+    key = "Array sum"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to use", "column_type": ["list"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -174,6 +180,7 @@ class Sum(Transformation):
 
 class Min(Transformation):
     title = "Get the min of the list in {field}"
+    key = "Array min"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to use", "column_type": ["list"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -195,6 +202,7 @@ class Min(Transformation):
 
 class Max(Transformation):
     title = "Get the max of the list in {field}"
+    key = "Array max"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to use", "column_type": ["list"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -216,6 +224,7 @@ class Max(Transformation):
 
 class Mode(Transformation):
     title = "Get the mode of the list in {field}"
+    key = "Array mode"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to use", "column_type": ["list"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -237,6 +246,7 @@ class Mode(Transformation):
 
 class Std(Transformation):
     title = "Get the standard deviation of the list in {field}"
+    key = "Array standard deviation (std)"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to use", "column_type": ["list"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -258,6 +268,7 @@ class Std(Transformation):
 
 class Var(Transformation):
     title = "Get the variance of the list in {field}"
+    key = "Array variance (var)"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to use", "column_type": ["list"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -279,6 +290,7 @@ class Var(Transformation):
 
 class Sort(Transformation):
     title = "Sort the values of the list in {field}"
+    key = "Array sort"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to use", "column_type": ["list"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -304,6 +316,7 @@ class Sort(Transformation):
 
 class Concat(Transformation):
     title = "Concat the arrays in {fields}"
+    key = "Array concat"
     fields = {
         "fields": {"name": "Inputs", "type": "list<string>", "help": "The columns to use as input",
                    "required": True, "input": "column", "multiple": True, "default": "", "column_type": ["list"]},
@@ -325,6 +338,7 @@ class Concat(Transformation):
 
 class Intersect(Transformation):
     title = "Get the intersection of the in {fields}"
+    key = "Array intersect"
     fields = {
         "fields": {"name": "Inputs", "type": "list<string>", "help": "The columns to use as input",
                    "required": True, "input": "column", "multiple": True, "default": "", "column_type": ["list"]},
@@ -352,6 +366,7 @@ class Intersect(Transformation):
 
 class Unique(Transformation):
     title = "Get all unique elements in {fields}"
+    key = "Array unique"
     fields = {
         "fields": {"name": "Inputs", "type": "list<string>", "help": "The columns to use as input",
                    "required": True, "input": "column", "multiple": True, "default": "", "column_type": ["list"]},
@@ -373,6 +388,7 @@ class Unique(Transformation):
 
 class Filter(Transformation):
     title = "Filter all elements from list where {field}[x] {comparison} {value}"
+    key = "Array filter"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input", "column_type": ["list"],
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -402,6 +418,7 @@ class Filter(Transformation):
 
 class Flatten(Transformation):
     title = "Flatten {field}"
+    key = "Array flatten"
     is_flatten = True
     fields = {
         "field": {"name": "Field", "type": "string", "required": True,
@@ -431,6 +448,7 @@ class Flatten(Transformation):
 
 class ToDict(Transformation):
     title = "Combine an array keys ({field_keys}) and values ({field_values}) into a dictionary."
+    key = "Array to dictionary"
     fields = {
         "field_keys": {"name": "Keys", "type": "string", "column_type": ["list"], "required": True, "input": "column",
                        "help": "The array containing the keys", "multiple": False, "default": ""},
@@ -453,6 +471,7 @@ class ToDict(Transformation):
 
 class Merge(Transformation):
     title = "Merge the elements of the list in {field} together, separated by {separator}"
+    key = "Array merge"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input", "column_type": ["list"],
                   "required": True, "input": "column", "multiple": False, "default": ""},

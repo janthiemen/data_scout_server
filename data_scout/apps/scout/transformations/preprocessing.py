@@ -5,6 +5,7 @@ from apps.scout.transformations.transformation import Transformation
 
 class Scale(Transformation):
     title = "Scale {field} using a {method} scaler"
+    key = "Scale"
     is_global = True
     fields = {
         "field": {"name": "Fields", "type": "string", "help": "The fields to scale","required": True, "input": "column",
@@ -38,6 +39,7 @@ class Scale(Transformation):
 
 class CategoricalEncoding(Transformation):
     title = "Encoding {field} using a {method} encoder"
+    key = "Encode categorical features"
     is_global = True
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
@@ -74,6 +76,7 @@ class CategoricalEncoding(Transformation):
 
 class DiscretizeBin(Transformation):
     title = "Discretize {field} into {k} bins"
+    key = "Discretize"
     is_global = True
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
@@ -109,6 +112,7 @@ class DiscretizeBin(Transformation):
 
 class Binarize(Transformation):
     title = "Binarize {field} using {threshold} as threshold"
+    key = "Binarize"
     is_global = True
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
@@ -132,6 +136,7 @@ class Binarize(Transformation):
 
 class Normalize(Transformation):
     title = "Normalize {field} using the {norm} norm"
+    key = "Normalize"
     is_global = True
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
@@ -156,6 +161,7 @@ class Normalize(Transformation):
 
 class Polynomial(Transformation):
     is_global = True
+    key = "Polynomial features"
     title = "Generate a polynomial feature based on {fields}"
     fields = {
         "fields": {"name": "Fields", "type": "list<string>", "help": "The fields to add to each other",
@@ -191,6 +197,7 @@ class Polynomial(Transformation):
 
 class Impute(Transformation):
     title = "Impute {field} through {strategy}"
+    key = "Impute missing values"
     is_global = True
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
@@ -249,6 +256,3 @@ class Impute(Transformation):
             raise ValueError(f"The selected strategy ({self.strategy} is not available")
 
         return rows.to_dict(orient="records"), index
-
-
-# TODO: PolynomialFeatures

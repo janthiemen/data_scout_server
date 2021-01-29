@@ -6,6 +6,7 @@ from apps.scout.transformations.transformation import Transformation
 
 class ReplaceText(Transformation):
     title = "Replace exact matches of {old} with {new} in {field} as {output}"
+    key = "Replace text"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -32,6 +33,7 @@ class ReplaceText(Transformation):
 
 class ReplaceRegex(Transformation):
     title = "Replace matches of the regex {pattern} with {new} in {field} as {output}"
+    key = "Replace regex"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -59,6 +61,7 @@ class ReplaceRegex(Transformation):
 
 class ReplaceDelimiters(Transformation):
     title = "Replace all characters between the delimiter: {delimiter} in {field} as {output}"
+    key = "Replace between delimiters"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -85,6 +88,7 @@ class ReplaceDelimiters(Transformation):
 
 class ReplacePositions(Transformation):
     title = "Replace all characters between pos. {start} - {end} with {new} into {output}"
+    key = "Replace between positions"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -114,6 +118,7 @@ class ReplacePositions(Transformation):
 
 class ReplaceMismatched(Transformation):
     title = "Replace mismatched values in {field} with {new}"
+    key = "Replace mismatched"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -133,6 +138,7 @@ class ReplaceMismatched(Transformation):
 
 class ReplaceMissing(Transformation):
     title = "Replace missing values in {field} with {new}"
+    key = "Replace missing"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},

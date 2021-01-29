@@ -6,6 +6,7 @@ from ._utils import compare_basis, compare_convert_value
 
 class CompareValue(Transformation):
     title = "Check if {field} {comparison} {value}"
+    key = "Compare to value"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -33,6 +34,7 @@ class CompareValue(Transformation):
 
 class CompareColumns(Transformation):
     title = "Check if {field_a} {comparison} {field_b}"
+    key = "Compare columns"
     fields = {
         "field_a": {"name": "Field A", "type": "string", "help": "The column on the left side",
                     "required": True, "input": "column", "multiple": False, "default": ""},
@@ -72,6 +74,7 @@ class CompareColumns(Transformation):
 
 class Parity(Transformation):
     title = "Check if {field} is {parity}"
+    key = "Parity (even/odd)"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to check", "required": True, "input": "column",
                   "multiple": False, "default": "", "column_type": ["int", "float"]},
@@ -98,6 +101,7 @@ class Parity(Transformation):
 
 class Mismatched(Transformation):
     title = "Check if {field} is mismatched"
+    key = "Check mismatched"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to check",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -116,6 +120,7 @@ class Mismatched(Transformation):
 
 class Missing(Mismatched):
     title = "Check if {field} is missing"
+    key = "Check missing"
 
     def __call__(self, row, index: int):
         row[self.output] = self.field not in row or row[self.field] is None or \
@@ -126,6 +131,7 @@ class Missing(Mismatched):
 
 class IsNull(Mismatched):
     title = "Check if {field} is null"
+    key = "Check null"
 
     def __call__(self, row, index: int):
         row[self.output] = row[self.field] is None
@@ -134,6 +140,7 @@ class IsNull(Mismatched):
 
 class Negate(Transformation):
     title = "Negate {field}"
+    key = "Negate"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to negate",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -152,6 +159,7 @@ class Negate(Transformation):
 
 class Logical(Transformation):
     title = "Compare {fields} using {comparison}"
+    key = "Logical comparison (and/or/xor)"
     fields = {
         "fields": {"name": "Inputs", "type": "list<string>", "help": "The columns to use as input",
                    "required": True, "input": "column", "multiple": True, "default": ""},
@@ -180,6 +188,7 @@ class Logical(Transformation):
 
 class IfElse(Transformation):
     title = "If else statement using {if}"
+    key = "If/else"
     fields = {
         "field": {"name": "If", "type": "list<string>", "help": "The column that is used in the if statement (boolean)",
                   "column_type": ["bool"], "required": True, "input": "column", "multiple": True, "default": ""},
@@ -242,6 +251,7 @@ class IfElse(Transformation):
 
 class Min(Transformation):
     title = "Get the minimum of {fields}"
+    key = "Columns minimum"
     fields = {
         "fields": {"name": "Inputs", "type": "list<string>", "help": "The columns to use as input",
                    "required": True, "input": "column", "multiple": True, "default": "",
@@ -268,6 +278,7 @@ class Min(Transformation):
 
 class Max(Min):
     title = "Get the maximum of {fields}"
+    key = "Columns maximum"
 
     def __call__(self, row, index: int):
         try:
@@ -280,6 +291,7 @@ class Max(Min):
 
 class Mean(Min):
     title = "Get the mean of {fields}"
+    key = "Columns mean"
 
     def __call__(self, row, index: int):
         try:
@@ -292,6 +304,7 @@ class Mean(Min):
 
 class Mode(Min):
     title = "Get the mode of {fields}"
+    key = "Columns mode"
 
     def __call__(self, row, index: int):
         try:
@@ -304,6 +317,7 @@ class Mode(Min):
 
 class Coalesce(Min):
     title = "Get the first non-null value of {fields}"
+    key = "Columns coalesce"
 
     def __call__(self, row, index: int):
         try:

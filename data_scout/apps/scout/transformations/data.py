@@ -10,6 +10,7 @@ from apps.scout.transformations.transformation import Transformation
 
 class Convert(Transformation):
     title = "Convert {field} to {to}"
+    key = "Convert"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The field to convert", "required": True,
                   "input": "column", "multiple": False, "default": ""},
@@ -55,6 +56,7 @@ class Convert(Transformation):
 
 class ConvertDatetime(Transformation):
     title = "Convert {field} to datetime"
+    key = "Convert to datetime"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The field to convert", "required": True,
                   "input": "column", "multiple": False, "default": ""},
@@ -89,6 +91,7 @@ class ConvertDatetime(Transformation):
 
 class FieldToColumn(Transformation):
     title = "Convert {field} to columns"
+    key = "List/dict to columns"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The field to convert", "required": True,
                   "input": "column", "multiple": False, "default": "", "column_type": ["list", "dict"]},
@@ -97,23 +100,10 @@ class FieldToColumn(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
-        """Initialize the transformation with the given parameters.
-
-        Arguments:
-            arguments {dict} -- The arguments
-        """
         self.field = arguments["field"]
         self.prefix = arguments["prefix"]
 
     def __call__(self, row, index: int):
-        """This class is called on each row.
-
-        Arguments:
-            row {dict} -- The complete row
-
-        Returns:
-            dict -- The row, including the extra output column
-        """
         if self.field not in row:
             return row, index
 
@@ -131,6 +121,7 @@ class FieldToColumn(Transformation):
 
 class DuplicateColumn(Transformation):
     title = "Duplicate {field} as {output}"
+    key = "Duplicate column"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to duplicate", "required": True,
                   "input": "column", "multiple": False, "default": ""},
@@ -151,6 +142,7 @@ class DuplicateColumn(Transformation):
 
 class DropColumn(Transformation):
     title = "Drop {field}"
+    key = "Drop column"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The field to convert", "required": True,
                   "input": "column", "multiple": False, "default": ""},
@@ -166,6 +158,7 @@ class DropColumn(Transformation):
 
 class RenameColumn(Transformation):
     title = "Rename {field} to {new}"
+    key = "Rename column"
     fields = {
         "field": {"name": "Column", "type": "string", "help": "The column to rename", "required": True,
                   "input": "column", "multiple": False, "default": ""},
@@ -185,6 +178,7 @@ class RenameColumn(Transformation):
 class Transpose(Transformation):
     is_global = True
     title = "Transpose index and columns"
+    key = "Transpose"
     fields = {
         "fields": StatsBase.fields["fields"],
     }
@@ -202,6 +196,7 @@ class Transpose(Transformation):
 class Shift(Transformation):
     is_global = True
     title = "Shift the values in {fields} by {periods}"
+    key = "Shift column"
     fields = {
         "fields": StatsBase.fields["fields"],
         "periods": {"name": "Periods", "type": "number", "input": "number", "required": True,
@@ -223,6 +218,7 @@ class Shift(Transformation):
 class Diff(Transformation):
     is_global = True
     title = "Calculate the difference between values in {fields} (vertically)"
+    key = "Differences in column (diff)"
     fields = {
         "fields": StatsBase.fields["fields"],
         "periods": Shift.fields["periods"],
@@ -240,6 +236,7 @@ class Diff(Transformation):
 class PctChange(Transformation):
     is_global = True
     title = "Calculate the percentual difference between values in {fields} (vertically)"
+    key = "Percentual change in column (pctchange)"
     fields = {
         "fields": StatsBase.fields["fields"],
         "periods": Shift.fields["periods"],
@@ -268,14 +265,6 @@ class CleanJSON:
     internal usage.
     """
     def __call__(self, row, index: int):
-        """This class is called on each row.
-
-        Arguments:
-            row {dict} -- The complete row
-
-        Returns:
-            dict -- The row, including the extra output column
-        """
         for key, value in row.items():
             if value is math.nan or (isinstance(value, float) and np.isnan(value)):
                 row[key] = "NaN"

@@ -25,6 +25,7 @@ class Custom(Transformation):
     """
 
     title = "Custom equation"
+    key = "Math equation"
     fields = {
         "equation": {"name": "Equation", "type": "string", "help": "The equation to evaluate. Column values should be entered as {COLUMN NAME}",
                      "required": True, "input": "text", "default": ""},

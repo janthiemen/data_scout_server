@@ -34,8 +34,8 @@ export const TransformationPanel: React.SFC<{newTransformation: (transformationT
             {/* <MergeTransformationButton newTransformation={props.newTransformation} /> */}
             <DataTransformationButton newTransformation={props.newTransformation} />
             <StatsTransformationButton newTransformation={props.newTransformation} />
+            <QuickAccess newTransformation={props.newTransformation} />
         </ButtonGroup>
-        <QuickAccess />
         {/* <input className="bp3-input" type="text" placeholder="Search help" /> */}
  
         {/* TODO: Link to a help page on the drawer */}

@@ -6,6 +6,7 @@ from apps.scout.transformations.transformation import Transformation
 
 class Substring(Transformation):
     title = "Extract a substring from the left of length {right} from {field} into {output}"
+    key = "Substring"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -30,6 +31,7 @@ class Substring(Transformation):
 
 class SubstringLeft(Substring):
     title = "Extract a substring from the left of length {right} from {field} into {output}"
+    key = "Substring left"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -46,6 +48,7 @@ class SubstringLeft(Substring):
 
 class SubstringRight(Substring):
     title = "Extract a substring from the right of length {left} from {field} into {output}"
+    key = "Substring right"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -62,6 +65,7 @@ class SubstringRight(Substring):
 
 class FindLeft(Transformation):
     title = "Find the index of the first occurrence of {lookup} in {field} into {output} (left to right)"
+    key = "String find left"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -83,6 +87,7 @@ class FindLeft(Transformation):
 
 class FindRight(FindLeft):
     title = "Find the index of the first occurrence of {lookup} in {field} into {output} (right to left)"
+    key = "String find right"
 
     def __call__(self, row, index: int):
         row[self.output] = str(row[self.field]).rfind(row[self.lookup])
@@ -91,6 +96,7 @@ class FindRight(FindLeft):
 
 class Length(Transformation):
     title = "Calculate the length of {field} into {output}"
+    key = "String length"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -109,6 +115,7 @@ class Length(Transformation):
 
 class Merge(Transformation):
     title = "Merge string columns together, with the separator {separator}"
+    key = "String merge"
     fields = {
         "fields": {"name": "Inputs", "type": "list<string>", "help": "The columns to use as input",
                    "required": True, "input": "column", "multiple": True, "default": ""},
@@ -130,6 +137,7 @@ class Merge(Transformation):
 
 class Repeat(Transformation):
     title = "Repeat the value in {field} {times} times into {output}"
+    key = "String repeat"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -151,6 +159,7 @@ class Repeat(Transformation):
 
 class TestContains(Transformation):
     title = "Test if {field} contains {search} into {output}"
+    key = "String contains"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -169,8 +178,10 @@ class TestContains(Transformation):
         row[self.output] = self.field in row and self.search in row[self.field]
         return row, index
 
+
 class TestStartsWith(Transformation):
     title = "Test if {field} starts with {search} into {output}"
+    key = "String starts with"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -192,6 +203,7 @@ class TestStartsWith(Transformation):
 
 class TestEndsWith(Transformation):
     title = "Test if {field} ends with {search} into {output}"
+    key = "String ends with"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -213,6 +225,7 @@ class TestEndsWith(Transformation):
 
 class TestRegex(Transformation):
     title = "Test if {field} matches {regex} into {output}"
+    key = "String regex"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -233,8 +246,10 @@ class TestRegex(Transformation):
 
 # TODO: Can we replace all of these by the one comparison transform?
 
+
 class TestExact(Transformation):
     title = "Test if {field} == {search} into {output}"
+    key = "String equals"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -256,6 +271,7 @@ class TestExact(Transformation):
 
 class TestGreater(Transformation):
     title = "Test if {field} > {search} into {output}"
+    key = "String greater than"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -277,6 +293,7 @@ class TestGreater(Transformation):
 
 class TestGreaterEqual(Transformation):
     title = "Test if {field} >= {search} into {output}"
+    key = "String greater or equal"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -298,6 +315,7 @@ class TestGreaterEqual(Transformation):
 
 class TestLess(Transformation):
     title = "Test if {field} < {search} into {output}"
+    key = "String less than"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -319,6 +337,7 @@ class TestLess(Transformation):
 
 class TestLessEqual(Transformation):
     title = "Test if {field} <= {search} into {output}"
+    key = "String less or equal"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -340,6 +359,7 @@ class TestLessEqual(Transformation):
 
 class Base64Encode(Transformation):
     title = "Base64 encode {field} into {output}"
+    key = "Base64 encode"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -358,6 +378,7 @@ class Base64Encode(Transformation):
 
 class Base64Decode(Transformation):
     title = "Base64 decode {field} into {output}"
+    key = "Base64 decode"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},

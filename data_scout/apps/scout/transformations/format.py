@@ -24,6 +24,7 @@ class Format(Transformation):
 
 class UpperCase(Format):
     title = "Convert {fields} to uppercase"
+    key = "To uppercase"
 
     def __call__(self, row, index: int):
         for field in [f for f in self.fields if f in row]:
@@ -34,6 +35,7 @@ class UpperCase(Format):
 
 class LowerCase(Format):
     title = "Convert {fields} to lowercase"
+    key = "To lowercase"
 
     def __call__(self, row, index: int):
         for field in [f for f in self.fields if f in row]:
@@ -44,6 +46,7 @@ class LowerCase(Format):
 
 class ProperCase(Format):
     title = "Convert {fields} to proper case"
+    key = "To propercase"
 
     def __call__(self, row, index: int):
         for field in [f for f in self.fields if f in row]:
@@ -54,6 +57,7 @@ class ProperCase(Format):
 
 class Trim(Transformation):
     character = None
+    key = "Trim"
     fields = {
         "fields": {"name": "Columns", "type": "list<string>", "help": "The fields to trim",
                    "required": True, "input": "column", "multiple": True, "default": ""},
@@ -82,16 +86,19 @@ class Trim(Transformation):
 
 class TrimWhitespace (Trim):
     title = "Trim {fields} of whitespace"
+    key = "Trim whitespace"
     character = None
 
 
 class TrimQuotes(Trim):
     title = "Trim {fields} of quotes"
+    key = "Trim quotes"
     character = "'\""
 
 
 class RemoveWhitespace(Format):
     title = "Remove whitespace from {fields}"
+    key = "Remove whitespace"
 
     def __call__(self, row, index: int):
         pattern = re.compile(r'\s+')
@@ -103,6 +110,7 @@ class RemoveWhitespace(Format):
 
 class RemoveQuotes(Format):
     title = "Remove quotes from {fields}"
+    key = "Remove quotes"
 
     def __call__(self, row, index: int):
         for field in [f for f in self.fields if f in row]:
@@ -113,6 +121,7 @@ class RemoveQuotes(Format):
 
 class RemoveSymbols(Format):
     title = "Remove symbols from {fields}"
+    key = "Remove symbols"
 
     def __call__(self, row, index: int):
         pattern = re.compile(r'[\W_]+')
@@ -124,6 +133,7 @@ class RemoveSymbols(Format):
 
 class RemoveAccents(Format):
     title = "Remove accents from {fields}"
+    key = "Remove accents"
 
     def __call__(self, row, index: int):
         for field in [f for f in self.fields if f in row]:
@@ -150,6 +160,7 @@ class AddFix(Transformation):
 
 class AddPrefix(AddFix):
     title = "Add the prefix {text} to {fields}"
+    key = "Add prefix"
 
     def __call__(self, row, index: int):
         for field in [f for f in self.fields if f in row]:
@@ -160,6 +171,7 @@ class AddPrefix(AddFix):
 
 class AddSuffix(AddFix):
     title = "Add the suffix {text} to {fields}"
+    key = "Add suffix"
 
     def __call__(self, row, index: int):
         for field in [f for f in self.fields if f in row]:
@@ -170,6 +182,7 @@ class AddSuffix(AddFix):
 
 class Pad(Transformation):
     title = "Pad {fields} {side} to {length} characters with {character}"
+    key = "Pad"
     fields = {
         "fields": {"name": "Columns", "type": "list<string>", "help": "The fields to trim",
                    "required": True, "input": "column", "multiple": True, "default": ""},
@@ -201,6 +214,7 @@ class Pad(Transformation):
 
 class Number(Transformation):
     title = "Format {fields} as numbers"
+    key = "Format as number"
     fields = {
         "field": {"name": "Field", "type": "string", "help": "The column to format",
                   "required": True, "input": "column", "multiple": False, "default": ""},

@@ -9,6 +9,7 @@ from apps.scout.transformations.transformation import Transformation
 class FilterMissing(Transformation):
     filter = True
     title = "Filter rows with missing values in {field}"
+    key = "Filter missing values"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -28,6 +29,7 @@ class FilterMissing(Transformation):
 class FilterMismatched(Transformation):
     filter = True
     title = "Filter rows with mismatched values in {field}"
+    key = "Filter mismatched values"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -54,6 +56,7 @@ def convert_search_value(search, example):
 class FilterIs(Transformation):
     filter = True
     title = "Filter rows where {field} matched {search}"
+    key = "Filter were equals"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -75,6 +78,7 @@ class FilterIs(Transformation):
 class FilterIsNot(Transformation):
     filter = True
     title = "Filter rows where {field} does not equal {search}"
+    key = "Filter where not equals"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -115,7 +119,8 @@ class FilterList(Transformation):
 
 
 class FilterIsOneOf(FilterList):
-    title = "Filter rows where {field} is one of"
+    title = "Filter rows where {field} is one of {self.search}"
+    key = "Filter where in list"
 
     def __call__(self, row, index: int):
         if self.field in row and row[self.field] in self.search:
@@ -125,7 +130,8 @@ class FilterIsOneOf(FilterList):
 
 
 class FilterIsnotOneOf(FilterList):
-    title = "Filter rows where {field} is not one of"
+    title = "Filter rows where {field} is not one of {self.search}"
+    key = "Filter where not in list"
 
     def __call__(self, row, index: int):
         if self.field not in row or row[self.field] not in self.search:
@@ -137,6 +143,7 @@ class FilterIsnotOneOf(FilterList):
 class FilterLessThan(Transformation):
     filter = True
     title = "Filter rows where {field} is lower than {threshold}"
+    key = "Filter lower than"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -158,6 +165,7 @@ class FilterLessThan(Transformation):
 class FilterGreaterThan(Transformation):
     filter = True
     title = "Filter rows where {field} is higher than {threshold}"
+    key = "Filter greater than"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -179,6 +187,7 @@ class FilterGreaterThan(Transformation):
 class FilterBetween(Transformation):
     filter = True
     title = "Filter rows where {field} is between {min} and {max}"
+    key = "Filter between"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -203,6 +212,7 @@ class FilterBetween(Transformation):
 class FilterNotBetween(Transformation):
     filter = True
     title = "Filter rows where {field} is not between {min} and {max}"
+    key = "Filter not between"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -227,6 +237,7 @@ class FilterNotBetween(Transformation):
 class FilterContains(Transformation):
     filter = True
     title = "Filter rows where {field} contains {search}"
+    key = "Filter contains"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -248,6 +259,7 @@ class FilterContains(Transformation):
 class FilterStartsWith(Transformation):
     filter = True
     title = "Filter rows where {field} starts with {search}"
+    key = "Filter starts with"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -269,6 +281,7 @@ class FilterStartsWith(Transformation):
 class FilterEndsWith(Transformation):
     filter = True
     title = "Filter rows where {field} ends with {search}"
+    key = "Filter ends with"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -290,6 +303,7 @@ class FilterEndsWith(Transformation):
 class FilterRegex(Transformation):
     filter = True
     title = "Filter rows where {field} matches {search}"
+    key = "Filter regex"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -315,6 +329,7 @@ class IndexFilterException(Exception):
 class FilterRowsInterval(Transformation):
     filter = True
     title = "Filter the rows at a regular interval of {interval}"
+    key = "Filter at interval"
     allowed_sampling_techniques = ["top"]
     fields = {
         "interval": {"name": "Interval", "type": "number", "help": "The interval at which to sample",
@@ -336,6 +351,7 @@ class FilterRowsInterval(Transformation):
 class FilterRowsRange(Transformation):
     filter = True
     title = "Filter the rows in the range {min} - {max}"
+    key = "Filter in range"
     allowed_sampling_techniques = ["top"]
     fields = {
         "min": {"name": "Min", "type": "number", "help": "The bottom of the range",
@@ -360,6 +376,7 @@ class FilterRowsRange(Transformation):
 class FilterRowsTop(Transformation):
     filter = True
     title = "Filter the top {rows} rows"
+    key = "Filter top rows"
     allowed_sampling_techniques = ["top"]
     fields = {
         "rows": {"name": "Rows", "type": "number", "help": "The number of rows to filter out from the top",
@@ -381,6 +398,7 @@ class FilterRowsTop(Transformation):
 class FilterRowsDuplicates(Transformation):
     is_global = True
     title = "Filter the duplicates from the dataset"
+    key = "Filter duplicate rows"
     fields = {
         "fields": {"name": "Fields", "type": "list<string>", "help": "The fields to check",
                    "required": True, "input": "column", "multiple": True, "default": "",

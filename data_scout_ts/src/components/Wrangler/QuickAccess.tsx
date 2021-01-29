@@ -18,6 +18,7 @@ import * as React from "react";
 
 import {
     Button,
+    ButtonGroup,
     H5,
     Hotkey,
     Hotkeys,
@@ -25,45 +26,39 @@ import {
     KeyCombo,
     MenuItem,
     Position,
-    Switch,
     Toaster,
 } from "@blueprintjs/core";
-import { Omnibar } from "@blueprintjs/select";
+import { ItemPredicate, ItemRenderer, Omnibar } from "@blueprintjs/select";
 
-import { areFilmsEqual, createFilm, filmSelectProps, IFilm, renderCreateFilmOption } from "./films";
+import { TransformationMetaQA, TRANSFORMATIONS } from './Transformation'
 
-const FilmOmnibar = Omnibar.ofType<IFilm>();
+const QAOmnibar = Omnibar.ofType<TransformationMetaQA>();
 
 interface QuickAccessProps {
+    newTransformation: (transformationType: string, kwargs: { [key: string]: any }) => void;
 }
 
-export interface QuickAccessState {
-    allowCreate: boolean;
+interface QuickAccessState {
     isOpen: boolean;
-    resetOnSelect: boolean;
-}
-
-function handleBooleanChange(handler: (checked: boolean) => void) {
-    return (event: React.FormEvent<HTMLElement>) => handler((event.target as HTMLInputElement).checked);
 }
 
 @HotkeysTarget
 export class QuickAccess extends React.PureComponent<QuickAccessProps, QuickAccessState> {
+    private newTransformation: (transformationType: string, kwargs: { [key: string]: any }) => void;
     public state: QuickAccessState = {
-        allowCreate: false,
         isOpen: false,
-        resetOnSelect: true,
     };
-
-    private handleAllowCreateChange = handleBooleanChange(allowCreate => this.setState({ allowCreate }));
-
-    private handleResetChange = handleBooleanChange(resetOnSelect => this.setState({ resetOnSelect }));
 
     private toaster: Toaster;
 
     private refHandlers = {
         toaster: (ref: Toaster) => (this.toaster = ref),
     };
+
+    constructor(props: QuickAccessProps) {
+        super(props);
+        this.newTransformation = props.newTransformation;
+    }
 
     public renderHotkeys() {
         return (
@@ -80,46 +75,94 @@ export class QuickAccess extends React.PureComponent<QuickAccessProps, QuickAcce
         );
     }
 
-    public render() {
-        const { allowCreate } = this.state;
+    protected escapeRegExpChars(text: string) {
+        return text.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+    }
 
-        const maybeCreateNewItemFromQuery = allowCreate ? createFilm : undefined;
-        const maybeCreateNewItemRenderer = allowCreate ? renderCreateFilmOption : null;
+    protected highlightText(text: string, query: string) {
+        let lastIndex = 0;
+        const words = query
+            .split(/\s+/)
+            .filter(word => word.length > 0)
+            .map(this.escapeRegExpChars);
+        if (words.length === 0) {
+            return [text];
+        }
+        const regexp = new RegExp(words.join("|"), "gi");
+        const tokens: React.ReactNode[] = [];
+        while (true) {
+            const match = regexp.exec(text);
+            if (!match) {
+                break;
+            }
+            const length = match[0].length;
+            const before = text.slice(lastIndex, regexp.lastIndex - length);
+            if (before.length > 0) {
+                tokens.push(before);
+            }
+            lastIndex = regexp.lastIndex;
+            tokens.push(<strong key={lastIndex}>{match[0]}</strong>);
+        }
+        const rest = text.slice(lastIndex);
+        if (rest.length > 0) {
+            tokens.push(rest);
+        }
+        return tokens;
+    }
 
+    protected filterTransformation: ItemPredicate<TransformationMetaQA> = (query, transformation, _index, exactMatch) => {
+        const normalizedTitle = transformation.key.toLowerCase();
+        const normalizedQuery = query.toLowerCase();
+    
+        if (exactMatch) {
+            return normalizedTitle === normalizedQuery;
+        } else {
+            return `${normalizedTitle}`.indexOf(normalizedQuery) >= 0;
+        }
+    };
+
+    protected areTransformationsEqual(transformationA: TransformationMetaQA, transformationB: TransformationMetaQA) {
+        // Compare only the titles (ignoring case) just for simplicity.
+        return transformationA.key.toLowerCase() === transformationB.key.toLowerCase();
+    }
+
+    protected renderTransformation: ItemRenderer<TransformationMetaQA> = (transformation, { handleClick, modifiers, query }) => {
+        if (!modifiers.matchesPredicate) {
+            return null;
+        }
+        const text = `${transformation.key}`;
         return (
-            <div>
-                <span>
-                    <Button text="Click to show Omnibar" onClick={this.handleClick} />
-                    {" or press "}
-                    <KeyCombo combo="shift + o" />
-                </span>
+            <MenuItem
+                active={modifiers.active}
+                disabled={modifiers.disabled}
+                // label={transformation.key}
+                key={transformation.id}
+                onClick={handleClick}
+                text={this.highlightText(text, query)}
+            />
+        );
+    };
 
-                <FilmOmnibar
-                    {...filmSelectProps}
+    public render() {
+        return (
+            <span>
+                <ButtonGroup minimal={true}>
+                    <Button icon="search" text="Quick Access" onClick={this.handleClick} />
+                </ButtonGroup>
+
+                <QAOmnibar
                     {...this.state}
-                    createNewItemFromQuery={maybeCreateNewItemFromQuery}
-                    createNewItemRenderer={maybeCreateNewItemRenderer}
-                    itemsEqual={areFilmsEqual}
+                    inputProps={{placeholder: "Search (use Shift + O to open)"}}
+                    itemsEqual={this.areTransformationsEqual}
+                    itemPredicate={this.filterTransformation}
+                    itemRenderer={this.renderTransformation}
                     noResults={<MenuItem disabled={true} text="No results." />}
                     onItemSelect={this.handleItemSelect}
                     onClose={this.handleClose}
+                    items={Object.keys(TRANSFORMATIONS).map((key, index) => ({ ...TRANSFORMATIONS[key], id: key }))}
                 />
                 <Toaster position={Position.TOP} ref={this.refHandlers.toaster} />
-            </div>
-        );
-    }
-
-    protected renderOptions() {
-        return (
-            <>
-                <H5>Props</H5>
-                <Switch label="Reset on select" checked={this.state.resetOnSelect} onChange={this.handleResetChange} />
-                <Switch
-                    label="Allow creating new films"
-                    checked={this.state.allowCreate}
-                    onChange={this.handleAllowCreateChange}
-                />
-            </>
+            </span>
         );
     }
 
@@ -127,16 +170,9 @@ export class QuickAccess extends React.PureComponent<QuickAccessProps, QuickAcce
         this.setState({ isOpen: true });
     };
 
-    private handleItemSelect = (film: IFilm) => {
+    private handleItemSelect = (transformation: TransformationMetaQA) => {
         this.setState({ isOpen: false });
-
-        this.toaster.show({
-            message: (
-                <span>
-                    You selected <strong>{film.title}</strong>.
-                </span>
-            ),
-        });
+        this.newTransformation(transformation.id, {})
     };
 
     private handleClose = () => this.setState({ isOpen: false });

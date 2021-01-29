@@ -5,6 +5,7 @@ from apps.scout.transformations.transformation import Transformation
 
 class CountExact(Transformation):
     title = "Count exact matches of {search} in {field} as {output}"
+    key = "Count string matches"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -30,6 +31,7 @@ class CountExact(Transformation):
 
 class CountRegex(Transformation):
     title = "Count exact matches of the regex {pattern} in {field} as {output}"
+    key = "Count regex matches"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},
@@ -56,6 +58,7 @@ class CountRegex(Transformation):
 
 class CountDelimiters(Transformation):
     title = "Count the number of strings between delimiter {delimiter} in {field} as {output}"
+    key = "Count between delimiters"
     fields = {
         "field": {"name": "Input", "type": "string", "help": "The column to use as input",
                   "required": True, "input": "column", "multiple": False, "default": ""},

@@ -5,6 +5,7 @@ import pandas as pd
 class SortBy(Transformation):
     is_global = True
     title = "Sort the data"
+    key = "Sort"
     fields = {
         "sorting": {"name": "Sort by:", "type": "list<agg>", "help": "The columns to sort by",
                     "required": True, "input": "multiple", "multiple": True, "default": [],
