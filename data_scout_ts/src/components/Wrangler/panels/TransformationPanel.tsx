@@ -12,6 +12,7 @@ import { DataTransformationButton } from "../transformations/DataTransformation"
 import { ComparisonTransformationButton } from "../transformations/ComparisonTransformation";
 import { FilterTransformationButton } from "../transformations/FilterTransformation";
 import { StatsTransformationButton } from "../transformations/StatsTransformation";
+import { QuickAccess } from "../QuickAccess";
 
 export const TransformationPanel: React.SFC<{newTransformation: (transformationType: string, kwargs: { [key: string]: any }) => void}> = (props) => (
     <div>
@@ -34,8 +35,8 @@ export const TransformationPanel: React.SFC<{newTransformation: (transformationT
             <DataTransformationButton newTransformation={props.newTransformation} />
             <StatsTransformationButton newTransformation={props.newTransformation} />
         </ButtonGroup>
-
-        <input className="bp3-input" type="text" placeholder="Search help" />
+        <QuickAccess />
+        {/* <input className="bp3-input" type="text" placeholder="Search help" /> */}
  
         {/* TODO: Link to a help page on the drawer */}
     </div>

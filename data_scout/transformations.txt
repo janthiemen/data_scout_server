@@ -1,19 +1,6 @@
 Aggregate Functions
    KTHLARGEST Function
    KTHLARGESTUNIQUE Function
-   LIST Function
-   UNIQUE Function
-   STDEVSAMP Function
-   VARSAMP Function
-   CORREL Function
-   COVAR Function
-   COVARSAMP Function
-   PERCENTILE Function
-   QUARTILE Function
-   APPROXIMATEMEDIAN Function
-   APPROXIMATEPERCENTILE Function
-   APPROXIMATEQUARTILE Function
-   KTHLARGESTDATE Function
 
 Nested Functions
     ARRAYCROSS Function
