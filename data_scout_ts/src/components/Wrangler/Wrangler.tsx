@@ -1,10 +1,11 @@
 import * as React from "react";
+import autobind from 'class-autobind';
 
 import { DataColumn } from "./DataColumn"
 import { PageProps } from "../../helpers/props";
 import { Row, Col, Grid } from "react-flexbox-grid";
 import { DataTable } from "./DataTable";
-import { Tabs, Tab, H3, Intent, IToastProps, HTMLTable, Divider } from "@blueprintjs/core";
+import { H3, Intent, IToastProps, HTMLTable, Divider } from "@blueprintjs/core";
 import { WranglerService } from "../../helpers/userService";
 import { ReactSortable, Sortable, SortableEvent } from "react-sortablejs";
 
@@ -48,6 +49,7 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
 
     constructor(props: any) {
         super(props);
+        autobind(this);
         this.wranglerService = new WranglerService(props.addToast, props.setLoggedIn);
 
         this.state = {
@@ -63,18 +65,6 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
         };
 
         this.addToast = props.addToast;
-        this.getData = this.getData.bind(this);
-        this.receiveData = this.receiveData.bind(this);
-        this.receiveRecipe = this.receiveRecipe.bind(this);
-        this.handleOpenTransformation = this.handleOpenTransformation.bind(this);
-        this.handleCloseTransformation = this.handleCloseTransformation.bind(this);
-        this.createTransformation = this.createTransformation.bind(this);
-        this.deleteTransformation = this.deleteTransformation.bind(this);
-        this.finishUpdate = this.finishUpdate.bind(this);
-        this.finishUpdateOrdering = this.finishUpdateOrdering.bind(this);
-        this.endUpdateOrdering = this.endUpdateOrdering.bind(this);
-        this.newTransformation = this.newTransformation.bind(this);
-        this.refresh = this.refresh.bind(this);
         this.refresh();
     }
 

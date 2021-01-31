@@ -15,15 +15,14 @@
  */
 
 import * as React from "react";
+import autobind from 'class-autobind';
 
 import {
     Button,
     ButtonGroup,
-    H5,
     Hotkey,
     Hotkeys,
     HotkeysTarget,
-    KeyCombo,
     MenuItem,
     Position,
     Toaster,
@@ -57,6 +56,7 @@ export class QuickAccess extends React.PureComponent<QuickAccessProps, QuickAcce
 
     constructor(props: QuickAccessProps) {
         super(props);
+        autobind(this);
         this.newTransformation = props.newTransformation;
     }
 

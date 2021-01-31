@@ -1,4 +1,5 @@
 import * as React from "react";
+import autobind from 'class-autobind';
 
 import { Intent, MenuItem } from "@blueprintjs/core";
 import { ItemPredicate, ItemRenderer, MultiSelect } from "@blueprintjs/select";
@@ -27,6 +28,7 @@ export class ColumnsSelect extends React.Component<ColumnSelectProps, ColumnSele
 
     constructor(props: ColumnSelectProps) {
         super(props);
+        autobind(this);
         // TODO: Add the option to set the ID
         this.onValueChange = props.onValueChange;
         let columns = Object.keys(props.columns).map(column => { return { name: column } });
@@ -40,11 +42,6 @@ export class ColumnsSelect extends React.Component<ColumnSelectProps, ColumnSele
             field: props.field,
             columns: availableColumns
         }
-        this.setColumn = this.setColumn.bind(this);
-        this.addColumn = this.addColumn.bind(this);
-        this.removeColumn = this.removeColumn.bind(this);
-        this.onRemoveColumn = this.onRemoveColumn.bind(this);
-        this.isColumnSelected = this.isColumnSelected.bind(this);
     }
 
     private setColumn(column: ColumnType) {

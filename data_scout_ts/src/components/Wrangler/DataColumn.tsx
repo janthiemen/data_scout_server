@@ -1,4 +1,5 @@
 import * as React from "react";
+import autobind from 'class-autobind';
 
 import { Menu, MenuItem, MenuDivider } from "@blueprintjs/core";
 
@@ -14,6 +15,7 @@ export class DataColumn extends AbstractSortableColumn {
 				createTransformation: (transformation: string, kwargs: { [key: string]: any }) => void, 
 				newTransformation: (transformation: string, kwargs: { [key: string]: any }) => void) {
 		super(name, index);
+        autobind(this);
 		this.type = type;
 		this.createTransformation = createTransformation;
 		this.newTransformation = newTransformation;

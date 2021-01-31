@@ -1,4 +1,5 @@
 import * as React from "react";
+import autobind from 'class-autobind';
 
 import {
     MenuItem, IProps, IToastProps, Intent, 
@@ -98,11 +99,7 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
      */
     constructor(props: RecipeProps) {
         super(props);
-        this.setDataSource = this.setDataSource.bind(this);
-        this.updateName = this.updateName.bind(this);
-        this.updateSamplingTechnique = this.updateSamplingTechnique.bind(this);
-        this.submitRecipe = this.submitRecipe.bind(this);
-        this.finishSubmit = this.finishSubmit.bind(this);
+        autobind(this);
         this.recipeService = props.recipeService;
         this.updateRecipes = props.updateRecipes;
         this.addToast = props.addToast;

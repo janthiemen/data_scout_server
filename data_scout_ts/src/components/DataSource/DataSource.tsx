@@ -1,4 +1,5 @@
 import * as React from "react";
+import autobind from 'class-autobind';
 
 import {
     MenuItem, IProps, IToastProps, Intent, 
@@ -98,12 +99,7 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
      */
     constructor(props: DataSourceProps) {
         super(props);
-        this.getFields = this.getFields.bind(this);
-        this.setType = this.setType.bind(this);
-        this.updateFieldValue = this.updateFieldValue.bind(this);
-        this.updateName = this.updateName.bind(this);
-        this.submitDataSource = this.submitDataSource.bind(this);
-        this.finishSubmit = this.finishSubmit.bind(this);
+        autobind(this);
         this.dataSourceService = props.dataSourceService;
         this.updateDataSources = props.updateDataSources;
         this.addToast = props.addToast;

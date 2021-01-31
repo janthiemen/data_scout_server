@@ -1,4 +1,5 @@
 import * as React from "react";
+import autobind from 'class-autobind';
 import { Transformation, TRANSFORMATIONS, transformationMakeTitle } from "./Transformation"
 import { HTMLSelect, FormGroup, Button, Dialog, Classes, Intent, InputGroup, NumericInput, TextArea, Card, Elevation } from "@blueprintjs/core";
 import { WranglerService } from "../../helpers/userService";
@@ -43,6 +44,7 @@ class TransformationDialogFieldSet extends React.Component<TransformationDialogF
 
     constructor(props: TransformationDialogFieldSetProps) {
         super(props);
+        autobind(this);
         this.state = {
             fields: props.fields,
             fieldValues: props.fieldValues,
@@ -50,8 +52,6 @@ class TransformationDialogFieldSet extends React.Component<TransformationDialogF
         };
         this.fieldName = props.fieldName;
         this.onFieldChange = props.onFieldChange;
-        this.onValueChange = this.onValueChange.bind(this);
-        this.onInputChange = this.onInputChange.bind(this);
     }
 
     /**

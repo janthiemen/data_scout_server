@@ -1,5 +1,6 @@
 import * as React from "react";
 import { NumericInput } from "@blueprintjs/core";
+import autobind from 'class-autobind';
 
 
 interface NumberInputProps {
@@ -18,12 +19,12 @@ export class NumberInput extends React.PureComponent<NumberInputProps, NumberInp
 
     constructor(props: NumberInputProps) {
         super(props);
+        autobind(this);
         this.onValueChange = props.onValueChange;
         this.state = {
             field: props.field,
             value: props.value,
         };
-        this.onInputChange = this.onInputChange.bind(this);
     }
 
     /**

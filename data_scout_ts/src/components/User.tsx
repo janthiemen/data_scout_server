@@ -1,4 +1,5 @@
 import * as React from "react";
+import autobind from 'class-autobind';
 
 import { FormGroup, InputGroup, ButtonGroup, Button, Intent, IToastProps } from "@blueprintjs/core";
 import { Grid, Row, Col } from "react-flexbox-grid";
@@ -14,9 +15,9 @@ export class LoginComponent extends React.PureComponent<PageProps> {
 
 	constructor(props: PageProps) {
 		super(props);
+        autobind(this);
 		this.apiCaller = new APICaller(props.addToast, props.setLoggedIn);
 		this.addToast = props.addToast;
-		this.doLogin = this.doLogin.bind(this);
 	}
 
 	protected doLogin(email: string, password: string) {

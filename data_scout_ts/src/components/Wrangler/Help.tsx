@@ -1,4 +1,5 @@
 import * as React from "react";
+import autobind from 'class-autobind';
 
 import { Drawer, Position, IProps, Button } from "@blueprintjs/core";
 
@@ -25,6 +26,7 @@ export class Help extends React.PureComponent<HelpProps, HelpState> {
 
     constructor(props: HelpProps) {
         super(props);
+        autobind(this);
         if (props.page === "sampling") {
             this.state = {
                 autoFocus: true,

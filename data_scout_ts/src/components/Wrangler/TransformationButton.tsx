@@ -1,4 +1,5 @@
 import * as React from "react";
+import autobind from 'class-autobind';
 import { Button, ButtonGroup, Classes, Intent, Alert, Icon } from "@blueprintjs/core";
 
 import { Transformation, transformationMakeTitle } from "./Transformation"
@@ -19,8 +20,10 @@ interface TransformationButtonState {
 export class TransformationButton extends React.PureComponent<TransformationButtonProps, TransformationButtonState> {
     private handleOpen: (transformation: Transformation) => void;
     private deleteTransformation: (transformation: Transformation) => void;
+    
     constructor(props: TransformationButtonProps) {
         super(props);
+        autobind(this);
         this.handleOpen = props.handleOpen;
         this.deleteTransformation = props.deleteTransformation;
         this.state = {
@@ -29,9 +32,6 @@ export class TransformationButton extends React.PureComponent<TransformationButt
             isOpenDelete: false,
         }
         this.openDialog = this.openDialog.bind(this);
-        this.handleDeleteAsk = this.handleDeleteAsk.bind(this);
-        this.handleDeleteCancel = this.handleDeleteCancel.bind(this);
-        this.handleDeleteConfirm = this.handleDeleteConfirm.bind(this);
     }
 
     /**

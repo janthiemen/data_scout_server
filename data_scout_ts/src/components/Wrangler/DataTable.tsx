@@ -1,4 +1,5 @@
 import * as React from "react";
+import autobind from 'class-autobind';
 
 import { Menu } from "@blueprintjs/core";
 
@@ -31,6 +32,7 @@ export class DataTable extends React.PureComponent<DataTableProps, DataTableStat
 
 	constructor(props: DataTableProps) {
 		super(props);
+        autobind(this);
 		this.state = {
             data: props.data,
             columns: props.columns,
