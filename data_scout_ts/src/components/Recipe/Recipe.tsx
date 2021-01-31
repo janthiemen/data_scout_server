@@ -2,7 +2,7 @@ import * as React from "react";
 
 import {
     MenuItem, IProps, IToastProps, Intent, 
-    FormGroup, InputGroup, NumericInput, Switch, Button, HTMLSelect
+    FormGroup, InputGroup, Button, HTMLSelect
 } from "@blueprintjs/core";
 
 import { Select, ItemRenderer, ItemPredicate } from "@blueprintjs/select";
