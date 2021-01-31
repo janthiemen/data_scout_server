@@ -167,6 +167,22 @@ export class DataSourceService extends APICaller {
     delete(id: number | string, callback: (body: {}) => void) {
         this.call(`/scout/api/datasource/${id}/`, "DELETE", {}, callback);
     }
+
+    getFolders(callback: (body: {}) => void) {
+        this.call("/scout/api/datasourcefolder/?orphans_only=1", "GET", {}, callback);
+    }
+
+    saveFolder(data: { [key: string]: any }, callback: (body: {}) => void) {
+        if (data["id"] > 0) {
+            this.call(`/scout/api/datasourcefolder/${data["id"]}/`, "PUT", data, callback);
+        } else {
+            this.call("/scout/api/datasourcefolder/", "POST", data, callback);
+        }
+    }
+
+    deleteFolder(id: number | string, callback: (body: {}) => void) {
+        this.call(`/scout/api/datasourcefolder/${id}/`, "DELETE", {}, callback);
+    }
 }
 
 
@@ -190,6 +206,22 @@ export class RecipeService extends APICaller {
 
     delete(id: number | string, callback: (body: {}) => void) {
         this.call(`/scout/api/recipe/${id}/`, "DELETE", {}, callback);
+    }
+
+    getFolders(callback: (body: {}) => void) {
+        this.call("/scout/api/recipefolder/?orphans_only=1", "GET", {}, callback);
+    }
+
+    saveFolder(data: { [key: string]: any }, callback: (body: {}) => void) {
+        if (data["id"] > 0) {
+            this.call(`/scout/api/recipefolder/${data["id"]}/`, "PUT", data, callback);
+        } else {
+            this.call("/scout/api/recipefolder/", "POST", data, callback);
+        }
+    }
+
+    deleteFolder(id: number | string, callback: (body: {}) => void) {
+        this.call(`/scout/api/recipefolder/${id}/`, "DELETE", {}, callback);
     }
 }
 

@@ -1,12 +1,12 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep
+from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep, RecipeFolder, DataSourceFolder
 
 
-class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
+class DataSourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = DataSource
-        fields = ['id', 'name', 'source', 'kwargs']
+        fields = ['id', 'name', 'parent', 'source', 'kwargs']
 
 
 class TransformationSerializer(serializers.ModelSerializer):
@@ -26,7 +26,31 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ['id', 'name', 'input', 'output', 'transformations']
+        fields = ['id', 'name', 'input', 'output', 'transformations', 'parent']
+
+
+class RecursiveField(serializers.Serializer):
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data
+
+
+class RecipeFolderSerializer(serializers.ModelSerializer):
+    child_folders = RecursiveField(many=True, read_only=True)
+    children = RecipeSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = RecipeFolder
+        fields = ['id', 'name', 'parent', 'child_folders', 'children']
+
+
+class DataSourceFolderSerializer(serializers.ModelSerializer):
+    child_folders = RecursiveField(many=True, read_only=True)
+    children = DataSourceSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = DataSourceFolder
+        fields = ['id', 'name', 'parent', 'child_folders', 'children']
 
 
 class FlowSerializer(serializers.HyperlinkedModelSerializer):

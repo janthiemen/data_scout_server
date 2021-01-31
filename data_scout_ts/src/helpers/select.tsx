@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ItemRenderer, ItemPredicate } from "@blueprintjs/select";
+import { ItemRenderer, ItemPredicate, Select } from "@blueprintjs/select";
 import { MenuItem } from "@blueprintjs/core";
 
 function escapeRegExpChars(text: string) {
@@ -71,3 +71,5 @@ export const defaultItemFilterer: ItemPredicate<DefaultItem> = (query, item, _in
     }
 };
 
+export const defaultSelectSettings = {itemPredicate: defaultItemFilterer, itemRenderer: defaultItemRenderer, noResults: <MenuItem disabled={true} text="No results." />};
+export const DefaultSelect = Select.ofType<DefaultItem>();

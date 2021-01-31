@@ -21,7 +21,9 @@ from rest_framework_simplejwt import views as jwt_views
 
 router = routers.DefaultRouter()
 router.register(r'datasource', views.DataSourceViewSet)
+router.register(r'datasourcefolder', views.DataSourceFolderViewSet)
 router.register(r'recipe', views.RecipeViewSet)
+router.register(r'recipefolder', views.RecipeFolderViewSet)
 router.register(r'transformation', views.TransformationViewSet)
 router.register(r'flow', views.FlowViewSet)
 router.register(r'join', views.JoinViewSet)

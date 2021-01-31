@@ -1,9 +1,9 @@
 import * as React from "react";
 
 import {
-    Classes, ITreeNode, Tree, Intent, 
+    Classes, ITreeNode, Tree, Intent,
     ContextMenu, Menu, MenuItem, MenuDivider,
-    IToastProps, Alert
+    IToastProps, Alert, ButtonGroup, Button, IProps
 } from "@blueprintjs/core";
 import { RecipeService } from "../../helpers/userService";
 import { Recipe, newRecipe } from "./Recipes";
@@ -17,11 +17,19 @@ interface DeleteState {
     id?: number;
 }
 
+export interface PaginationProps {
+    changePage: (number) => void;
+    page: number;
+    maxPage: number;
+}
+
 interface RecipesTreeState {
     recipes: Recipe[];
     nodes: RecipeNode[];
     nodeContextMenu?: RecipeNode;
     delete: DeleteState;
+    page: number;
+    pagination: PaginationProps;
 }
 
 export interface RecipeNode<T = {}> extends ITreeNode {
@@ -29,27 +37,33 @@ export interface RecipeNode<T = {}> extends ITreeNode {
     childNodes?: RecipeNode[];
 }
 
-interface RecipesTreeProps extends RouteComponentProps<any>, React.Props<any> {
-// interface RecipesTreeProps extends IProps {
+interface RecipesTreeProps extends RouteComponentProps<any>, IProps {
     recipeService: RecipeService;
     updateRecipes: () => void;
     onSelectRecipe: (dataSouce: RecipeNode) => void;
     addToast: (toast: IToastProps) => void;
     recipes: Recipe[];
+    pagination: PaginationProps;
 }
 
 /**
  * The component represents all of the data sources in a tree.
  */
-class RecipesTree extends React.Component<RecipesTreeProps> {
-    public state: RecipesTreeState = { 
+class RecipesTreeComponent extends React.Component<RecipesTreeProps> {
+    public state: RecipesTreeState = {
         recipes: [],
         nodes: [],
+        page: 1,
         nodeContextMenu: undefined,
         delete: {
             isOpen: false,
             title: "",
             id: undefined
+        },
+        pagination: {
+            page: 1,
+            maxPage: 1,
+            changePage: undefined
         }
     };
     private history: History;
@@ -66,6 +80,8 @@ class RecipesTree extends React.Component<RecipesTreeProps> {
         super(props);
         this.history = props.history;
 
+        this.setState({pagination: props.pagination});
+        console.log(props.pagination);
         // This binding is necessary to make `this` work in the callback    
         this.onSelectRecipe = props.onSelectRecipe;
         this.updateRecipes = props.updateRecipes;
@@ -81,7 +97,7 @@ class RecipesTree extends React.Component<RecipesTreeProps> {
         this.handleDeleteConfirm = this.handleDeleteConfirm.bind(this);
     }
 
-    
+
     /**
      * Called when new props are received.
      * @param props The new props
@@ -91,6 +107,8 @@ class RecipesTree extends React.Component<RecipesTreeProps> {
         for (let recipe of props.recipes) {
             nodes.push(this.convertRecipeToNode(recipe));
         }
+        nodes.push({ id: -2, icon: "arrow-right", label: "next" });
+
         this.setState({ recipes: props.recipes, nodes: nodes });
     }
 
@@ -124,16 +142,16 @@ class RecipesTree extends React.Component<RecipesTreeProps> {
      * Delete a data source or folder.
      */
     public delete(event: any) {
-        this.setState({ delete: {isOpen: true, title: this.state.nodeContextMenu.label, id: this.state.nodeContextMenu.id} });        
+        this.setState({ delete: { isOpen: true, title: this.state.nodeContextMenu.label, id: this.state.nodeContextMenu.id } });
     }
 
     private handleDeleteCancel() {
-        this.setState({ delete: {isOpen: false, title: "", id: undefined} });        
+        this.setState({ delete: { isOpen: false, title: "", id: undefined } });
     }
 
     private handleDeleteConfirm() {
         this.recipeService.delete(this.state.delete.id, this.finishDelete);
-        this.setState({ delete: {isOpen: false, title: "", id: undefined} });        
+        this.setState({ delete: { isOpen: false, title: "", id: undefined } });
     }
 
     public finishDelete(body: {}) {
@@ -202,6 +220,13 @@ class RecipesTree extends React.Component<RecipesTreeProps> {
                     onNodeExpand={this.handleNodeExpand}
                     className={Classes.ELEVATION_0}
                 />
+
+                <ButtonGroup fill={true} className="pagination">
+                    <Button icon="arrow-left" outlined onClick={() => this.state.pagination.changePage(-1)}>Previous</Button>
+                    <Button icon="plus" outlined>New</Button>
+                    <Button icon="arrow-right" outlined onClick={() => this.state.pagination.changePage(1)}>Next</Button>
+                </ButtonGroup>
+
             </div>
         );
     }
@@ -210,13 +235,21 @@ class RecipesTree extends React.Component<RecipesTreeProps> {
      * Handle node click of data sources tree
      */
     private handleNodeClick = (nodeData: RecipeNode, _nodePath: number[], e: React.MouseEvent<HTMLElement>) => {
-        const originallySelected = nodeData.isSelected;
-        if (!e.shiftKey) {
-            this.forEachNode(this.state.nodes, n => (n.isSelected = false));
+        if (nodeData.id == -2) {
+            // Go to the next page
+            this.setState({ page: this.state.page + 1 })
+        } else if (nodeData.id == -3) {
+            // Go to the previous page
+            this.setState({ page: this.state.page - 1 })
+        } else {
+            const originallySelected = nodeData.isSelected;
+            if (!e.shiftKey) {
+                this.forEachNode(this.state.nodes, n => (n.isSelected = false));
+            }
+            nodeData.isSelected = originallySelected == null ? true : !originallySelected;
+            this.setState(this.state);
+            this.onSelectRecipe(nodeData);
         }
-        nodeData.isSelected = originallySelected == null ? true : !originallySelected;
-        this.setState(this.state);
-        this.onSelectRecipe(nodeData);
     };
 
     /**
@@ -267,4 +300,4 @@ class RecipesTree extends React.Component<RecipesTreeProps> {
     }
 }
 
-export const RecipesTreeWithRouter = withRouter(RecipesTree);
+export const RecipesTree = withRouter(RecipesTreeComponent);

@@ -170,8 +170,6 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
             let recipe = this.state.recipe;
             recipe.id = body["id"];
             recipe.input = body["input"];
-            console.log(body);
-            console.log(recipe);
             this.setState({ recipe: recipe });
             this.addToast({ intent: Intent.SUCCESS, message: "The data source has been saved" });
             this.updateRecipes();
@@ -181,7 +179,7 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
     }
 
     /**
-     * Submits the data source
+     * Submits the recipe
      */
     private submitRecipe(event: React.SyntheticEvent) {
         event.preventDefault();

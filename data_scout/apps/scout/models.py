@@ -9,8 +9,15 @@ User projects
 
 
 # Create your models here.
+class DataSourceFolder(models.Model):
+    name = models.CharField(max_length=512)
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="child_folders")
+
+
 class DataSource(models.Model):
     name = models.CharField(max_length=512)
+    # We have the option to create a "tree" structure, where we can set the parent of a data source
+    parent = models.ForeignKey(DataSourceFolder, on_delete=models.CASCADE, null=True, blank=True, related_name="children")
     # The type of the data source (e.g. BigQuery, Csv, Excel, etc.)
     source = models.CharField(max_length=512)
     # The arguments to pass to the data source, defined as a JSON string
@@ -18,6 +25,11 @@ class DataSource(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class RecipeFolder(models.Model):
+    name = models.CharField(max_length=512)
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="child_folders")
 
 
 class Recipe(models.Model):
@@ -28,6 +40,7 @@ class Recipe(models.Model):
     )
 
     name = models.CharField(max_length=512)
+    parent = models.ForeignKey(RecipeFolder, on_delete=models.CASCADE, null=True, blank=True, related_name="children")
     input = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="recipe_input")
     output = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="recipe_output", null=True)
     sampling_technique = models.CharField(

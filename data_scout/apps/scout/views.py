@@ -17,8 +17,9 @@ from apps.scout.transformations import TRANSFORMATION_MAP
 from apps.scout.transformations.data import CleanJSON
 from .data_sources.data_sources import DataSourceTypeSerializer
 from .serializers import DataSourceSerializer, RecipeSerializer, TransformationSerializer, FlowSerializer, \
-    JoinSerializer, FlowStepSerializer, TransformationSerializerUpdate
-from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep
+    JoinSerializer, FlowStepSerializer, TransformationSerializerUpdate, RecipeFolderSerializer, \
+    DataSourceFolderSerializer
+from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep, RecipeFolder, DataSourceFolder
 from . import data_sources
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -26,6 +27,7 @@ from .transformations import _utils
 from .transformations.filter import IndexFilterException
 
 import pandas as pd
+
 
 class DataSourceViewSet(viewsets.ModelViewSet):
     """
@@ -47,9 +49,9 @@ class DataSourceTypesView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        data_source_types = [data_sources.BigQuery, data_sources.CSV]
+        data_source_types = data_sources.data_sources.DataSourceTypeSerializer.data_source_types
         serialized = []
-        for data_source_type in data_source_types:
+        for data_source_type in data_source_types.values():
             serialized.append({"name": data_source_type.__name__, "fields": data_source_type.fields})
 
         # content = {'message': 'Hello, World!'}
@@ -71,10 +73,52 @@ class TransformationTypesView(views.APIView):
 class RecipeViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
+    Use ?orphans_only=1 to only select top level recipes
     """
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        orphans_only = self.request.query_params.get("orphans_only", 0) == 1
+        queryset = self.queryset
+        if orphans_only:
+            queryset = queryset.filter(parent=None)
+        return queryset
+
+
+class RecipeFolderViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    Use ?orphans_only=1 to only select top level folders
+    """
+    queryset = RecipeFolder.objects.all()
+    serializer_class = RecipeFolderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        orphans_only = int(self.request.query_params.get("orphans_only", 0)) == 1
+        queryset = self.queryset
+        if orphans_only:
+            queryset = queryset.filter(parent=None)
+        return queryset
+
+
+class DataSourceFolderViewSet(RecipeFolderViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    Use ?orphans_only=1 to only select top level folders
+    """
+    queryset = DataSourceFolder.objects.all()
+    serializer_class = DataSourceFolderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    # def get_queryset(self):
+    #     orphans_only = int(self.request.query_params.get("orphans_only", 0)) == 1
+    #     queryset = self.queryset
+    #     if orphans_only:
+    #         queryset = queryset.filter(parent=None)
+    #     return queryset
 
 
 class TransformationViewSet(viewsets.ModelViewSet):
