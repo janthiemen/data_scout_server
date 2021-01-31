@@ -1,7 +1,7 @@
 import * as React from "react";
 import autobind from 'class-autobind';
 import { Transformation, TRANSFORMATIONS, transformationMakeTitle } from "./Transformation"
-import { HTMLSelect, FormGroup, Button, Dialog, Classes, Intent, InputGroup, NumericInput, TextArea, Card, Elevation } from "@blueprintjs/core";
+import { HTMLSelect, FormGroup, Button, Dialog, Classes, Intent, InputGroup, TextArea, Card, Elevation } from "@blueprintjs/core";
 import { WranglerService } from "../../helpers/userService";
 import { ColumnsSelect } from "./ColumnsSelect"
 import { NumberInput } from "./NumberInput"; 
@@ -112,6 +112,7 @@ class TransformationDialogFieldSet extends React.Component<TransformationDialogF
                     if (!("column_type" in field) || field["column_type"].indexOf(this.state.columns[column]) !== -1) {
                         return <option id={column} key={`transformation-input-${key}-option-${column}`}>{column}</option>
                     }
+                    return <></>;
                 })}
                 {/* {Object.keys(this.state.columns).map(column => <option id={column} key={`transformation-input-${key}-option-${column}`}>{column}</option>)} */}
             </HTMLSelect>
@@ -157,7 +158,7 @@ class TransformationDialogFieldSet extends React.Component<TransformationDialogF
         let that = this;
         if ("optional" in field) {
             for (let optional_field in field["optional"]) {
-                if (field["optional"][optional_field].indexOf(this.state.fieldValues[optional_field]) == -1) {
+                if (field["optional"][optional_field].indexOf(this.state.fieldValues[optional_field]) === -1) {
                     return;
                 }
             }

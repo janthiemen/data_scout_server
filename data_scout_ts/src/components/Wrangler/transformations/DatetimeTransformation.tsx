@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Popover, Position, IProps, Menu, MenuItem, MenuDivider } from "@blueprintjs/core";
+import { Button, ButtonGroup, Popover, Position, Menu, MenuItem, MenuDivider } from "@blueprintjs/core";
 import * as React from "react";
 import { TranformationProps, TransformationState } from './BasicTransformation'
 

@@ -43,7 +43,7 @@ interface Recipe {
 }
 
 
-export class Wrangler extends React.Component<PageProps, WranglerState> {
+export class WranglerComponent extends React.Component<PageProps, WranglerState> {
     private wranglerService: WranglerService;
     private addToast: (toast: IToastProps) => void;
 
@@ -150,7 +150,7 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
             typeof body["messages"][Symbol.iterator] === 'function') {
             for (let message of body["messages"]) {
                 this.addToast({
-                    intent: message["type"] == "info" ? Intent.PRIMARY : message["type"] == "warning" ? Intent.WARNING : Intent.DANGER,
+                    intent: message["type"] === "info" ? Intent.PRIMARY : message["type"] === "warning" ? Intent.WARNING : Intent.DANGER,
                     message: `${message["code"]}: ${message["message"]}`,
                 });
             }
@@ -353,4 +353,4 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
     }
 }
 
-export const WranglerWithRouter = withRouter(Wrangler);
+export const Wrangler = withRouter(WranglerComponent);

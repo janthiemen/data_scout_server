@@ -103,16 +103,16 @@ export class DataColumn extends AbstractSortableColumn {
 	}
 
 	protected renderMenu(sortColumn: ISortCallback) {
-		let convertStringMethod = this.type == "datetime" ? this.newTransformation : this.createTransformation;
-		let convertStringTransformation = this.type == "datetime" ? "datetime-format": "data-convert";
-		let convertStringKwargs = this.type == "datetime" ? {field: this.name} : {to: "string", field: this.name };
+		let convertStringMethod = this.type === "datetime" ? this.newTransformation : this.createTransformation;
+		let convertStringTransformation = this.type === "datetime" ? "datetime-format": "data-convert";
+		let convertStringKwargs = this.type === "datetime" ? {field: this.name} : {to: "string", field: this.name };
 		return (
 			<Menu>
 				<MenuItem icon="translate" text="Convert">
-					<MenuItem disabled={this.type == "int"} onClick={() => this.createTransformation("data-convert", {to: "int", field: this.name })} text="Integer" />
-					<MenuItem disabled={this.type == "float"} onClick={() => this.createTransformation("data-convert", {to: "float", field: this.name })} text="Floating point number" />
-					<MenuItem disabled={this.type == "str"} onClick={() => convertStringMethod(convertStringTransformation, convertStringKwargs)} text="Text" />
-					<MenuItem disabled={this.type == "datetime"} onClick={() => this.newTransformation("data-convert-datetime", {field: this.name })} text="Datetime" />
+					<MenuItem disabled={this.type === "int"} onClick={() => this.createTransformation("data-convert", {to: "int", field: this.name })} text="Integer" />
+					<MenuItem disabled={this.type === "float"} onClick={() => this.createTransformation("data-convert", {to: "float", field: this.name })} text="Floating point number" />
+					<MenuItem disabled={this.type === "str"} onClick={() => convertStringMethod(convertStringTransformation, convertStringKwargs)} text="Text" />
+					<MenuItem disabled={this.type === "datetime"} onClick={() => this.newTransformation("data-convert-datetime", {field: this.name })} text="Datetime" />
 				</MenuItem>
 				{this.datetime()}
 				{this.number()}

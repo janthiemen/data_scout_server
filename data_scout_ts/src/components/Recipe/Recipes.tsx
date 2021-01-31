@@ -125,7 +125,7 @@ export class RecipesComponent extends React.Component<PageProps> {
                                     onClick={this.onClick} 
                                     onDoubleClick={this.onDoubleClick} 
                                     onSetParent={this.onSetParent} 
-                                    nodes={this.makeNodes(this.state.recipeFolders, this.state.recipes.filter((recipe: Recipe) => recipe.parent === null && recipe.id != -1))} 
+                                    nodes={this.makeNodes(this.state.recipeFolders, this.state.recipes.filter((recipe: Recipe) => recipe.parent === null && recipe.id !== -1))} 
                         />
                     </Col>
                     <Col md={6}>

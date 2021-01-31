@@ -33,9 +33,10 @@ export class ColumnsSelect extends React.Component<ColumnSelectProps, ColumnSele
         this.onValueChange = props.onValueChange;
         let columns = Object.keys(props.columns).map(column => { return { name: column } });
         let availableColumns = columns.filter(function (column) {
-            if (props.columnType === undefined || props.columnType.length == 0 || props.columnType.indexOf(props.columns[column.name]) !== -1) {
+            if (props.columnType === undefined || props.columnType.length === 0 || props.columnType.indexOf(props.columns[column.name]) !== -1) {
                 return column
             }
+            return false;
         });
         this.state = {
             selectedColumns: columns.filter(column => props.value.indexOf(column.name) !== -1),

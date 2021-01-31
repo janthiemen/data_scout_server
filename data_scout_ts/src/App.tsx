@@ -7,8 +7,8 @@ import { DataSources } from "./components/DataSource/DataSources";
 import { Recipes } from "./components/Recipe/Recipes";
 import { Login } from "./components/User";
 import { Toaster, Position, IProps, IToastProps, HTMLTable } from "@blueprintjs/core";
-import { BrowserRouter as Router, Switch, Route, Redirect, RouteComponentProps } from "react-router-dom";
-import { Wrangler, WranglerWithRouter } from './components/Wrangler/Wrangler';
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import { Wrangler } from './components/Wrangler/Wrangler';
 
 import { ReactSortable } from "react-sortablejs";
 
@@ -98,7 +98,7 @@ export default class App extends React.Component<IProps> {
 						</Route>
 						<Route path="/wrangler/:recipe">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
-							<WranglerWithRouter addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
+							<Wrangler addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
 						</Route>
 						<Route path="/data_sources">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />

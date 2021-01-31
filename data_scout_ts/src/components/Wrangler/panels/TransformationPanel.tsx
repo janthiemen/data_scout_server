@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { ButtonGroup, Tooltip, Divider, Button } from "@blueprintjs/core";
+import { ButtonGroup } from "@blueprintjs/core";
 import { StringTransformationButton } from "../transformations/StringTranformation";
 import { ArrayTransformationButton } from "../transformations/ArrayTransformation";
 import { DatetimeTransformationButton } from "../transformations/DatetimeTransformation";

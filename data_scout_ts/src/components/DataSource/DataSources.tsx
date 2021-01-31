@@ -127,7 +127,7 @@ export class DataSourcesComponent extends React.Component<PageProps> {
                                     onClick={this.onClick} 
                                     onDoubleClick={this.onDoubleClick} 
                                     onSetParent={this.onSetParent} 
-                                    nodes={this.makeNodes(this.state.dataSourceFolders, this.state.dataSources.filter((dataSource: DataSource) => dataSource.parent === null && dataSource.id != -1))} 
+                                    nodes={this.makeNodes(this.state.dataSourceFolders, this.state.dataSources.filter((dataSource: DataSource) => dataSource.parent === null && dataSource.id !== -1))} 
                         />
                     </Col>
                     <Col md={6}>
