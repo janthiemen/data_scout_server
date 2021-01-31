@@ -22,7 +22,7 @@ class TransformationSerializerUpdate(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    transformations = TransformationSerializer(many=True)
+    transformations = TransformationSerializer(many=True, read_only=True)
 
     class Meta:
         model = Recipe

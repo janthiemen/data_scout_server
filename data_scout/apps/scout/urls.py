@@ -34,7 +34,8 @@ urlpatterns = [
     path('token/check/', views.LoginCheckView.as_view(), name='token_check'),
     path('datasource_types/', views.DataSourceTypesView.as_view(), name='hello'),
     path('transformation_types_view/', views.TransformationTypesView.as_view(), name='hello'),
-    path('data/<int:recipe>/<int:step>', views.data, name='data'),
+    path('data/<int:recipe>', views.data, name='data'),
+    # path('data/<int:recipe>/<int:step>', views.data, name='data'),
     path('meta/transformations', views.meta_transformations, name='meta_transformations'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

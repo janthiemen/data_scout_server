@@ -9,13 +9,22 @@ Other Functions
     SOURCEROWNUMBER Function
 
 
-Search function
+Move transformations to a separate package
+    - Export code
+Paging for recipes and data sources
+Tour
+File upload
+SQL connector
+Excel connector
+
+Improved logging (separated from serving)
+Join datasets/recipes
 Help function
 Improve logout timer
 Store data schemas
-Switch to pandas apply?
 Return result until an error in the recipe
 Multitype input (INPUT_value, INPUT_type)
+Spark support
 
 Automatically build the menu
 Custom transformations

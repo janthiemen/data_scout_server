@@ -79,8 +79,8 @@ export class TransformationButton extends React.PureComponent<TransformationButt
             <td>{title}</td>
             <td>
                 <ButtonGroup vertical={false} fill={true} alignText="left">
-                    <Button outlined={true} intent={Intent.PRIMARY} rightIcon="edit" key={`transformation-edit-${this.state.index}`} onClick={this.openDialog} className={Classes.FIXED}></Button>
-                    <Button outlined={true} intent={Intent.DANGER} rightIcon="delete" key={`transformation-delete-${this.state.index}`} onClick={this.handleDeleteAsk} className={Classes.FIXED}></Button>
+                    <Button outlined intent={Intent.PRIMARY} rightIcon="edit" key={`transformation-edit-${this.state.index}`} onClick={this.openDialog} className={Classes.FIXED}></Button>
+                    <Button outlined intent={Intent.DANGER} rightIcon="delete" key={`transformation-delete-${this.state.index}`} onClick={this.handleDeleteAsk} className={Classes.FIXED}></Button>
                 </ButtonGroup>
             </td>
         </tr>

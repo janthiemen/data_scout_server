@@ -7,6 +7,8 @@ import {
 } from "@blueprintjs/core";
 import { DataSourceService } from "../../helpers/userService";
 import { DataSource, newDataSource } from "./DataSources";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { History } from 'history'
 
 interface DataSourcesTreeState {
     dataSources: DataSource[];
@@ -19,7 +21,7 @@ export interface DataSourceNode<T = {}> extends ITreeNode {
     childNodes?: DataSourceNode[];
 }
 
-interface DataSourcesTreeProps extends IProps {
+interface DataSourcesTreeProps extends RouteComponentProps<any>, IProps {
     dataSourceService: DataSourceService;
     updateDataSources: () => void;
     onSelectDataSource: (dataSouce: DataSourceNode) => void;
@@ -30,7 +32,7 @@ interface DataSourcesTreeProps extends IProps {
 /**
  * The component represents all of the data sources in a tree.
  */
-export class DataSourcesTree extends React.Component<DataSourcesTreeProps> {
+export class DataSourcesTreeComponent extends React.Component<DataSourcesTreeProps> {
     public state: DataSourcesTreeState = { 
         dataSources: [],
         nodes: [],
@@ -40,6 +42,7 @@ export class DataSourcesTree extends React.Component<DataSourcesTreeProps> {
     private updateDataSources: () => void;;
     private addToast: (toast: IToastProps) => void;
     public onSelectDataSource: (dataSouce: DataSourceNode) => void;
+    private history: History;
 
     /**
      * Create a new data source tree.
@@ -47,6 +50,7 @@ export class DataSourcesTree extends React.Component<DataSourcesTreeProps> {
      */
     constructor(props: DataSourcesTreeProps) {
         super(props);
+        this.history = props.history;
 
         // This binding is necessary to make `this` work in the callback    
         this.onSelectDataSource = props.onSelectDataSource;
@@ -57,6 +61,7 @@ export class DataSourcesTree extends React.Component<DataSourcesTreeProps> {
         this.newDataSource = this.newDataSource.bind(this);
         this.finishDelete = this.finishDelete.bind(this);
         this.delete = this.delete.bind(this);
+        this.useDataSource = this.useDataSource.bind(this);
         this.handleNodeClick = this.handleNodeClick.bind(this);
     }
 
@@ -100,6 +105,14 @@ export class DataSourcesTree extends React.Component<DataSourcesTreeProps> {
     }
 
     /**
+     * Set the parent of a data source or folder (i.e. move it).
+     * @param event TODO: Determine the event type
+     */
+    public useDataSource(event: any) {
+        this.history.push(`/recipes`)
+    }
+
+    /**
      * Delete a data source or folder.
      * @param event TODO: Determine the event type
      */
@@ -133,7 +146,7 @@ export class DataSourcesTree extends React.Component<DataSourcesTreeProps> {
             <MenuItem icon="trash" onClick={this.delete} text="Remove" />
             <MenuDivider />
             {!nodeData.isFolder &&
-                <MenuItem icon="data-lineage" text="Use data source" />
+                <MenuItem icon="data-lineage" text="Use data source" onClick={this.useDataSource} />
             }
         </Menu>, { left: e.clientX, top: e.clientY }
         );
@@ -210,3 +223,5 @@ export class DataSourcesTree extends React.Component<DataSourcesTreeProps> {
         }
     }
 }
+
+export const DataSourcesTree = withRouter(DataSourcesTreeComponent);

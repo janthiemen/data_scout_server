@@ -5,9 +5,10 @@ import { Grid, Row, Col } from "react-flexbox-grid";
 import { Formik } from 'formik';
 import { APICaller } from "../helpers/userService";
 import { PageProps } from "../helpers/props";
+import { withRouter } from "react-router-dom";
 
 
-export class Login extends React.PureComponent<PageProps> {
+export class LoginComponent extends React.PureComponent<PageProps> {
 	private addToast: (toast: IToastProps) => void;
 	private apiCaller: APICaller;
 
@@ -68,3 +69,5 @@ export class Login extends React.PureComponent<PageProps> {
 		</Grid>;
 	}
 }
+
+export const Login = withRouter(LoginComponent);

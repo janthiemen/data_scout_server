@@ -7,47 +7,6 @@ import pandas as pd
 from django.conf import settings
 
 
-class BigQuery:
-    fields = {
-        "project": {"name": "Project", "type": "string", "help": "The project from which to retrieve the data.",
-                    "required": True},
-        "test": {"name": "Test", "type": "number", "help": "The project from which to retrieve the data.",
-                 "required": True, "min": 0, "max": 100},
-        "dataset": {"name": "Data set", "type": "string",
-                    "help": "The data set from which to retrieve the data. Either dataset and table or query should be filled out.",
-                    "required": False},
-        "table": {"name": "Table", "type": "string",
-                  "help": "The table from which to retrieve the data. Either dataset and table or query should be filled out.",
-                  "required": False},
-        "query": {"name": "Query", "type": "string",
-                  "help": "The query to use to retrieve the data. Either dataset and table or query should be filled out.",
-                  "required": False},
-    }
-
-    def __init__(self, arguments):
-        """Initialize the data source with the given parameters.
-        
-        Arguments:
-            arguments {dict} -- The arguments
-        """
-        self.project = arguments["project"]
-        self.dataset = arguments["dataset"]
-        self.table = arguments["table"]
-        self.query = arguments["query"]
-        self.output = arguments["output"]
-
-    def __call__(self):
-        """This class is called when the data needs to be loaded.
-        
-        Arguments:
-        
-        Returns:
-            dict -- The row, including the extra output column
-        """
-        # TODO: Return the data (as a beam stream)
-        pass
-
-
 class CSV:
     """
     Read data from a CSV file.
@@ -70,7 +29,7 @@ class CSV:
 
     def __init__(self, arguments):
         """Initialize the data source with the given parameters.
-        
+
         Arguments:
             arguments {dict} -- The arguments
         """
@@ -81,7 +40,7 @@ class CSV:
 
     def __call__(self, sample: bool = False, sampling_technique: str = "top"):
         """This class is called when the data needs to be loaded.
-        
+
         Arguments:
             :type sample: boolean: Whether to take a sample or not
             :type sampling_technique: str: Which sampling technique to use (top, stratisfied, random)
@@ -151,14 +110,3 @@ class CSV:
         else:
             # TODO: To be implemented
             raise NotImplementedError()
-
-
-class DataSourceTypeSerializer:
-    data_source_types = [BigQuery, CSV]
-
-    def serialize(self):
-        serialized = []
-        for data_source_type in self.data_source_types:
-            serialized.append({"name": data_source_type.__name__, "fields": data_source_type.fields})
-
-        return serialized

@@ -170,6 +170,31 @@ export class DataSourceService extends APICaller {
 }
 
 
+export class RecipeService extends APICaller {
+
+    getDataSources(callback: (body: {}) => void) {
+        this.call("/scout/api/datasource/", "GET", {}, callback);
+    }
+
+    get(callback: (body: {}) => void) {
+        this.call("/scout/api/recipe/", "GET", {}, callback);
+    }
+
+    save(data: { [key: string]: any }, callback: (body: {}) => void) {
+        if (data["id"] > 0) {
+            this.call(`/scout/api/recipe/${data["id"]}/`, "PUT", data, callback);
+        } else {
+            this.call("/scout/api/recipe/", "POST", data, callback);
+        }
+    }
+
+    delete(id: number | string, callback: (body: {}) => void) {
+        this.call(`/scout/api/recipe/${id}/`, "DELETE", {}, callback);
+    }
+}
+
+
+
 export class WranglerService extends APICaller {
 
     get(callback: (body: {}) => void) {
@@ -180,8 +205,9 @@ export class WranglerService extends APICaller {
         this.call(`/scout/api/recipe/${recipe}/`, "GET", {}, callback);
     }
 
-    getData(recipe: number, recipe_step: number, callback: (body: {}) => void) {
-        this.call(`/scout/data/${recipe}/${recipe_step}`, "GET", {}, callback);
+    getData(recipe: number, callback: (body: {}) => void) {
+        // this.call(`/scout/data/${recipe}/${recipe_step}`, "GET", {}, callback);
+        this.call(`/scout/data/${recipe}`, "GET", {}, callback);
     }
 
     putTransformation(id: number, data: Transformation, callback: (body: {}) => void) {

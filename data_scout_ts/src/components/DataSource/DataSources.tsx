@@ -8,6 +8,7 @@ import { DataSourceService } from "../../helpers/userService";
 
 import { DataSourcesTree, DataSourceNode } from "./DataSourceTree";
 import { DataSourceComponent, DataSourceType } from "./DataSource";
+import { withRouter } from "react-router-dom";
 
 
 interface DataSourcesState {
@@ -39,7 +40,7 @@ export const newDataSource = function(): DataSource {
 /**
  * The page with all the data sources.
  */
-export class DataSources extends React.Component<PageProps> {
+class DataSourcesComponent extends React.Component<PageProps> {
     private dataSourceService: DataSourceService;
     private addToast: (toast: IToastProps) => void;
     public state: DataSourcesState = {
@@ -119,3 +120,5 @@ export class DataSources extends React.Component<PageProps> {
         );
     }
 }
+
+export const DataSources = withRouter(DataSourcesComponent);

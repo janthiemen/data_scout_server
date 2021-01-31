@@ -12,6 +12,7 @@ import { Transformation, TRANSFORMATIONS } from "./Transformation"
 import { TransformationButton } from "./TransformationButton"
 import { TransformationDialog } from "./TransformationDialog"
 import { TransformationPanel } from "./panels/TransformationPanel"
+import { withRouter } from "react-router-dom";
 
 const DUMMY_DATA = [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]];
 const DUMMY_COLUMNS = ["Loading", "Loading", "Loading", "Loading"]
@@ -24,7 +25,7 @@ interface WranglerState {
     isOpen: boolean;
     loading: boolean;
     recipe: number;
-    recipeStep: number;
+    // recipeStep: number;
     transformationsUpdating: number[];
     recipeObject?: Recipe;
     selectedTransformation?: Transformation;
@@ -50,10 +51,10 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
         this.wranglerService = new WranglerService(props.addToast, props.setLoggedIn);
 
         this.state = {
-            recipe: 1,
+            recipe: parseInt(this.props.match.params.recipe),
             isOpen: false,
             loading: true,
-            recipeStep: 3,
+            // recipeStep: 4,
             transformationsUpdating: [],
             recipeObject: undefined,
             columns: this.createColumns(DUMMY_COLUMNS, DUMMY_COLUMN_TYPES),
@@ -90,7 +91,7 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
      * Get the data.
      */
     public getData() {
-        this.wranglerService.getData(this.state.recipe, this.state.recipeStep, this.receiveData)
+        this.wranglerService.getData(this.state.recipe, this.receiveData)
     }
 
     /**
@@ -361,3 +362,5 @@ export class Wrangler extends React.Component<PageProps, WranglerState> {
         );
     }
 }
+
+export const WranglerWithRouter = withRouter(Wrangler);

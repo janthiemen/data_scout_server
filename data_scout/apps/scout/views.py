@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from apps.scout import transformations
 from apps.scout.transformations import TRANSFORMATION_MAP
 from apps.scout.transformations.data import CleanJSON
+from .data_sources.data_sources import DataSourceTypeSerializer
 from .serializers import DataSourceSerializer, RecipeSerializer, TransformationSerializer, FlowSerializer, \
     JoinSerializer, FlowStepSerializer, TransformationSerializerUpdate
 from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep
@@ -167,9 +168,13 @@ def _get_transformations(recipe, messages):
 
 
 def _get_sampling_technique(recipe, transformation_list, messages):
+    if len(transformation_list) == 0:
+        # If there are no transformations, we can use all sampling techniques
+        return recipe.sampling_technique, messages
     # Not every transformation can be used with all sampling techniques. We'll determine which is allowed.
     allowed_sampling_techniques = [transformation.allowed_sampling_techniques
                                    for _, _, transformation in transformation_list]
+
     result = set(allowed_sampling_techniques[0]).intersection(*allowed_sampling_techniques[1:])
     if recipe.sampling_technique in result:
         return recipe.sampling_technique, messages
@@ -189,7 +194,16 @@ def _get_sampling_technique(recipe, transformation_list, messages):
                 return key, messages
 
 
-def data(request, recipe: int, step: int):
+def data(request, recipe: int):
+    """
+    Load the data.
+    TODO: Check if we want to reintroduce the "step" (i.e. to offer the option to get the dataset after a certain step
+    in the recipe).
+    :param request:
+    :param recipe:
+    :param step:
+    :return:
+    """
     recipe = get_object_or_404(Recipe, pk=recipe)
     messages = []
     transformation_list, messages = _get_transformations(recipe, messages)
@@ -197,9 +211,12 @@ def data(request, recipe: int, step: int):
 
     success = True
     # Load the data
-    # TODO: Get this from the database
-    csv = data_sources.CSV({"filename": "test.csv", "delimiter": ",", "has_header": True, "encoding": "utf-8"})
-    df = csv(True, sampling_technique)
+    ds = DataSourceTypeSerializer.data_source_types.get(recipe.input.source)(json.loads(recipe.input.kwargs))
+    if ds is None:
+        messages.append({"code": -1, "type": "error", "message": f"Data source {recipe.input.source} is not available"})
+        return JsonResponse({"success": True, "messages": messages})
+
+    df = ds(True, sampling_technique)
 
     def _is_false(value):
         return value != False

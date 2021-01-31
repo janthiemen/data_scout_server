@@ -29,7 +29,7 @@ class Recipe(models.Model):
 
     name = models.CharField(max_length=512)
     input = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="recipe_input")
-    output = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="recipe_output")
+    output = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="recipe_output", null=True)
     sampling_technique = models.CharField(
         max_length=64,
         choices=SAMPLING_TECHNIQUE_CHOICES,

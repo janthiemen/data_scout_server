@@ -14,7 +14,7 @@ export function ScoutNavbar() {
                 <Link className="bp3-minimal" icon="help" to="/users" />Help</Link> */}
                 <Link to="/"><Button className="bp3-minimal" icon="home" text="Home" /></Link>
                 <Link to="/data_sources"><Button className="bp3-minimal" icon="document" text="Data Sources" /></Link>
-                <Link to="/flows"><Button className="bp3-minimal" icon="data-lineage" text="Flows" /></Link>
+                <Link to="/recipes"><Button className="bp3-minimal" icon="data-lineage" text="Flows" /></Link>
                 <Link to="/help"><Button className="bp3-minimal" icon="help" text="Help" /></Link>
             </Navbar.Group>
             <Navbar.Group align={Alignment.RIGHT}>
