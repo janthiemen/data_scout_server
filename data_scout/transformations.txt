@@ -11,8 +11,6 @@ Other Functions
 
 Move transformations to a separate package
     - Export code
-Paging for recipes and data sources
-Tour
 File upload
 SQL connector
 Excel connector
@@ -35,6 +33,8 @@ Marketplace
     Store installed packages in DB
         Package name
         Call method (eval?)
+
+Tour
 
 Data quality checks
     Types

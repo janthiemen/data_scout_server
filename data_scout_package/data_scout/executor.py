@@ -30,6 +30,14 @@ class Executor:
         """
         raise NotImplementedError()
 
+    def _fix_missing_columns(self, records: List[dict]):
+        """
+        Make sure that each row in the dataset has the same keys.
+        :param records: The input records (list for Pandas, RDD for PySpark)
+        :return:
+        """
+        raise NotImplementedError()
+
     def _get_columns(self, records: List[dict]) -> dict:
         """
         Get a list of column_name: column_type dicts.
@@ -80,6 +88,32 @@ class Executor:
                 t += 1
         return transformation_list
 
+    # def _get_sampling_technique(recipe, transformation_list, messages):
+    #     if len(transformation_list) == 0:
+    #         # If there are no transformations, we can use all sampling techniques
+    #         return recipe.sampling_technique, messages
+    #     # Not every transformation can be used with all sampling techniques. We'll determine which is allowed.
+    #     allowed_sampling_techniques = [transformation.allowed_sampling_techniques
+    #                                    for _, _, transformation in transformation_list]
+    #
+    #     result = set(allowed_sampling_techniques[0]).intersection(*allowed_sampling_techniques[1:])
+    #     if recipe.sampling_technique in result:
+    #         return recipe.sampling_technique, messages
+    #     elif len(result) == 0:
+    #         messages.append({
+    #             "code": -1,
+    #             "type": "warning",
+    #             "message": f"Couldn't find a sampling technique that satisfies all requirements. Using {recipe.sampling_technique}, expect unexpected behaviour."})
+    #         return recipe.sampling_technique, messages
+    #     else:
+    #         for key, _ in Recipe.SAMPLING_TECHNIQUE_CHOICES:
+    #             if key in result:
+    #                 messages.append({
+    #                     "code": -1,
+    #                     "type": "info",
+    #                     "message": f"Switched from sampling technique {recipe.sampling_technique} to {key} because of requirements by the transformations."})
+    #                 return key, messages
+
     def __call__(self, column_types: bool = False):
         columns = []
         transformation_list = self._get_transformations()
@@ -110,8 +144,14 @@ class Executor:
             if t_func.filter:
                 records = self._filter(records)
 
+        if column_types:
+            # TODO: Move get_columns to here
+            step_columns, df_records = _utils.get_columns(records)
+            columns.append(step_columns)
+
+        records = self._fix_missing_columns(records)
             # TODO: Make sure we're still returning records, even if an error occurs
-        return records
+        return records, columns
 
 
 class PandasExecutor(Executor):
@@ -137,6 +177,9 @@ class PandasExecutor(Executor):
         }
         return {key: type_mappings.get(type(val).__name__, type(val).__name__) for key, val in
                 df_records.to_dict(orient="records")[0].items()}, df_records
+
+    def _fix_missing_columns(self, records):
+        return self._make_dataframe(records).to_dict(orient="records")
 
     def _make_dataframe(self, records: List[dict]):
         return pd.DataFrame(records)
@@ -165,12 +208,14 @@ class SparkExecutor(Executor):
         # TODO
         pass
 
-    def _make_dataframe(self, records):
+    def _fix_missing_columns(self, records):
         get_fields = GetFields()
         columns = get_fields.spark(records)
         mc = MissingColumns({"columns": columns}, 0, None)
-        records = self._apply(records, mc)
-        return records.toDF()
+        return self._apply(records, mc)
+
+    def _make_dataframe(self, records):
+        return self._fix_missing_columns(records).toDF()
 
     def _filter(self, records):
         return records.filter(lambda x: x != False)

@@ -335,10 +335,6 @@ class FilterRegex(Transformation):
         return row, index
 
 
-class IndexFilterException(Exception):
-    message = "An error occurred while filtering"
-
-
 class FilterRowsInterval(Transformation):
     filter = True
     title = "Filter the rows at a regular interval of {interval}"
