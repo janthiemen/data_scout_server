@@ -2,9 +2,9 @@ from typing import List
 
 import pandas as pd
 
-from apps.scout.transformations.transformation import Transformation
-from apps.scout.transformations.groupby import GroupByBase
-from apps.scout.transformations.window import Window
+from .transformation import Transformation
+from .groupby import GroupByBase
+from .window import Window
 
 
 class Pivot(GroupByBase):
@@ -93,6 +93,7 @@ class Unpivot(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.id_vars = arguments["id_vars"]
         self.value_vars = arguments["value_vars"] if len(arguments["value_vars"]) > 0 else None
         self.var_name = arguments["var_name"]

@@ -1,5 +1,5 @@
-from apps.scout.transformations._utils import get_param_int
-from apps.scout.transformations.transformation import Transformation
+from ._utils import get_param_int
+from .transformation import Transformation
 import pandas as pd
 
 
@@ -17,6 +17,7 @@ class StatsBase(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.axis = arguments["axis"]
         self.skipna = arguments["skipna"] == "1"
@@ -39,6 +40,7 @@ class Correlation(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.method = arguments["method"]
         self.min_periods = int(arguments["min_periods"])
@@ -63,6 +65,7 @@ class Covariance(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.min_periods = int(arguments["min_periods"])
         self.ddof = int(arguments["ddof"])
@@ -141,6 +144,7 @@ class Skew(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.axis = arguments["axis"]
         self.skipna = arguments["skipna"] == "1"
@@ -230,6 +234,7 @@ class Sum(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.axis = arguments["axis"]
         self.skipna = arguments["skipna"] == "1"
@@ -258,6 +263,7 @@ class Std(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.axis = arguments["axis"]
         self.skipna = arguments["skipna"] == "1"
@@ -344,6 +350,7 @@ class ValueCounts(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.normalize = arguments["normalize"] == "1"
         self.sort = arguments["sort"] == "1"

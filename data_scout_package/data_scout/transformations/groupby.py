@@ -1,5 +1,5 @@
-from apps.scout.transformations._utils import get_param_bool, get_param_int
-from apps.scout.transformations.transformation import Transformation
+from ._utils import get_param_bool, get_param_int
+from .transformation import Transformation
 import pandas as pd
 import numpy as np
 
@@ -119,7 +119,9 @@ class GroupByBase(Transformation):
             elif agg["agg"] == "unique":
                 self._add_aggregation(agg["name"], agg["field"], lambda x: x.unique().tolist())
         # TODO: Add percentual change, diff, shift
+
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.aggregations = {}
         self._create_aggregations(arguments["aggs"])
 

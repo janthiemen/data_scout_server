@@ -1,6 +1,6 @@
 from __future__ import division
 
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 from pyparsing import (Literal, CaselessLiteral, Word, Combine, Group, Optional,
                        ZeroOrMore, Forward, nums, alphas, oneOf)
 import math
@@ -49,6 +49,7 @@ class Custom(Transformation):
         Arguments:
             arguments {dict} -- The arguments
         """
+        super().__init__(arguments, sample_size, example)
         self.equation = arguments["equation"]
         self.output = arguments["output"]
 

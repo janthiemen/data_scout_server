@@ -3,7 +3,7 @@ import math
 import statistics
 from typing import List, Tuple
 
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 from ._utils import compare_basis, compare_convert_value
 
 
@@ -37,6 +37,7 @@ class Index(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.value = convert_value(arguments["value"], example[self.field])
         self.side = arguments["side"]
@@ -66,6 +67,7 @@ class AtIndex(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.index = arguments["index"]
         self.output = arguments["output"]
@@ -93,6 +95,7 @@ class Slice(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.start = arguments["start"]
 
@@ -123,6 +126,7 @@ class Length(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -145,6 +149,7 @@ class Mean(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -167,6 +172,7 @@ class Sum(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -189,6 +195,7 @@ class Min(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -211,6 +218,7 @@ class Max(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -233,6 +241,7 @@ class Mode(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -255,6 +264,7 @@ class Std(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -277,6 +287,7 @@ class Var(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -302,6 +313,7 @@ class Sort(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.reverse = arguments["order"] == "desc"
         self.output = arguments["output"]
@@ -325,6 +337,7 @@ class Concat(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.output = arguments["output"]
 
@@ -347,6 +360,7 @@ class Intersect(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.output = arguments["output"]
 
@@ -375,6 +389,7 @@ class Unique(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.output = arguments["output"]
 
@@ -403,6 +418,7 @@ class Filter(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.comparison = arguments["comparison"]
         self.value = compare_convert_value(arguments["value"].splitlines(), example[self.field])
@@ -427,6 +443,7 @@ class Flatten(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
 
     def __call__(self, row, index: int) -> Tuple[List[dict], int]:
@@ -460,6 +477,7 @@ class ToDict(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field_keys = arguments["field_keys"]
         self.field_values = arguments["field_values"]
         self.output = arguments["output"]
@@ -482,6 +500,7 @@ class Merge(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.separator = arguments["separator"]
         self.output = arguments["output"]

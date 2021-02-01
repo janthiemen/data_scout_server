@@ -1,4 +1,4 @@
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 
 
 class Add(Transformation):
@@ -13,6 +13,7 @@ class Add(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.output = arguments["output"]
 
@@ -40,6 +41,7 @@ class Min(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field_a = arguments["field_a"]
         self.field_b = arguments["field_b"]
         self.output = arguments["output"]
@@ -65,6 +67,7 @@ class Divide(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field_a = arguments["field_a"]
         self.field_b = arguments["field_b"]
         self.output = arguments["output"]
@@ -89,6 +92,7 @@ class Multiply(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.output = arguments["output"]
 

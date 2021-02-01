@@ -1,3 +1,5 @@
+from typing import Type
+
 from .connector import Connector
 from .csv import CSV
 from .big_query import BigQuery
@@ -15,7 +17,7 @@ class DataSourceType:
         return serialized
 
     @staticmethod
-    def get_by_string(name: str) -> Connector:
+    def get_by_string(name: str) -> Type[Connector]:
         data_source = DataSourceType.data_source_types.get(name)
         if data_source is None:
             raise DataSourceConnectorUnavailableException(name)

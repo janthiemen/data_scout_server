@@ -1,13 +1,14 @@
 import csv
-import os
 import random
 import sys
+from typing import List
 
 import pandas as pd
-from django.conf import settings
+
+from .connector import Connector
 
 
-class CSV:
+class CSV(Connector):
     """
     Read data from a CSV file.
     """
@@ -33,12 +34,13 @@ class CSV:
         Arguments:
             arguments {dict} -- The arguments
         """
+        super().__init__(arguments)
         self.filename = arguments["filename"]
         self.delimiter = arguments["delimiter"]
         self.has_header = arguments["has_header"]
         self.encoding = arguments["encoding"]
 
-    def __call__(self, sample: bool = False, sampling_technique: str = "top"):
+    def __call__(self, sample: bool = False, sampling_technique: str = "top") -> List[dict]:
         """This class is called when the data needs to be loaded.
 
         Arguments:
@@ -51,7 +53,7 @@ class CSV:
         # TODO: Return the data (as a beam stream or a pandas data frame (in case it's a sample))
         if sample:
             # TODO: Make this big data proof (chucking, sampling before loading, etc.)
-            with open(os.path.join(settings.MEDIA_ROOT, self.filename), encoding=self.encoding) as f:
+            with open(self.filename, encoding=self.encoding) as f:
                 number_of_rows = sum(1 for line in f)
 
                 # We'll return to the start
@@ -106,7 +108,7 @@ class CSV:
                         i += 1
 
             df = pd.DataFrame(data, columns=column_names)
-            return df
+            return df.to_dict(orient="records")
         else:
             # TODO: To be implemented
             raise NotImplementedError()

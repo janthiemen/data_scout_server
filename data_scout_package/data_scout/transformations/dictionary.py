@@ -1,4 +1,4 @@
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 
 
 class Keys(Transformation):
@@ -12,6 +12,7 @@ class Keys(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -34,6 +35,7 @@ class Values(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -58,6 +60,7 @@ class Get(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.key = arguments["key"]
         self.output = arguments["output"]
@@ -87,6 +90,7 @@ class Create(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.output = arguments["output"]
         self.items = arguments["items"]
 

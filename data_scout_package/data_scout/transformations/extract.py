@@ -1,9 +1,8 @@
-import math
 import re
 import urllib.parse as urlparse
 from urllib.parse import parse_qs
 
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 
 
 class ExtractNumbers(Transformation):
@@ -17,6 +16,7 @@ class ExtractNumbers(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -43,6 +43,7 @@ class ExtractHttpQueryString(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -69,6 +70,7 @@ class ExtractRegex(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.pattern = re.compile(arguments["pattern"])
         self.output = arguments["output"]
@@ -115,6 +117,7 @@ class ExtractPositions(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.start = int(arguments["start"])
         self.end = int(arguments["end"])

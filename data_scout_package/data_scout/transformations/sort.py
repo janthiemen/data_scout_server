@@ -1,4 +1,4 @@
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 import pandas as pd
 
 
@@ -19,6 +19,7 @@ class SortBy(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.by = [sort["field"] for sort in arguments["sorting"]]
         self.asc = [sort["order"] == "asc" for sort in arguments["sorting"]]
 

@@ -1,7 +1,7 @@
 import re
 import base64
 
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 
 
 class Substring(Transformation):
@@ -19,6 +19,7 @@ class Substring(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.left = arguments["left"]
         self.right = arguments["right"]
@@ -76,6 +77,7 @@ class FindLeft(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.lookup = arguments["lookup"]
         self.output = arguments["output"]
@@ -105,6 +107,7 @@ class Length(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -126,6 +129,7 @@ class Merge(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.separator = arguments["separator"]
         self.output = arguments["output"]
@@ -148,6 +152,7 @@ class Repeat(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.times = arguments["times"]
         self.output = arguments["output"]
@@ -170,6 +175,7 @@ class TestContains(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = arguments["search"]
         self.output = arguments["output"]
@@ -192,6 +198,7 @@ class TestStartsWith(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = arguments["search"]
         self.output = arguments["output"]
@@ -214,6 +221,7 @@ class TestEndsWith(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = arguments["search"]
         self.output = arguments["output"]
@@ -236,6 +244,7 @@ class TestRegex(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.regex = re.compile(arguments["regex"])
         self.output = arguments["output"]
@@ -260,6 +269,7 @@ class TestExact(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = arguments["search"]
         self.output = arguments["output"]
@@ -282,6 +292,7 @@ class TestGreater(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = arguments["search"]
         self.output = arguments["output"]
@@ -304,6 +315,7 @@ class TestGreaterEqual(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = arguments["search"]
         self.output = arguments["output"]
@@ -326,6 +338,7 @@ class TestLess(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = arguments["search"]
         self.output = arguments["output"]
@@ -348,6 +361,7 @@ class TestLessEqual(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = arguments["search"]
         self.output = arguments["output"]
@@ -368,6 +382,7 @@ class Base64Encode(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -387,6 +402,7 @@ class Base64Decode(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 

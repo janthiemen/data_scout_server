@@ -1,6 +1,6 @@
 import re
 
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 
 
 class CountExact(Transformation):
@@ -16,6 +16,7 @@ class CountExact(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = arguments["search"]
         self.output = arguments["output"]
@@ -42,6 +43,7 @@ class CountRegex(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.pattern = re.compile(arguments["pattern"])
         self.output = arguments["output"]
@@ -69,6 +71,7 @@ class CountDelimiters(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.delimiter = arguments["delimiter"]
         self.output = arguments["output"]

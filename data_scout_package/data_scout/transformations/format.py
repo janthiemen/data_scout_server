@@ -1,7 +1,7 @@
 import re
 from text_unidecode import unidecode
 
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 
 
 class Format(Transformation):
@@ -16,6 +16,7 @@ class Format(Transformation):
         Arguments:
             arguments {dict} -- The arguments
         """
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
 
     def __call__(self, row, index: int):
@@ -67,6 +68,7 @@ class Trim(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.side = arguments["side"]
 
@@ -151,6 +153,7 @@ class AddFix(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.text = arguments["text"]
 
@@ -196,6 +199,7 @@ class Pad(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.character = arguments["character"]
         self.length = arguments["length"]
@@ -229,6 +233,7 @@ class Number(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.decimals = int(arguments["decimals"])
         self.decimal_sep = str(arguments["decimal_sep"])

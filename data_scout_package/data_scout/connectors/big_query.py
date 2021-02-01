@@ -1,4 +1,7 @@
-class BigQuery:
+from data_scout.connectors.connector import Connector
+
+
+class BigQuery(Connector):
     fields = {
         "project": {"name": "Project", "type": "string", "help": "The project from which to retrieve the data.",
                     "required": True},
@@ -15,25 +18,19 @@ class BigQuery:
                   "required": False},
     }
 
-    def __init__(self, arguments):
+    def __init__(self, arguments: dict):
         """Initialize the data source with the given parameters.
 
         Arguments:
             arguments {dict} -- The arguments
         """
+        super().__init__(arguments)
         self.project = arguments["project"]
         self.dataset = arguments["dataset"]
         self.table = arguments["table"]
         self.query = arguments["query"]
         self.output = arguments["output"]
 
-    def __call__(self):
-        """This class is called when the data needs to be loaded.
-
-        Arguments:
-
-        Returns:
-            dict -- The row, including the extra output column
-        """
+    def __call__(self, sample: bool = False, sampling_technique: str = "top"):
         # TODO: Return the data (as a beam stream)
         pass

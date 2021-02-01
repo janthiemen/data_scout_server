@@ -1,6 +1,6 @@
 import math
 
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 from ._utils import compare_basis, compare_convert_value
 
 
@@ -21,6 +21,7 @@ class CompareValue(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.comparison = arguments["comparison"]
         self.value = compare_convert_value(arguments["value"].splitlines(), example[self.field])
@@ -48,6 +49,7 @@ class CompareColumns(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field_a = arguments["field_a"]
         self.comparison = arguments["comparison"]
         self.field_b = arguments["field_b"]
@@ -86,6 +88,7 @@ class Parity(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.parity = arguments["parity"]
         self.output = arguments["output"]
@@ -110,6 +113,7 @@ class Mismatched(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -171,6 +175,7 @@ class Logical(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.comparison = arguments["comparison"]
         self.output = arguments["output"]
@@ -230,6 +235,7 @@ class IfElse(Transformation):
             return float(value_number)
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.if_is_column = arguments["if_value_type"] == "column"
         self.if_value = self._get_value(arguments["if_value_type"], arguments["if_value_string"],
@@ -261,6 +267,7 @@ class Min(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.output = arguments["output"]
 

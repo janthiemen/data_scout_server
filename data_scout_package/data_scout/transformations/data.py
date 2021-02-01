@@ -3,9 +3,9 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 
-from apps.scout.transformations._utils import get_param_int
-from apps.scout.transformations.statistics import StatsBase
-from apps.scout.transformations.transformation import Transformation
+from ._utils import get_param_int
+from .statistics import StatsBase
+from .transformation import Transformation
 
 
 class Convert(Transformation):
@@ -25,6 +25,7 @@ class Convert(Transformation):
         Arguments:
             arguments {dict} -- The arguments
         """
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.to = arguments["to"]
 
@@ -71,6 +72,7 @@ class ConvertDatetime(Transformation):
         Arguments:
             arguments {dict} -- The arguments
         """
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.format = arguments["format"]
 
@@ -100,6 +102,7 @@ class FieldToColumn(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.prefix = arguments["prefix"]
 
@@ -130,6 +133,7 @@ class DuplicateColumn(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -149,6 +153,7 @@ class DropColumn(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
 
     def __call__(self, row, index: int):
@@ -167,6 +172,7 @@ class RenameColumn(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.new = arguments["new"]
 
@@ -206,6 +212,7 @@ class Shift(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.periods = get_param_int(arguments["periods"], 1)
         self.fill_value = get_param_int(arguments["fill_value"], None)
@@ -225,6 +232,7 @@ class Diff(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.periods = get_param_int(arguments["periods"], 1)
 
@@ -248,6 +256,7 @@ class PctChange(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.periods = get_param_int(arguments["periods"], 1)
         self.fill_method = arguments["fill_method"] if arguments["fill_method"] != "" else None
@@ -270,3 +279,31 @@ class CleanJSON:
                 row[key] = "NaN"
 
         return row, index
+
+
+class GetFields:
+
+    def __init__(self):
+        pass
+
+    def spark(self, records):
+        return records.flatMap(lambda x: x.keys()).distinct().collect()
+
+    def __call__(self, records, index: int):
+        pass
+
+
+class MissingColumns(Transformation):
+    """
+    Add missing columns to the rows. Only for internal use.
+    """
+    def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
+        self.columns = arguments["columns"]
+
+    def __call__(self, row, index: int):
+        for key in self.columns:
+            if key not in row.keys():
+                row[key] = None
+        return row
+

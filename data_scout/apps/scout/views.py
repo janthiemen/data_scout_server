@@ -267,10 +267,10 @@ def data(request, recipe: int):
 
     records = df.to_dict('records')
     columns = []
-    sample_size = len(records)
     for t, transformation, t_class in transformation_list:
         # Execute the transformation on the data set
         try:
+            sample_size = len(records)
             # Before each transformation we create a list of columns and column types that are available at that point
             step_columns, df_records = _utils.get_columns(records)
             columns.append(step_columns)

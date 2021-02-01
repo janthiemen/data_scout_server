@@ -3,7 +3,7 @@ import re
 import pandas as pd
 from pandas.core.dtypes.inference import is_hashable
 
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 
 
 class FilterMissing(Transformation):
@@ -16,6 +16,7 @@ class FilterMissing(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
 
     def __call__(self, row, index: int):
@@ -36,6 +37,7 @@ class FilterMismatched(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
 
     def __call__(self, row, index: int):
@@ -65,6 +67,7 @@ class FilterIs(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = convert_search_value(arguments["search"], example[self.field])
 
@@ -87,6 +90,7 @@ class FilterIsNot(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = convert_search_value(arguments["search"], example[self.field])
 
@@ -107,6 +111,7 @@ class FilterList(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = arguments["search"].splitlines()
         if isinstance(example[self.field], int):
@@ -152,6 +157,7 @@ class FilterLessThan(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.threshold = convert_search_value(arguments["threshold"], example[self.field])
 
@@ -174,6 +180,7 @@ class FilterGreaterThan(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.threshold = convert_search_value(arguments["threshold"], example[self.field])
 
@@ -198,6 +205,7 @@ class FilterBetween(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.min = convert_search_value(arguments["min"], example[self.field])
         self.max = convert_search_value(arguments["max"], example[self.field])
@@ -223,6 +231,7 @@ class FilterNotBetween(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.min = convert_search_value(arguments["min"], example[self.field])
         self.max = convert_search_value(arguments["max"], example[self.field])
@@ -246,6 +255,7 @@ class FilterContains(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = arguments["search"]
 
@@ -268,6 +278,7 @@ class FilterStartsWith(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = arguments["search"]
 
@@ -290,6 +301,7 @@ class FilterEndsWith(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = arguments["search"]
 
@@ -312,6 +324,7 @@ class FilterRegex(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.search = re.compile(arguments["search"])
 
@@ -337,6 +350,7 @@ class FilterRowsInterval(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.interval = arguments["interval"]
         if self.interval < 2:
             raise IndexFilterException(f"We can't delete every {self.interval} rows, as it would delete all rows in the sample.")
@@ -361,6 +375,7 @@ class FilterRowsRange(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.min = arguments["min"]
         self.max = arguments["max"]
         if self.max >= sample_size and self.min < 1:
@@ -384,6 +399,7 @@ class FilterRowsTop(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.rows = arguments["rows"]
         if sample_size <= self.rows:
             raise IndexFilterException(f"We couldn't delete the top {self.rows} rows, as it would delete all rows in the sample. The transformation was skipped but will be performed in a non-sampled environment.")
@@ -406,6 +422,7 @@ class FilterRowsDuplicates(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
 
     def __call__(self, rows: pd.DataFrame, index: int):

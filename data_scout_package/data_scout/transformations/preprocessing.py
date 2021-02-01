@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn import preprocessing
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 
 
 class Scale(Transformation):
@@ -18,6 +18,7 @@ class Scale(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.method = arguments["method"]
         self.output = arguments["output"]
@@ -55,6 +56,7 @@ class CategoricalEncoding(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.method = arguments["method"]
         self.categories = arguments["categories"].splitlines()
@@ -94,6 +96,7 @@ class DiscretizeBin(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.k = int(arguments["k"])
         self.encode = arguments["encode"]
@@ -124,6 +127,7 @@ class Binarize(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.threshold = float(arguments["threshold"])
         self.output = arguments["output"]
@@ -149,6 +153,7 @@ class Normalize(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.norm = arguments["norm"]
         self.output = arguments["output"]
@@ -180,6 +185,7 @@ class Polynomial(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.fields = arguments["fields"]
         self.degree = int(arguments["degree"])
         self.interaction_only = arguments["interaction_only"] == "1"
@@ -222,6 +228,7 @@ class Impute(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.strategy = arguments["strategy"]
         self.constant = ""

@@ -1,7 +1,7 @@
 import math
 from datetime import datetime, timedelta, date
 import calendar
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 
 
 class ExtractBasic(Transformation):
@@ -16,6 +16,7 @@ class ExtractBasic(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.output = arguments["output"]
 
@@ -204,8 +205,8 @@ class DateAdd(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
-
         self.delta = timedelta(
             weeks=int(arguments["weeks"]),
             days=int(arguments["days"]),
@@ -240,6 +241,7 @@ class DateDiff(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field_a = arguments["field_a"]
         self.field_b = arguments["field_b"]
         self.unit = arguments["unit"]
@@ -274,6 +276,7 @@ class Now(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.output = arguments["output"]
 
     def __call__(self, row, index: int):
@@ -290,6 +293,7 @@ class Today(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.output = arguments["output"]
 
     def __call__(self, row, index: int):

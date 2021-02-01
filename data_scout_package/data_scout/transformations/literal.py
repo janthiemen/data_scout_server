@@ -1,8 +1,6 @@
 import random
-import re
-from text_unidecode import unidecode
 
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 
 
 # TODO: Should we combine all of these into one transformation?
@@ -18,6 +16,7 @@ class Literal(Transformation):
         Arguments:
             arguments {dict} -- The arguments
         """
+        super().__init__(arguments, sample_size, example)
         self.output = arguments["output"]
 
     def __call__(self, row, index: int):
@@ -35,6 +34,7 @@ class String(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.value = str(arguments["value"])
         self.output = arguments["output"]
 
@@ -54,6 +54,7 @@ class Integer(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.value = int(arguments["value"])
         self.output = arguments["output"]
 
@@ -73,6 +74,7 @@ class Float(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.value = float(arguments["value"])
         self.output = arguments["output"]
 
@@ -90,6 +92,7 @@ class Null(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.output = arguments["output"]
 
     def __call__(self, row, index: int):
@@ -110,6 +113,7 @@ class RandBetween(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.start = float(arguments["start"])
         self.end = float(arguments["end"])
         self.output = arguments["output"]
@@ -132,6 +136,7 @@ class RandInt(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.start = int(arguments["start"])
         self.end = int(arguments["end"])
         self.output = arguments["output"]

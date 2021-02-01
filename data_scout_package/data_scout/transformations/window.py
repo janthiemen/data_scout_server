@@ -1,6 +1,6 @@
 import itertools
 
-from apps.scout.transformations.groupby import GroupByBase
+from .groupby import GroupByBase
 import pandas as pd
 
 

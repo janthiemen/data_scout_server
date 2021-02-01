@@ -1,7 +1,7 @@
 import math
 import re
 
-from apps.scout.transformations.transformation import Transformation
+from .transformation import Transformation
 
 
 class ReplaceText(Transformation):
@@ -19,6 +19,7 @@ class ReplaceText(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.old = arguments["old"]
         self.new = arguments["new"]
@@ -46,6 +47,7 @@ class ReplaceRegex(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.pattern = re.compile(arguments["pattern"])
         self.new = arguments["new"]
@@ -74,6 +76,7 @@ class ReplaceDelimiters(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.pattern = re.compile('{delimiter}.*{delimiter}'.format(delimiter=arguments["delimiter"]), flags=re.DOTALL)
         self.new = arguments["new"]
@@ -103,6 +106,7 @@ class ReplacePositions(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.start = arguments["start"]
         self.end = arguments["end"]
@@ -127,6 +131,7 @@ class ReplaceMismatched(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.new = arguments["new"]
 
@@ -147,6 +152,7 @@ class ReplaceMissing(Transformation):
     }
 
     def __init__(self, arguments: dict, sample_size: int, example: dict = None):
+        super().__init__(arguments, sample_size, example)
         self.field = arguments["field"]
         self.new = arguments["new"]
 
