@@ -1,9 +1,10 @@
 import itertools
-from typing import List, Tuple, Type
+from typing import List, Tuple, Type, Any
 import pandas as pd
 
+from .connectors.connector import Connector
 from .connectors.data_source_type import DataSourceType
-from .exceptions import TransformationUnavailableException
+from .exceptions import TransformationUnavailableException, IndexFilterException, PipelineException
 from .scout import Scout
 from .transformations import _utils
 from .transformations.data import MissingColumns, GetFields
@@ -13,13 +14,12 @@ from .transformations.transformation import Transformation
 class Executor:
 
     def __init__(self, data_source: dict, pipeline: List[dict], scout: Scout):
-        self.data_source = data_source
+        self.data_source = DataSourceType.get_by_string(data_source["source"])(data_source["kwargs"])
         self.pipeline = pipeline
         self.scout = scout
 
     def load_data(self, use_sample: bool = False, sampling_technique: str = "top") -> List[dict]:
-        data_source = DataSourceType.get_by_string(self.data_source["source"])(self.data_source["kwargs"])
-        data = data_source(use_sample, sampling_technique)
+        data = self.data_source(use_sample, sampling_technique)
         return data
 
     def _make_dataframe(self, records: List[dict]):
@@ -38,12 +38,12 @@ class Executor:
         """
         raise NotImplementedError()
 
-    def _get_columns(self, records: List[dict]) -> dict:
+    def _get_columns(self, records: List[dict]) -> Tuple[dict, Any]:
         """
         Get a list of column_name: column_type dicts.
 
         :param records: A list of all records
-        :return: A list of column names and their types
+        :return: A list of column names and their types and a complete dataframe
         """
         raise NotImplementedError()
 
@@ -88,69 +88,85 @@ class Executor:
                 t += 1
         return transformation_list
 
-    # def _get_sampling_technique(recipe, transformation_list, messages):
-    #     if len(transformation_list) == 0:
-    #         # If there are no transformations, we can use all sampling techniques
-    #         return recipe.sampling_technique, messages
-    #     # Not every transformation can be used with all sampling techniques. We'll determine which is allowed.
-    #     allowed_sampling_techniques = [transformation.allowed_sampling_techniques
-    #                                    for _, _, transformation in transformation_list]
-    #
-    #     result = set(allowed_sampling_techniques[0]).intersection(*allowed_sampling_techniques[1:])
-    #     if recipe.sampling_technique in result:
-    #         return recipe.sampling_technique, messages
-    #     elif len(result) == 0:
-    #         messages.append({
-    #             "code": -1,
-    #             "type": "warning",
-    #             "message": f"Couldn't find a sampling technique that satisfies all requirements. Using {recipe.sampling_technique}, expect unexpected behaviour."})
-    #         return recipe.sampling_technique, messages
-    #     else:
-    #         for key, _ in Recipe.SAMPLING_TECHNIQUE_CHOICES:
-    #             if key in result:
-    #                 messages.append({
-    #                     "code": -1,
-    #                     "type": "info",
-    #                     "message": f"Switched from sampling technique {recipe.sampling_technique} to {key} because of requirements by the transformations."})
-    #                 return key, messages
+    def _get_sampling_technique(self,
+                                requested_technique: str,
+                                transformation_list: List[Tuple[int, dict, Type[Transformation]]]):
 
-    def __call__(self, column_types: bool = False):
+        if len(transformation_list) == 0:
+            # If there are no transformations, we can use all sampling techniques
+            return requested_technique
+
+        # Not every transformation can be used with all sampling techniques. We'll determine which is allowed.
+        allowed_sampling_techniques = [transformation.allowed_sampling_techniques
+                                       for _, _, transformation in transformation_list]
+
+        result = set(self.data_source.SAMPLING_TECHNIQUES).intersection(*allowed_sampling_techniques)
+        if requested_technique in result:
+            return requested_technique
+        elif len(result) == 0:
+            self.scout.log.info(f"Couldn't find a sampling technique that satisfies all requirements. Using "
+                                f"{requested_technique}, expect unexpected behaviour.")
+            return requested_technique
+        else:
+            for key, _ in self.data_source.SAMPLING_TECHNIQUES:
+                if key in result:
+                    self.scout.log.info(f"Switched from sampling technique {requested_technique} to {key} because "
+                                        f"of requirements by the transformations.")
+                    return key
+
+    def __call__(self, use_sample: bool = True, sampling_technique: str = 'top', column_types: bool = False):
+        """
+        Execute the pipeline that this executor was initialized with.
+
+        :param use_sample: Should the data be sampled?
+        :param sampling_technique: What sampling technique to use (only if use_sample is true)?
+        :param column_types: Should the column types of all steps be returned? If not, an empty list is returned
+        :return: A list of dictionary objects representing the data and a list of dicts representing the columns and
+        column types.
+        """
         columns = []
         transformation_list = self._get_transformations()
-
         # TODO:
-        records = self.load_data(True, "top")
+        if use_sample:
+            sampling_technique = self._get_sampling_technique(sampling_technique, transformation_list)
+        records = self.load_data(use_sample, )
         for t, step, t_class in transformation_list:
-            # Execute the transformation on the data set
-            # TODO: only calculate length if the transformation requires it!
-            sample_size = len(records)
-            # Before each step we create a list of columns and column types that are available
-            df_records = None
-            if column_types:
-                step_columns, df_records = _utils.get_columns(records)
-                columns.append(step_columns)
+            try:
+                # Execute the transformation on the data set
+                # TODO: only calculate length if the transformation requires it!
+                sample_size = len(records)
+                # Before each step we create a list of columns and column types that are available
+                df_records = None
+                if column_types:
+                    step_columns, df_records = self._get_columns(records)
+                    columns.append(step_columns)
 
-            t_func = t_class(step["kwargs"], sample_size, records[0])
-            # If it's a global transformation, we'll call it on all records, if it isn't, we call it one-at-a-time
-            if t_func.is_global:
-                if not column_types:
-                    # If we're loading column types, this is already defined
-                    df_records = self._make_dataframe(records)
-                records = self._apply_global(df_records, t_func)
-            elif t_func.is_flatten:
-                records = self._apply_flatten(records, t_func)
-            else:
-                records = self._apply(records, t_func)
-            if t_func.filter:
-                records = self._filter(records)
+                t_func = t_class(step["kwargs"], sample_size, records[0])
+                # If it's a global transformation, we'll call it on all records, if it isn't, we call it one-at-a-time
+                if t_func.is_global:
+                    if not column_types:
+                        # If we're loading column types, this is already defined
+                        df_records = self._make_dataframe(records)
+                    records = self._apply_global(df_records, t_func)
+                elif t_func.is_flatten:
+                    records = self._apply_flatten(records, t_func)
+                else:
+                    records = self._apply(records, t_func)
+                if t_func.filter:
+                    records = self._filter(records)
+            except IndexFilterException as e:
+                self.scout.log.warning(f"Transformation {t}: {e}")
+            except TransformationUnavailableException as e:
+                self.scout.log.warning(f"Transformation {t}: {e}")
+            except Exception as e:
+                raise PipelineException(transformation=t, original_exception=e)
 
         if column_types:
-            # TODO: Move get_columns to here
-            step_columns, df_records = _utils.get_columns(records)
+            step_columns, df_records = self._get_columns(records)
             columns.append(step_columns)
 
         records = self._fix_missing_columns(records)
-            # TODO: Make sure we're still returning records, even if an error occurs
+        # TODO: Make sure we're still returning records, even if an error occurs
         return records, columns
 
 

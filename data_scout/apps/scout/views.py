@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 from django.conf import settings
@@ -18,6 +19,8 @@ from .serializers import DataSourceSerializer, RecipeSerializer, TransformationS
     DataSourceFolderSerializer
 from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep, RecipeFolder, DataSourceFolder
 from django.core.exceptions import ObjectDoesNotExist
+
+from .variable_logger import VariableLogger
 
 
 class DataSourceViewSet(viewsets.ModelViewSet):
@@ -208,18 +211,22 @@ def data(request, recipe: int):
     :param step:
     :return:
     """
+
+    logger = logging.getLogger(__name__)
+    variable_logger = VariableLogger(1)
+    logger.addHandler(variable_logger.log_handler)
+    logger.setLevel(logging.INFO)
+
     recipe = get_object_or_404(Recipe, pk=recipe)
-    messages = []
     success = True
     records_export, columns = [], []
-    t = -1
     try:
         data_source = {"source": recipe.input.source, "kwargs": json.loads(recipe.input.kwargs)}
         if "filename" in data_source["kwargs"]:
             # In this case, we need to append the upload directory
             data_source["kwargs"]["filename"] = os.path.join(settings.MEDIA_ROOT, data_source["kwargs"]["filename"])
         pipeline = _get_pipeline(recipe)
-        scout = data_scout.scout.Scout()
+        scout = data_scout.scout.Scout(logger=logger)
         executor = data_scout.executor.PandasExecutor(data_source, pipeline, scout)
         records, columns = executor(column_types=True)
 
@@ -228,23 +235,14 @@ def data(request, recipe: int):
         for i, record in enumerate(records):
             records_export.append(list(clean_func(record, i)[0].values()))
 
-        # TODO: Retrieve t on error
-    except TypeError as e:
+    except data_scout.exceptions.PipelineException as e:
         success = False
-        messages.append({"code": 2, "type": "error", "message": f"Transformation {t}: {e}"})
-    except ParseException as e:
-        success = False
-        messages.append(
-            {"code": -1, "type": "error", "message": f"Transformation {t}: There is an error in the equation. {e}"})
-    except data_scout.exceptions.IndexFilterException as e:
-        messages.append({"code": -1, "type": "warning", "message": f"Transformation {t}: {e}"})
-    except data_scout.exceptions.TransformationUnavailableException as e:
-        messages.append({"code": -1, "type": "warning", "message": f"Transformation {e.transformation}: {e}"})
+        logger.error(f"Transformation: {e.transformation}: {type(e.original_exception).__name__} {e.original_exception}")
 
     if not success:
-        return JsonResponse({"success": False, "messages": messages})
+        return JsonResponse({"success": False, "messages": variable_logger.contents()})
 
-    return JsonResponse({"success": True, "messages": messages, "data": {
+    return JsonResponse({"success": True, "messages": variable_logger.contents(), "data": {
         'records': records_export,
         "column_types": columns,
         "column_names": list(columns[-1].keys())

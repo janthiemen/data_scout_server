@@ -2,6 +2,7 @@ from typing import List
 
 
 class Connector:
+    SAMPLING_TECHNIQUES = ['random', 'stratified', 'top']
     fields = {}
 
     def __init__(self, arguments: dict):

@@ -4,6 +4,7 @@ import pandas as pd
 from pandas.core.dtypes.inference import is_hashable
 
 from .transformation import Transformation
+from ..exceptions import IndexFilterException
 
 
 class FilterMissing(Transformation):

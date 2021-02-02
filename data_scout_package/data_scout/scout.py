@@ -1,4 +1,4 @@
-import importlib
+import logging
 import subprocess
 import sys
 from typing import List
@@ -11,8 +11,12 @@ class Scout:
     This is the main controller class. It manages all meta information, and installs/imports packages
     """
 
-    def __init__(self, extensions: List[dict] = None):
+    def __init__(self, logger: logging.Logger = None, extensions: List[dict] = None):
         self.transformations = TRANSFORMATION_MAP
+        self.log = logger
+        if self.log is None:
+            self.log = logging.getLogger(__name__)
+
         self.extensions = extensions
         if self.extensions is not None:
             self.load_extensions()
