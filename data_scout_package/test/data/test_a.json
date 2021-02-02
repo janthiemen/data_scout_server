@@ -1,0 +1,84 @@
+{
+  "use_sample": true,
+  "sampling_technique": "random",
+  "column_types": true,
+  "data_source": {
+    "source": "CSV",
+    "kwargs": {
+      "filename": "C:\\Users\\janthiemen.postema\\development\\data_scout\\data_scout\\uploads\\test.csv",
+      "delimiter": ",",
+      "has_header": true,
+      "encoding": "utf-8"
+    }
+  },
+  "pipeline": [
+    {
+      "transformation": "replace-text",
+      "kwargs": {
+        "field": "Column 4",
+        "old": "a",
+        "new": "b",
+        "output": "Column 4"
+      }
+    },
+    {
+      "transformation": "data-convert",
+      "kwargs": {
+        "to": "int",
+        "field": "column1"
+      }
+    },
+    {
+      "transformation": "extract-numbers",
+      "kwargs": {
+        "field": "Column 4",
+        "output": "numbers"
+      }
+    },
+    {
+      "transformation": "extract-httpquerystrings",
+      "kwargs": {
+        "field": "url",
+        "output": "url_param"
+      }
+    },
+    {
+      "transformation": "data-convert-datetime",
+      "kwargs": {
+        "field": "Datum",
+        "format": "%Y-%m-%d"
+      }
+    },
+    {
+      "transformation": "datetime-extract-week",
+      "kwargs": {
+        "field": "Datum",
+        "output": "week"
+      }
+    },
+    {
+      "transformation": "data-convert",
+      "kwargs": {
+        "to": "int",
+        "field": "column3"
+      }
+    },
+    {
+      "transformation": "math-add",
+      "kwargs": {
+        "fields": [
+          "column1",
+          "week",
+          "column3"
+        ],
+        "output": "test"
+      }
+    },
+    {
+      "transformation": "filter-value-missing",
+      "kwargs": {
+        "field": "test"
+      }
+    }
+  ]
+}

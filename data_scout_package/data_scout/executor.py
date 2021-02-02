@@ -1,17 +1,18 @@
 import itertools
-from typing import List, Tuple, Type, Any
+from typing import List, Tuple, Type, Any, Optional
 import pandas as pd
 
-from .connectors.connector import Connector
 from .connectors.data_source_type import DataSourceType
 from .exceptions import TransformationUnavailableException, IndexFilterException, PipelineException
 from .scout import Scout
-from .transformations import _utils
 from .transformations.data import MissingColumns, GetFields
 from .transformations.transformation import Transformation
 
 
 class Executor:
+    """
+    This is the abstract executor. It contains the base method every executor should implement.
+    """
 
     def __init__(self, data_source: dict, pipeline: List[dict], scout: Scout):
         self.data_source = DataSourceType.get_by_string(data_source["source"])(data_source["kwargs"])
@@ -126,10 +127,9 @@ class Executor:
         """
         columns = []
         transformation_list = self._get_transformations()
-        # TODO:
         if use_sample:
             sampling_technique = self._get_sampling_technique(sampling_technique, transformation_list)
-        records = self.load_data(use_sample, )
+        records = self.load_data(use_sample, sampling_technique)
         for t, step, t_class in transformation_list:
             try:
                 # Execute the transformation on the data set
@@ -171,6 +171,9 @@ class Executor:
 
 
 class PandasExecutor(Executor):
+    """
+    Execute a pipeline in Pandas.
+    """
 
     def _apply(self, records, transformation: Transformation):
         for i, record in enumerate(records):
@@ -205,6 +208,101 @@ class PandasExecutor(Executor):
             return value != False
 
         return [record for record in filter(_is_false, records)]
+
+
+class CodeExecutor(Executor):
+
+    def _get_columns(self, records: List[dict]) -> Tuple[dict, Any]:
+        return {}, None
+
+    def __init__(self, data_source: dict, pipeline: List[dict], scout: Scout):
+        super().__init__(data_source, pipeline, scout)
+        self.data_source = data_source
+        self.pipeline = pipeline
+        self.scout = scout
+
+    def load_data(self, use_sample: bool = False, sampling_technique: str = "top") -> str:
+        data_source_name = self._class_name(DataSourceType.get_by_string(self.data_source["source"]))
+        data_source_params = str(self.data_source["kwargs"])
+
+        code = f"data_source = {data_source_name}({data_source_params})\n"
+        code += f"records = data_source(False, '{sampling_technique}')\n"
+        return code
+
+    def _apply(self, records, transformation: Optional[Transformation]) -> str:
+        code = "for i, record in enumerate(records):\n"
+        code += "    records[i], _ = transformation(record, i)\n"
+        return code
+
+    def _apply_global(self, df_records, transformation: Optional[Transformation]):
+        code = "records, _ = transformation(df_records, -1)\n"
+        return code
+
+    def _apply_flatten(self, records, transformation: Optional[Transformation]):
+        code = self._apply(records, transformation)
+        code += "list(itertools.chain.from_iterable(records))\n"
+        return code
+
+    def _fix_missing_columns(self, records):
+        code = self._make_dataframe(records)
+        code += f"records = df_records.to_dict(orient='records')\n"
+        return code
+
+    def _make_dataframe(self, records: List[dict]):
+        return "df_records = pd.DataFrame(records)\n"
+
+    def _filter(self, records):
+        code = "records = [record for record in filter(_is_false, records)]\n"
+        return code
+
+    def _make_data_source(self):
+        # TODO
+        pass
+
+    def _class_name(self, o):
+        """
+        Get the fully classified class name of a certain type.
+
+        :param o: The class
+        :return:
+        """
+        module = o.__module__
+        if module is None or module == str.__module__:
+            return o.__name__  # Avoid reporting __builtin__
+        else:
+            return module + '.' + o.__name__
+
+    def __call__(self, use_sample: bool = True, sampling_technique: str = 'top', column_types: bool = False):
+        """
+        Create a piece of code that will execute all of the steps in Pandas.
+
+        :param use_sample: Not used
+        :param sampling_technique: Not used
+        :param column_types: Not used
+        :return: A string containing the code and an empty list.
+        """
+        transformation_list = self._get_transformations()
+        code = "import data_scout\n\n"
+        code += "def _is_false(value):\n"
+        code += "    return value != False\n\n"
+        code += self.load_data(use_sample, sampling_technique)
+        for t, step, t_class in transformation_list:
+            # Execute the transformation on the data set
+            code += f"sample_size = len(records)\n"
+            code += f"transformation = {self._class_name(t_class)}({str(step['kwargs'])}, sample_size, records[0])\n"
+            if t_class.is_global:
+                code += self._make_dataframe([])
+                code += self._apply_global(None, None)
+            elif t_class.is_flatten:
+                code += self._apply_flatten(None, None)
+            else:
+                code += self._apply(None, None)
+
+            if t_class.filter:
+                code += self._filter(None)
+
+            code += "\n"
+        return code, []
 
 
 class SparkExecutor(Executor):

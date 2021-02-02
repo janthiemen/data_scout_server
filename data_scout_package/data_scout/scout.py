@@ -21,6 +21,18 @@ class Scout:
         if self.extensions is not None:
             self.load_extensions()
 
+    def execute_json(self, definition: dict, executor_class):
+        """
+        Execute a JSON pipeline definition.
+
+        :param definition: Dict containing: use_sample, sampling_technique, column_types, data_source, pipeline
+        :param executor_class: A class that shall be initialized and called
+        :return: The results of the executor
+        """
+        executor = executor_class(data_source=definition["data_source"], pipeline=definition["pipeline"], scout=self)
+        return executor(use_sample=definition["use_sample"], sampling_technique=definition["sampling_technique"],
+                        column_types=definition["column_types"])
+
     def load_extensions(self):
         """
         Load/install all extensions.

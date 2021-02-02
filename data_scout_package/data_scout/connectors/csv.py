@@ -110,5 +110,9 @@ class CSV(Connector):
             df = pd.DataFrame(data, columns=column_names)
             return df.to_dict(orient="records")
         else:
-            # TODO: To be implemented
-            raise NotImplementedError()
+            # TODO: To be implemented properly!
+            # raise NotImplementedError()
+
+            df = pd.read_csv(self.filename, sep=self.delimiter, encoding=self.encoding,
+                             header='infer' if self.has_header else None)
+            return df.to_dict(orient="records")

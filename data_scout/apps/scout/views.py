@@ -3,7 +3,7 @@ import logging
 import os
 
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 
 from pyparsing import ParseException
@@ -201,34 +201,40 @@ class CleanJSON:
         return row, index
 
 
+def _recipe_to_dict(recipe: int, use_sample=True, column_types=True):
+    recipe = get_object_or_404(Recipe, pk=recipe)
+    definition = {"use_sample": use_sample,
+                  "sampling_technique": recipe.sampling_technique,
+                  "column_types": column_types}
+    data_source = {"source": recipe.input.source, "kwargs": json.loads(recipe.input.kwargs)}
+    if "filename" in data_source["kwargs"]:
+        # In this case, we need to append the upload directory
+        data_source["kwargs"]["filename"] = os.path.join(settings.MEDIA_ROOT, data_source["kwargs"]["filename"])
+    definition["data_source"] = data_source
+
+    definition["pipeline"] = _get_pipeline(recipe)
+    return definition
+
+
 def data(request, recipe: int):
     """
-    Load the data.
-    TODO: Check if we want to reintroduce the "step" (i.e. to offer the option to get the dataset after a certain step
-    in the recipe).
+    Load the data and execute a pipeline.
+
     :param request:
     :param recipe:
-    :param step:
     :return:
     """
-
     logger = logging.getLogger(__name__)
     variable_logger = VariableLogger(1)
     logger.addHandler(variable_logger.log_handler)
     logger.setLevel(logging.INFO)
 
-    recipe = get_object_or_404(Recipe, pk=recipe)
     success = True
     records_export, columns = [], []
     try:
-        data_source = {"source": recipe.input.source, "kwargs": json.loads(recipe.input.kwargs)}
-        if "filename" in data_source["kwargs"]:
-            # In this case, we need to append the upload directory
-            data_source["kwargs"]["filename"] = os.path.join(settings.MEDIA_ROOT, data_source["kwargs"]["filename"])
-        pipeline = _get_pipeline(recipe)
+        definition = _recipe_to_dict(recipe, use_sample=True, column_types=True)
         scout = data_scout.scout.Scout(logger=logger)
-        executor = data_scout.executor.PandasExecutor(data_source, pipeline, scout)
-        records, columns = executor(column_types=True)
+        records, columns = scout.execute_json(definition, data_scout.executor.PandasExecutor)
 
         records_export = []
         clean_func = CleanJSON()
@@ -247,6 +253,18 @@ def data(request, recipe: int):
         "column_types": columns,
         "column_names": list(columns[-1].keys())
     }})
+
+
+def pipeline(request, recipe: int):
+    definition = _recipe_to_dict(recipe)
+    if request.GET.get("output") == "python":
+        scout = data_scout.scout.Scout()
+        code, _ = scout.execute_json(definition, data_scout.executor.CodeExecutor)
+        res = HttpResponse(code, content_type='text/x-python')
+        res['Content-Disposition'] = 'attachment; filename="pipeline.py"'
+        return res
+    else:
+        return JsonResponse(definition)
 
 
 def meta_transformations(request):

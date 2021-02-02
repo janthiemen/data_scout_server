@@ -1,6 +1,6 @@
 import unittest
 
-from data_scout.executor import PandasExecutor
+from data_scout.executor import PandasExecutor, CodeExecutor
 from data_scout.scout import Scout
 
 
@@ -15,7 +15,7 @@ class TestPandas(unittest.TestCase):
         :return:
         """
         self.scout = Scout()
-        self.executor = PandasExecutor({"source": "CSV", "kwargs": {
+        self.executor = CodeExecutor({"source": "CSV", "kwargs": {
             "filename": "C:\\Users\\janthiemen.postema\\development\\data_scout\\data_scout\\uploads\\test.csv",
             "delimiter": ",",
             "encoding": "utf-8",
