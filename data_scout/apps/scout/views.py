@@ -1,14 +1,18 @@
 import json
 import logging
 import os
+import uuid
 
 from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 
 from pyparsing import ParseException
 from rest_framework import viewsets, views, response, status
 from rest_framework import permissions
+from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 
 import data_scout
@@ -16,8 +20,8 @@ import math
 import numpy as np
 from .serializers import DataSourceSerializer, RecipeSerializer, TransformationSerializer, FlowSerializer, \
     JoinSerializer, FlowStepSerializer, TransformationSerializerUpdate, RecipeFolderSerializer, \
-    DataSourceFolderSerializer
-from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep, RecipeFolder, DataSourceFolder
+    DataSourceFolderSerializer, UserFileSerializer
+from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep, RecipeFolder, DataSourceFolder, UserFile
 from django.core.exceptions import ObjectDoesNotExist
 
 from .variable_logger import VariableLogger
@@ -30,6 +34,36 @@ class DataSourceViewSet(viewsets.ModelViewSet):
     queryset = DataSource.objects.all()
     serializer_class = DataSourceSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class UserFileViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = UserFile.objects.all()
+    serializer_class = UserFileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class UserFileUploadView(views.APIView):
+    parser_classes = [FileUploadParser]
+    queryset = UserFile.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, user_file_id: int, format=None):
+        file_name = str(uuid.uuid4())
+        user_file = get_object_or_404(UserFile, pk=user_file_id)
+
+        file_obj = request.data['file']
+        # TODO: If there already is a file; delete it
+        default_storage.save(file_name, ContentFile(file_obj.read()))
+        user_file.original_file_name = file_name
+        user_file.file_name = request.data['file'].name
+        user_file.save()
+
+        serializer = UserFileSerializer(user_file, many=False)
+        return Response(serializer.data)
+        # return Response(status=204)
 
 
 class LoginCheckView(views.APIView):

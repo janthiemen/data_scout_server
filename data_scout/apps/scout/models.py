@@ -88,6 +88,14 @@ class FlowStep(models.Model):
     join = models.OneToOneField(Join, on_delete=models.CASCADE, null=True)
 
 
+class UserFile(models.Model):
+    data_source = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="files")
+    field_name = models.CharField(max_length=1024)
+    file_name = models.CharField(max_length=1024, null=True)
+    original_file_name = models.CharField(max_length=1024, null=True)
+    # TODO: Add some sort of on delete
+
+
 class TempDataSample(models.Model):
     """
     This table contains samples of the data sources. The actual samples are stored as CSV files on disk.

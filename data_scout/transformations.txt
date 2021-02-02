@@ -9,13 +9,10 @@ Other Functions
     SOURCEROWNUMBER Function
 
 
-Move transformations to a separate package
-    - Export code
 File upload
 SQL connector
 Excel connector
 
-Improved logging (separated from serving)
 Join datasets/recipes
 Help function
 Improve logout timer
@@ -28,7 +25,7 @@ Automatically build the menu
 Custom transformations
     Hook system?
 Marketplace
-    Rpository systeem -> CSV file oid.
+    Repository system -> CSV file oid.
     Installation command -> e.g. pip install ...
     Store installed packages in DB
         Package name

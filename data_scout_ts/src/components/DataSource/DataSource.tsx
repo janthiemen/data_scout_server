@@ -3,7 +3,7 @@ import autobind from 'class-autobind';
 
 import {
     MenuItem, IProps, IToastProps, Intent, 
-    FormGroup, InputGroup, NumericInput, Switch, Button
+    FormGroup, InputGroup, NumericInput, Switch, Button, FileInput
 } from "@blueprintjs/core";
 
 import { Select, ItemRenderer, ItemPredicate } from "@blueprintjs/select";
@@ -74,6 +74,7 @@ interface DataSourceProps extends IProps {
  */
 interface DataSourceState {
     dataSource: DataSource,
+    fileUploadQueue: string[],
     dataSourceType?: DataSourceType,
     fieldValues: { [key: string]: any },
     types: DataSourceType[];
@@ -88,6 +89,7 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
     private updateDataSources: () => void;
     public state: DataSourceState = {
         dataSource: newDataSource(),
+        fileUploadQueue: [],
         dataSourceType: undefined,
         fieldValues: {},
         types: []
@@ -168,10 +170,18 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
         let fields = this.getFields();
         if (fields[event.target.id]["type"] === "boolean") {
             fieldValues[event.target.id] = event.target.checked;
+        } else if (fields[event.target.id]["type"] === "file") {
+            fieldValues[event.target.id] = event.target.files[0];
+            // this.dataSourceService.saveFile({"data_source": 2, "field_name": "filename"}, this.finishFile);
+            // this.dataSourceService.saveFile({}, this.finishFile, event.target.files[0])
         } else {
             fieldValues[event.target.id] = event.target.value;
         }
         this.setState({ fieldValues: fieldValues });
+    }
+
+    private finishFile(body: {}) {
+        console.log(body);
     }
 
     /**
@@ -194,10 +204,42 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
             let dataSource = this.state.dataSource;
             dataSource.id = body["id"];
             this.setState({ dataSource: dataSource });
+            // TODO: Add some sort of progress bar for uploading
+            let fields = this.getFields();
+            let fileUploadQueue = [];
+            for (let [key, fieldValue] of Object.entries(this.state.fieldValues)) {
+                if (fields[key]["type"] == "file") {
+                    fileUploadQueue.push(key);
+                }
+            }
+
+            // TODO:
+            /*
+            - If there's no ID; post the data source
+            - For each file input:
+                - If there's no value (id) in the fieldValues: 
+                    - create the UserFile object
+                    - Store the ID as fieldValue
+                - Upload the file
+            - Update the data source
+            */
+
+            this.setState({fileUploadQueue: fileUploadQueue});
+            this.dataSourceService.saveFile({"data_source": 2, "field_name": "filename"}, this.uploadFile);
+        } else {
+            this.addToast({ intent: Intent.WARNING, message: "Couldn't save the data source." });
+        }
+    }
+
+    private uploadFile() {
+        if (this.state.fileUploadQueue.length == 0) {
             this.addToast({ intent: Intent.SUCCESS, message: "The data source has been saved" });
             this.updateDataSources();
         } else {
-            this.addToast({ intent: Intent.WARNING, message: "Couldn't save the data source." });
+            let fileUploadQueue = this.state.fileUploadQueue;
+            let key = fileUploadQueue.pop()
+            this.setState({fileUploadQueue: fileUploadQueue});
+            this.dataSourceService.saveFile({"data_source": 2, "field_name": "filename"}, this.finishFile);
         }
     }
 
@@ -208,11 +250,18 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
         event.preventDefault();
 
         if (this.state.dataSourceType !== undefined) {
+            let fields = this.getFields();
+            let kwargs: { [key: string]: any } = {}
+            for (let [key, fieldValue] of Object.entries(this.state.fieldValues)) {
+                if (fields[key]["type"] != "file") {
+                    kwargs[key] = fieldValue;
+                }
+            }
             let data = {
                 id: this.state.dataSource.id,
                 name: this.state.dataSource.name,
                 source: this.state.dataSourceType.name,
-                kwargs: JSON.stringify(this.state.fieldValues)
+                kwargs: JSON.stringify(kwargs)
             }
             this.dataSourceService.save(data, this.finishSubmit);
         } else {
@@ -245,6 +294,10 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
             case "boolean":
                 return <FormGroup {...paramsFormGroup}>
                     <Switch id={key} checked={this.state.fieldValues[key]} label={field.name} onChange={this.updateFieldValue} />
+                </FormGroup>
+            case "file":
+                return <FormGroup {...paramsFormGroup}>
+                    <FileInput text="Choose file..." inputProps={{"id": key}} onInputChange={this.updateFieldValue} />
                 </FormGroup>
             default:
                 return <FormGroup {...paramsFormGroup} label={field.name}>

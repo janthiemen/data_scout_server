@@ -16,7 +16,7 @@ class CSV(Connector):
     MAX_SIZE = 2000000
     MAX_ROWS = 200
     fields = {
-        "filename": {"name": "Filename", "type": "string", "help": "The filename of the CSV file.", "required": True},
+        "filename": {"name": "Filename", "type": "file", "help": "The filename of the CSV file.", "required": True},
         "delimiter": {"name": "Delimiter", "type": "string", "help": "The delimiter in the CSV file.", "required": True,
                       "default": ","},
         "has_header": {"name": "Has header",

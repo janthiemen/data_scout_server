@@ -164,6 +164,23 @@ export class DataSourceService extends APICaller {
         }
     }
 
+    saveFile(data: { [key: string]: any }, callback: (body: {}) => void) {
+        if (data["id"] > 0) {
+            this.call(`/scout/api/datasource_file/${data["id"]}/`, "PUT", data, callback);
+        } else {
+            this.call("/scout/api/datasource_file/", "POST", data, callback);
+        }
+    }
+
+    uploadFile(file: File, id, callback: (body: {}) => void) {
+        this.call(`/scout/api/datasource_file/${id}/upload`, "PUT", file, callback, false);
+        // if (data["id"] > 0) {
+        //     this.call(`/scout/api/datasource/${data["id"]}/`, "PUT", data, callback);
+        // } else {
+        //     this.call("/scout/api/datasource/", "POST", data, callback);
+        // }
+    }
+
     delete(id: number | string, callback: (body: {}) => void) {
         this.call(`/scout/api/datasource/${id}/`, "DELETE", {}, callback);
     }

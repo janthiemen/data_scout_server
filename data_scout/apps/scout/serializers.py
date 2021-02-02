@@ -1,12 +1,18 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep, RecipeFolder, DataSourceFolder
+from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep, RecipeFolder, DataSourceFolder, UserFile
 
 
 class DataSourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = DataSource
         fields = ['id', 'name', 'parent', 'source', 'kwargs']
+
+
+class UserFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserFile
+        fields = ['id', 'data_source', 'file_name', 'original_file_name']
 
 
 class TransformationSerializer(serializers.ModelSerializer):
