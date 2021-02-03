@@ -96,7 +96,8 @@ class DataSourceTypesView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        data_source_types = data_scout.connectors.DataSourceType.data_source_types
+        scout = data_scout.scout.Scout()
+        data_source_types = scout.data_sources
         serialized = []
         for data_source_type in data_source_types.values():
             serialized.append({"name": data_source_type.__name__, "fields": data_source_type.fields})
@@ -254,15 +255,18 @@ class CleanJSON:
         return row, index
 
 
-def _recipe_to_dict(recipe: int, use_sample=True, column_types=True):
+def _recipe_to_dict(recipe: int, scout: data_scout.scout.Scout, use_sample=True, column_types=True):
     recipe = get_object_or_404(Recipe, pk=recipe)
     definition = {"use_sample": use_sample,
                   "sampling_technique": recipe.sampling_technique,
                   "column_types": column_types}
     data_source = {"source": recipe.input.source, "kwargs": json.loads(recipe.input.kwargs)}
-    if "filename" in data_source["kwargs"]:
-        # In this case, we need to append the upload directory
-        data_source["kwargs"]["filename"] = os.path.join(settings.MEDIA_ROOT, data_source["kwargs"]["filename"])
+
+    ds = scout.get_data_source(data_source["source"])
+    for field_name, field in ds.fields.items():
+        if field["type"] == "file":
+            user_file = UserFile.objects.get(pk=data_source["kwargs"][field_name])
+            data_source["kwargs"][field_name] = os.path.join(settings.MEDIA_ROOT, user_file.file_name)
     definition["data_source"] = data_source
 
     definition["pipeline"] = _get_pipeline(recipe)
@@ -285,8 +289,8 @@ def data(request, recipe: int):
     success = True
     records_export, columns = [], []
     try:
-        definition = _recipe_to_dict(recipe, use_sample=True, column_types=True)
         scout = data_scout.scout.Scout(logger=logger)
+        definition = _recipe_to_dict(recipe, scout, use_sample=True, column_types=True)
         records, columns = scout.execute_json(definition, data_scout.executor.PandasExecutor)
 
         records_export = []
@@ -309,7 +313,8 @@ def data(request, recipe: int):
 
 
 def pipeline(request, recipe: int):
-    definition = _recipe_to_dict(recipe)
+    scout = data_scout.scout.Scout()
+    definition = _recipe_to_dict(recipe, scout)
     if request.GET.get("output") == "python":
         scout = data_scout.scout.Scout()
         code, _ = scout.execute_json(definition, data_scout.executor.CodeExecutor)

@@ -3,6 +3,7 @@ import subprocess
 import sys
 from typing import List
 
+from .connectors import DATA_SOURCE_MAP, Connector
 from .transformations import TRANSFORMATION_MAP
 
 
@@ -13,6 +14,8 @@ class Scout:
 
     def __init__(self, logger: logging.Logger = None, extensions: List[dict] = None):
         self.transformations = TRANSFORMATION_MAP
+        # TODO: Add option to install data sources
+        self.data_sources = DATA_SOURCE_MAP
         self.log = logger
         if self.log is None:
             self.log = logging.getLogger(__name__)
@@ -61,3 +64,5 @@ class Scout:
         for transformation in extension["transformations"]:
             self.transformations[transformation["name"]] = eval(transformation["class"])
 
+    def get_data_source(self, data_source: str) -> Connector:
+        return self.data_sources.get(data_source)
