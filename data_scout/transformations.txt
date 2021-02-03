@@ -9,9 +9,7 @@ Other Functions
     SOURCEROWNUMBER Function
 
 
-File upload
 SQL connector
-Excel connector
 
 Join datasets/recipes
 Help function

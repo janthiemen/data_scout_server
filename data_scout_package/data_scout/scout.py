@@ -1,7 +1,7 @@
 import logging
 import subprocess
 import sys
-from typing import List
+from typing import List, Type
 
 from .connectors import DATA_SOURCE_MAP, Connector
 from .transformations import TRANSFORMATION_MAP
@@ -64,5 +64,5 @@ class Scout:
         for transformation in extension["transformations"]:
             self.transformations[transformation["name"]] = eval(transformation["class"])
 
-    def get_data_source(self, data_source: str) -> Connector:
+    def get_data_source(self, data_source: str) -> Type[Connector]:
         return self.data_sources.get(data_source)

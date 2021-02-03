@@ -15,9 +15,9 @@ class Executor:
     """
 
     def __init__(self, data_source: dict, pipeline: List[dict], scout: Scout):
-        self.data_source = DataSourceType.get_by_string(data_source["source"])(data_source["kwargs"])
-        self.pipeline = pipeline
         self.scout = scout
+        self.pipeline = pipeline
+        self.data_source = self.scout.get_data_source(data_source["source"])(data_source["kwargs"])
 
     def load_data(self, use_sample: bool = False, sampling_technique: str = "top") -> List[dict]:
         data = self.data_source(use_sample, sampling_technique)
@@ -222,7 +222,7 @@ class CodeExecutor(Executor):
         self.scout = scout
 
     def load_data(self, use_sample: bool = False, sampling_technique: str = "top") -> str:
-        data_source_name = self._class_name(DataSourceType.get_by_string(self.data_source["source"]))
+        data_source_name = self._class_name(self.scout.get_data_source(self.data_source["source"]))
         data_source_params = str(self.data_source["kwargs"])
 
         code = f"data_source = {data_source_name}({data_source_params})\n"

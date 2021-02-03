@@ -168,10 +168,10 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
             recipe.id = body["id"];
             recipe.input = body["input"];
             this.setState({ recipe: recipe });
-            this.addToast({ intent: Intent.SUCCESS, message: "The data source has been saved" });
+            this.addToast({ intent: Intent.SUCCESS, message: "The recipe has been saved" });
             this.updateRecipes();
         } else {
-            this.addToast({ intent: Intent.WARNING, message: "Couldn't save the data source." });
+            this.addToast({ intent: Intent.WARNING, message: "Couldn't save the recipe." });
         }
     }
 
@@ -194,7 +194,7 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
     }
 
     /**
-     * Render a data source, including a type selector and a name field, as well as the required data source specific fields.
+     * Render a recipe, including a type selector and a name field, as well as the required recipe specific fields.
      */
     render() {
         const DataSourceSelect = Select.ofType<DataSource>();
@@ -212,7 +212,7 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
                     />
                 </DataSourceSelect>
             </FormGroup>
-            <FormGroup label="Name" labelFor="name" labelInfo="(required)" helperText="The human readable name of the data source">
+            <FormGroup label="Name" labelFor="name" labelInfo="(required)" helperText="The human readable name of the recipe">
                 <InputGroup id="name" placeholder="Placeholder text" onChange={this.updateName} value={this.state.recipe.name} />
             </FormGroup>
             <FormGroup label="Sampling technique" labelFor="sampling_technique" labelInfo="(required)" helperText="The sampling technique used in the editor">
