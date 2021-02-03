@@ -10,7 +10,7 @@ import { withRouter } from "react-router-dom";
 
 
 export class LoginComponent extends React.PureComponent<PageProps> {
-	private addToast: (toast: IToastProps) => void;
+	private addToast: (toast: IToastProps, key?: string) => string;
 	private apiCaller: APICaller;
 
 	constructor(props: PageProps) {

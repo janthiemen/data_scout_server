@@ -1,7 +1,9 @@
 import json
 import logging
+import mimetypes
 import os
 import uuid
+from wsgiref.util import FileWrapper
 
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -42,7 +44,22 @@ class UserFileViewSet(viewsets.ModelViewSet):
     """
     queryset = UserFile.objects.all()
     serializer_class = UserFileSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, user_file: int):
+        return JsonResponse({"user_file": user_file})
+
+    def retrieve(self, request, pk=None, **kwargs):
+        user_file = get_object_or_404(self.queryset, pk=pk)
+        if request.query_params.get("output", "json") == "file":
+            with default_storage.open(user_file.file_name) as f:
+                res = HttpResponse(FileWrapper(f), content_type=mimetypes.guess_type(user_file.original_file_name))
+                res['Content-Disposition'] = f"attachment; filename={user_file.original_file_name}"
+                return res
+        else:
+            serializer = self.serializer_class(user_file)
+            return Response(serializer.data)
+    # TODO: Add some sort of on delete to delete the accompanying file
 
 
 class UserFileUploadView(views.APIView):
@@ -54,16 +71,18 @@ class UserFileUploadView(views.APIView):
         file_name = str(uuid.uuid4())
         user_file = get_object_or_404(UserFile, pk=user_file_id)
 
+        # If there's already a file, we'll delete it
+        if user_file.file_name is not None and default_storage.exists(user_file.file_name):
+            default_storage.delete(user_file.file_name)
+
         file_obj = request.data['file']
-        # TODO: If there already is a file; delete it
         default_storage.save(file_name, ContentFile(file_obj.read()))
-        user_file.original_file_name = file_name
-        user_file.file_name = request.data['file'].name
+        user_file.file_name = file_name
+        user_file.original_file_name = request.data['file'].name
         user_file.save()
 
         serializer = UserFileSerializer(user_file, many=False)
         return Response(serializer.data)
-        # return Response(status=204)
 
 
 class LoginCheckView(views.APIView):

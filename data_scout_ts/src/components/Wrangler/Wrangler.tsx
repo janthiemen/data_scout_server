@@ -45,7 +45,7 @@ interface Recipe {
 
 export class WranglerComponent extends React.Component<PageProps, WranglerState> {
     private wranglerService: WranglerService;
-    private addToast: (toast: IToastProps) => void;
+    private addToast: (toast: IToastProps, key?: string) => string;
 
     constructor(props: any) {
         super(props);

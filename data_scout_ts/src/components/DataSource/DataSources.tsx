@@ -1,7 +1,7 @@
 import * as React from "react";
 import autobind from 'class-autobind';
 
-import { Icon, Intent, IToastProps } from "@blueprintjs/core";
+import { Icon, Intent, IToastProps, Toaster } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { History } from 'history'
 
@@ -37,6 +37,10 @@ interface DataSourcesState {
     dataSourceFolders: DataSourceFolder[],
 }
 
+interface DataSourcesProps extends PageProps {
+    getToaster: () => Toaster;
+}
+
 
 /**
  * Empty data source object.
@@ -54,9 +58,10 @@ export const newDataSource = function(): DataSource {
 /**
  * The page with all the data sources.
  */
-export class DataSourcesComponent extends React.Component<PageProps> {
+export class DataSourcesComponent extends React.Component<DataSourcesProps> {
     private dataSourceService: DataSourceService;
-    private addToast: (toast: IToastProps) => void;
+    private addToast: (toast: IToastProps, key?: string) => string;
+    private getToaster: () => Toaster;
     private history: History;
     public state: DataSourcesState = {
         types: [],
@@ -69,7 +74,7 @@ export class DataSourcesComponent extends React.Component<PageProps> {
      * Creates an instance of data sources.
      * @param props 
      */
-    constructor(props: PageProps) {
+    constructor(props: DataSourcesProps) {
         super(props);
         autobind(this);
         this.dataSourceService = new DataSourceService(props.addToast, props.setLoggedIn);
@@ -77,6 +82,7 @@ export class DataSourcesComponent extends React.Component<PageProps> {
         this.dataSourceService.getTypes(this.setTypes);
 
         this.addToast = props.addToast;
+        this.getToaster = props.getToaster;
         this.refresh();
     }
 
@@ -131,7 +137,7 @@ export class DataSourcesComponent extends React.Component<PageProps> {
                         />
                     </Col>
                     <Col md={6}>
-                        <DataSourceComponent updateDataSources={this.refresh} types={this.state.types} dataSource={this.state.dataSource} dataSourceService={this.dataSourceService} addToast={this.addToast} />
+                        <DataSourceComponent getToaster={this.getToaster} updateDataSources={this.refresh} types={this.state.types} dataSource={this.state.dataSource} dataSourceService={this.dataSourceService} addToast={this.addToast} />
                     </Col>
                 </Row>
             </Grid>

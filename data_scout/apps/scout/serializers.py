@@ -12,7 +12,7 @@ class DataSourceSerializer(serializers.ModelSerializer):
 class UserFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserFile
-        fields = ['id', 'data_source', 'file_name', 'original_file_name']
+        fields = ['id', 'data_source', 'field_name', 'file_name', 'original_file_name']
 
 
 class TransformationSerializer(serializers.ModelSerializer):

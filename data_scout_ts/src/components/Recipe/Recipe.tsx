@@ -58,7 +58,7 @@ const dataSourceFilterer: ItemPredicate<DataSource> = (query, item, _index, exac
  */
 interface RecipeProps extends IProps {
     recipeService: RecipeService,
-    addToast: (toast: IToastProps) => void;
+    addToast: (toast: IToastProps, key?: string) => string;
     updateRecipes: () => void;
     dataSource?: DataSource,
     recipe: Recipe,
@@ -85,7 +85,7 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
         history: PropTypes.object.isRequired
     };
     private recipeService: RecipeService;
-    private addToast: (toast: IToastProps) => void;
+    private addToast: (toast: IToastProps, key?: string) => string;
     private updateRecipes: () => void;
     public state: RecipeState = {
         recipe: newRecipe(),

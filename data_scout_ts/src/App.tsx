@@ -65,6 +65,7 @@ export default class App extends React.Component<IProps> {
 	constructor(props: IProps) {
 		super(props);
 		this.addToast = this.addToast.bind(this);
+		this.getToaster = this.getToaster.bind(this);
 		this.setLoggedIn = this.setLoggedIn.bind(this);
 	}
 
@@ -72,9 +73,16 @@ export default class App extends React.Component<IProps> {
 	 * Add a toast.
 	 * @param toast The Blueprint.js toast properties
 	 */
-	private addToast(toast: IToastProps) {
+	private addToast(toast: IToastProps, key?: string): string {
 		toast.timeout = 5000;
-		this.toaster.show(toast);
+		return this.toaster.show(toast, key);
+	}
+
+	/**
+	 * Get the toaster object.
+	 */
+	private getToaster(): Toaster {
+		return this.toaster;
 	}
 
 	/**
@@ -102,7 +110,7 @@ export default class App extends React.Component<IProps> {
 						</Route>
 						<Route path="/data_sources">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
-							<DataSources addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
+							<DataSources getToaster={this.getToaster} addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
 						</Route>
 						<Route path="/recipes">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />

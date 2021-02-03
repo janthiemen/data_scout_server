@@ -3,7 +3,7 @@ import autobind from 'class-autobind';
 
 import {
     MenuItem, IProps, IToastProps, Intent, 
-    FormGroup, InputGroup, NumericInput, Switch, Button, FileInput
+    FormGroup, InputGroup, NumericInput, Switch, Button, FileInput, ControlGroup, Toaster, ProgressBar
 } from "@blueprintjs/core";
 
 import { Select, ItemRenderer, ItemPredicate } from "@blueprintjs/select";
@@ -62,7 +62,8 @@ const dataSourceTypeFilterer: ItemPredicate<DataSourceType> = (query, item, _ind
  */
 interface DataSourceProps extends IProps {
     dataSourceService: DataSourceService,
-    addToast: (toast: IToastProps) => void;
+    addToast: (toast: IToastProps, key?: string) => string;
+    getToaster: () => Toaster;
     updateDataSources: () => void;
     dataSourceType?: DataSourceType,
     dataSource: DataSource,
@@ -74,7 +75,6 @@ interface DataSourceProps extends IProps {
  */
 interface DataSourceState {
     dataSource: DataSource,
-    fileUploadQueue: string[],
     dataSourceType?: DataSourceType,
     fieldValues: { [key: string]: any },
     types: DataSourceType[];
@@ -85,11 +85,17 @@ interface DataSourceState {
  */
 export class DataSourceComponent extends React.Component<DataSourceProps, DataSourceState> {
     private dataSourceService: DataSourceService;
-    private addToast: (toast: IToastProps) => void;
+    private addToast: (toast: IToastProps, key?: string) => string;
+    private getToaster: () => Toaster;
     private updateDataSources: () => void;
+    private submitProgress = {
+        "step": 0,
+        "total_steps": 0,
+        "key": undefined
+    }
+    private fileUploadQueue: {}[] = [];
     public state: DataSourceState = {
         dataSource: newDataSource(),
-        fileUploadQueue: [],
         dataSourceType: undefined,
         fieldValues: {},
         types: []
@@ -105,6 +111,7 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
         this.dataSourceService = props.dataSourceService;
         this.updateDataSources = props.updateDataSources;
         this.addToast = props.addToast;
+        this.getToaster = props.getToaster;
     }
 
     /**
@@ -114,9 +121,13 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
         let fields = this.getFields()
         let kwargs = this.state.dataSource.kwargs;
 
-        let fieldValues: { [key: string]: string } = {};
+        let fieldValues: { [key: string]: string|{} } = {};
         for (let key in fields) {
-            fieldValues[key] = key in kwargs ? kwargs[key] : "";
+            if (fields[key]["type"] === "file") {
+                fieldValues[key] = {"id": key in kwargs && kwargs[key] !== null ? kwargs[key] : -1, "file": null};
+            } else {
+                fieldValues[key] = key in kwargs ? kwargs[key] : "";
+            }
         }
         this.setState({ fieldValues: fieldValues })
     }
@@ -171,17 +182,11 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
         if (fields[event.target.id]["type"] === "boolean") {
             fieldValues[event.target.id] = event.target.checked;
         } else if (fields[event.target.id]["type"] === "file") {
-            fieldValues[event.target.id] = event.target.files[0];
-            // this.dataSourceService.saveFile({"data_source": 2, "field_name": "filename"}, this.finishFile);
-            // this.dataSourceService.saveFile({}, this.finishFile, event.target.files[0])
+            fieldValues[event.target.id]["file"] = event.target.files[0];
         } else {
             fieldValues[event.target.id] = event.target.value;
         }
         this.setState({ fieldValues: fieldValues });
-    }
-
-    private finishFile(body: {}) {
-        console.log(body);
     }
 
     /**
@@ -195,79 +200,150 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
     }
 
     /**
+     * Submits the data source
+     */
+    private submitDataSource(event: React.SyntheticEvent) {
+        if (event !== null) {
+            event.preventDefault();
+        }
+
+        if (this.state.dataSourceType !== undefined) {
+            let fields = this.getFields();
+            let kwargs: { [key: string]: any } = {};
+
+            // Check if there are file to be uploaded, if so, put them in the queue
+            this.fileUploadQueue = [];
+            for (let [key, fieldValue] of Object.entries(this.state.fieldValues)) {
+                // TODO: On loading of the kwargs, replace the id in a file field by an object {"id": X, "file": null}
+                if (fields[key]["type"] == "file" && fieldValue["file"] !== null) {
+                    this.fileUploadQueue.push({"key": key, "id": fieldValue["id"], "file": fieldValue["file"]});
+                }
+            }
+
+            this.submitProgress["step"] = -1;
+            this.submitProgress["key"] = undefined;
+            if (this.state.dataSource.id === -1 && this.fileUploadQueue.length > 0) {
+                // Here we've got fileUploadQueue.length + 2 steps
+                this.submitProgress["total_steps"] = this.fileUploadQueue.length + 2;
+                this.renderProgress();
+                // Upload the data source, without kwargs
+                this.doSubmitDataSource({});
+            } else if (this.fileUploadQueue.length > 0) {
+                this.submitProgress["total_steps"] = this.fileUploadQueue.length + 1;
+                this.renderProgress();
+                this.uploadFile();
+            } else {
+                this.submitProgress["total_steps"] = 1;
+                this.renderProgress();
+                this.finalSubmitDataSource();
+            }
+
+        } else {
+            this.addToast({ intent: Intent.WARNING, message: "Please select a data source type first." });
+        }
+    }
+
+    private finalSubmitDataSource() {
+        let fields = this.getFields();
+        let kwargs: { [key: string]: any } = {};
+        for (let [key, fieldValue] of Object.entries(this.state.fieldValues)) {
+            if (fields[key]["type"] != "file") {
+                kwargs[key] = fieldValue;
+            } else {
+                kwargs[key] = fieldValue["id"];
+            }
+        }
+        this.doSubmitDataSource(kwargs);
+    }
+
+    private doSubmitDataSource(kwargs) {
+        let data = {
+            id: this.state.dataSource.id,
+            name: this.state.dataSource.name,
+            source: this.state.dataSourceType.name,
+            kwargs: JSON.stringify(kwargs)
+        }
+        this.dataSourceService.save(data, this.finishSubmit);
+    }
+
+    /**
      * Handle the submit return
      * @param body 
      */
     private finishSubmit(body: {}) {
         if ("id" in body) {
+            this.renderProgress();
             // There is an ID in there, so we'll set the current ID
             let dataSource = this.state.dataSource;
             dataSource.id = body["id"];
             this.setState({ dataSource: dataSource });
             // TODO: Add some sort of progress bar for uploading
-            let fields = this.getFields();
-            let fileUploadQueue = [];
-            for (let [key, fieldValue] of Object.entries(this.state.fieldValues)) {
-                if (fields[key]["type"] == "file") {
-                    fileUploadQueue.push(key);
-                }
+            if (this.fileUploadQueue.length == 0) {
+                this.updateDataSources();
+            } else {
+                this.uploadFile();
             }
-
-            // TODO:
-            /*
-            - If there's no ID; post the data source
-            - For each file input:
-                - If there's no value (id) in the fieldValues: 
-                    - create the UserFile object
-                    - Store the ID as fieldValue
-                - Upload the file
-            - Update the data source
-            */
-
-            this.setState({fileUploadQueue: fileUploadQueue});
-            this.dataSourceService.saveFile({"data_source": 2, "field_name": "filename"}, this.uploadFile);
         } else {
             this.addToast({ intent: Intent.WARNING, message: "Couldn't save the data source." });
         }
     }
 
+    private createUserFile(key: string) {
+        this.dataSourceService.saveFile({"data_source": this.state.dataSource.id, "field_name": key}, this.doUploadFile);
+    }
+
     private uploadFile() {
-        if (this.state.fileUploadQueue.length == 0) {
-            this.addToast({ intent: Intent.SUCCESS, message: "The data source has been saved" });
-            this.updateDataSources();
+        if (this.fileUploadQueue.length == 0) {
+            this.finalSubmitDataSource();
         } else {
-            let fileUploadQueue = this.state.fileUploadQueue;
-            let key = fileUploadQueue.pop()
-            this.setState({fileUploadQueue: fileUploadQueue});
-            this.dataSourceService.saveFile({"data_source": 2, "field_name": "filename"}, this.finishFile);
+            let key = this.fileUploadQueue[this.fileUploadQueue.length-1]["key"];
+            if (this.state.fieldValues[key]["id"] === -1) {
+                this.createUserFile(key);
+            } else {
+                this.doUploadFile({"id": this.state.fieldValues[key]["id"], "field_name": key});
+            }
         }
     }
 
-    /**
-     * Submits the data source
-     */
-    private submitDataSource(event: React.SyntheticEvent) {
-        event.preventDefault();
-
-        if (this.state.dataSourceType !== undefined) {
-            let fields = this.getFields();
-            let kwargs: { [key: string]: any } = {}
-            for (let [key, fieldValue] of Object.entries(this.state.fieldValues)) {
-                if (fields[key]["type"] != "file") {
-                    kwargs[key] = fieldValue;
-                }
-            }
-            let data = {
-                id: this.state.dataSource.id,
-                name: this.state.dataSource.name,
-                source: this.state.dataSourceType.name,
-                kwargs: JSON.stringify(kwargs)
-            }
-            this.dataSourceService.save(data, this.finishSubmit);
+    private doUploadFile(body: {}) {
+        if ("id" in body) {
+            this.renderProgress();
+            let uploading = this.fileUploadQueue[this.fileUploadQueue.length-1];
+            let fieldValues = this.state.fieldValues;
+            fieldValues[uploading["key"]]["id"] = body["id"];
+            this.setState({fieldValues: fieldValues});
+            this.dataSourceService.uploadFile(uploading["file"], body["id"], this.finishUploadFile);
         } else {
-            this.addToast({ intent: Intent.WARNING, message: "Please select a data source type first." });
+            this.addToast({ intent: Intent.DANGER, message: "There was an error while uploading the file." });
         }
     }
+
+    private finishUploadFile(body: {}) {
+        if ("id" in body) {
+            let uploading = this.fileUploadQueue.pop();
+            let fieldValues = this.state.fieldValues;
+            fieldValues[uploading["key"]]["file"] = null;
+            this.setState({fieldValues: fieldValues});
+            this.uploadFile();
+        } else {
+            this.addToast({ intent: Intent.DANGER, message: "There was an error while uploading the file." });
+        }
+    }
+
+    private renderProgress() {
+        this.submitProgress["step"]++;
+        this.submitProgress["key"] = this.addToast({
+            icon: "cloud-upload",
+            message: (
+                <ProgressBar
+                    intent={this.submitProgress["step"] < this.submitProgress["total_steps"] ? Intent.PRIMARY : Intent.SUCCESS}
+                    value={this.submitProgress["step"] / this.submitProgress["total_steps"]}
+                />
+            ),
+            timeout: this.submitProgress["step"] < this.submitProgress["total_steps"] ? 0 : 2000,
+        }, this.submitProgress["key"])
+    }
+
 
     /**
      * Render a specific field.
@@ -296,9 +372,27 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
                     <Switch id={key} checked={this.state.fieldValues[key]} label={field.name} onChange={this.updateFieldValue} />
                 </FormGroup>
             case "file":
-                return <FormGroup {...paramsFormGroup}>
-                    <FileInput text="Choose file..." inputProps={{"id": key}} onInputChange={this.updateFieldValue} />
-                </FormGroup>
+                let title = "Choose file...";
+                let downloadLink = false;
+                if (this.state.fieldValues[key] !== undefined) {
+                    if (this.state.fieldValues[key]["file"] !== null) {
+                        title = this.state.fieldValues[key]["file"].name;
+                    }
+                    if (this.state.fieldValues[key]["id"] !== -1) {
+                        downloadLink = true;
+                    }
+                }
+
+                return <div>
+                        <FormGroup {...paramsFormGroup}>
+                            <ControlGroup>
+                            <Button disabled={!downloadLink} onClick={() => this.dataSourceService.downloadUserFile(this.state.fieldValues[key]["id"])}>
+                                Download current file
+                            </Button>
+                            <FileInput text={title} fill inputProps={{"id": key}} onInputChange={this.updateFieldValue} />
+                            </ControlGroup>
+                        </FormGroup>
+                    </div>
             default:
                 return <FormGroup {...paramsFormGroup} label={field.name}>
                     <InputGroup id={key} value={this.state.fieldValues[key]} onChange={this.updateFieldValue} />

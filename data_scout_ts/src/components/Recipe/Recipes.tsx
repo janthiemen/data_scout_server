@@ -58,7 +58,7 @@ export const newRecipe = function(): Recipe {
  */
 export class RecipesComponent extends React.Component<PageProps> {
     private recipeService: RecipeService;
-    private addToast: (toast: IToastProps) => void;
+    private addToast: (toast: IToastProps, key?: string) => string;
     private history: History;
     public state: RecipesState = {
         dataSources: [],

@@ -5,7 +5,7 @@ import { Transformation } from "../components/Wrangler/Transformation";
  * The API caller handles all API requests to the Scout backend.
  */
 export class APICaller {
-    private addToast: (toast: IToastProps) => void;
+    private addToast: (toast: IToastProps, key?: string) => string;
     private setLoggedIn: (loggedIn: boolean) => void;
 
     /**
@@ -13,7 +13,7 @@ export class APICaller {
      * @param addToast Method to add a toast with
      * @param setLoggedIn Method to set if the user is logged in
      */
-    constructor(addToast: (toast: IToastProps) => void, setLoggedIn: (loggedIn: boolean) => void) {
+    constructor(addToast: (toast: IToastProps, key?: string) => string, setLoggedIn: (loggedIn: boolean) => void) {
         this.addToast = addToast;
         this.call = this.call.bind(this);
         this.setLoggedIn = setLoggedIn;
@@ -85,17 +85,29 @@ export class APICaller {
         this.call(url, type, body, callback, true);
     }
 
-    public call(url: string, type: string, body: {}, callback: (body: {}) => void, wasRefreshed: boolean = false) {
+    protected _prepareCall(type: string, body: {}, headers: {} = {}) {
+        let properties;
+        if (type === "GET") {
+            properties = {method: type, headers: this.getHeaders()}
+        } else if (body instanceof File) {
+            properties = {method: type, headers: this.getHeaders(), body: body};
+            properties["headers"]["Content-Type"] = "multipart/form-data";
+        } else {
+            properties = {method: type, headers: this.getHeaders(), body: JSON.stringify(body)};
+        }
+
+        for (let [key, value] of Object.entries(headers)) {
+            properties["headers"][key] = value;
+        }
+        return properties;
+    }
+
+    public call(url: string, type: string, body: {}, callback: (body: {}) => void, wasRefreshed: boolean = false, headers: {} = {}) {
         /**
          * Call an API. This method handles authentication using JWT tokens (refreshing, etc.).
          * @param url: string: The URL to call
          */
-        let properties;
-        if (type === "GET") {
-            properties = {method: type, headers: this.getHeaders()}
-        } else {
-            properties = {method: type, headers: this.getHeaders(), body: JSON.stringify(body)}
-        }
+        let properties = this._prepareCall(type, body, headers);
 
         fetch(url, properties)
             .then(r => r.json().then(data => ({ status: r.status, body: data })).catch(data => ({ status: r.status, body: {} })))
@@ -120,6 +132,22 @@ export class APICaller {
                 // console.log("ERROR");
                 // this.addToast({ intent: Intent.DANGER, message: "An error occured!" })
                 // console.log(error);
+            });
+    }
+
+    public callDownloadFile(url) {
+        let properties = this._prepareCall("GET", {}, {});
+
+        fetch(url, properties)
+            .then(r => {
+                let fileName = r.headers.get("content-disposition").replace("attachment; filename=", "");
+                r.blob().then(blob => {
+                    let url = window.URL.createObjectURL(blob);
+                    let a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    a.click();
+                });
             });
     }
 
@@ -173,12 +201,11 @@ export class DataSourceService extends APICaller {
     }
 
     uploadFile(file: File, id, callback: (body: {}) => void) {
-        this.call(`/scout/api/datasource_file/${id}/upload`, "PUT", file, callback, false);
-        // if (data["id"] > 0) {
-        //     this.call(`/scout/api/datasource/${data["id"]}/`, "PUT", data, callback);
-        // } else {
-        //     this.call("/scout/api/datasource/", "POST", data, callback);
-        // }
+        this.call(`/scout/api/datasource_file/${id}/upload`, "PUT", file, callback, false, {"Content-Disposition": `attachment; filename="${file.name}"`});
+    }
+
+    downloadUserFile(id) {
+        this.callDownloadFile(`/scout/api/datasource_file/${id}/?output=file`);
     }
 
     delete(id: number | string, callback: (body: {}) => void) {
