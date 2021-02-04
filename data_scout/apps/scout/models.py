@@ -23,6 +23,8 @@ class DataSource(models.Model):
     # The arguments to pass to the data source, defined as a JSON string
     kwargs = models.TextField()
 
+    schema = models.TextField(null=True, blank=True)
+
     def __str__(self):
         return self.name
 
@@ -48,6 +50,7 @@ class Recipe(models.Model):
         choices=SAMPLING_TECHNIQUE_CHOICES,
         default="top",
     )
+    schema = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.name

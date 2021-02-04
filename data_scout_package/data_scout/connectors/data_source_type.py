@@ -1,5 +1,7 @@
 from typing import Type
 
+from .sql import SQL
+from .excel import Excel
 from .connector import Connector
 from .csv import CSV
 from .big_query import BigQuery
@@ -7,7 +9,7 @@ from ..exceptions import DataSourceConnectorUnavailableException
 
 
 class DataSourceType:
-    data_source_types = {"BigQuery": BigQuery, "CSV": CSV}
+    data_source_types = {"BigQuery": BigQuery, "CSV": CSV, "Excel": Excel, "SQL": SQL}
 
     def serialize(self):
         serialized = []

@@ -29,6 +29,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from .variable_logger import VariableLogger
 
 
+def _is_int(val):
+    try:
+        int(val)
+        return True
+    except:
+        return False
+
+
 class DataSourceViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
@@ -36,6 +44,40 @@ class DataSourceViewSet(viewsets.ModelViewSet):
     queryset = DataSource.objects.all()
     serializer_class = DataSourceSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def _make_schema(self, request):
+        # We try if the data source actually works and what the data schema looks like
+        definition = {"use_sample": True,
+                      "sampling_technique": "top",
+                      "column_types": True}
+        data_source = {"source": request.data["source"], "kwargs": json.loads(request.data["kwargs"])}
+
+        scout = data_scout.scout.Scout()
+        ds = scout.get_data_source(data_source["source"])
+        # Sometimes a data source is created that isn't ready to be tested (e.g. because the files still need to be
+        # uploaded.
+        ready = True
+        for field_name, field in ds.fields.items():
+            if field["type"] == "file":
+                if field_name in data_source["kwargs"] and _is_int(data_source["kwargs"][field_name]):
+                    user_file = UserFile.objects.get(pk=data_source["kwargs"][field_name])
+                    data_source["kwargs"][field_name] = os.path.join(settings.MEDIA_ROOT, user_file.file_name)
+                else:
+                    ready = False
+        if ready:
+            definition["data_source"] = data_source
+            definition["pipeline"] = []
+            records, columns = scout.execute_json(definition, data_scout.executor.PandasExecutor)
+            request.data["schema"] = json.dumps(columns[-1])
+        return request
+
+    def update(self, request, *args, **kwargs):
+        request = self._make_schema(request)
+        return super().update(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        request = self._make_schema(request)
+        return super().create(request, *args, **kwargs)
 
 
 class UserFileViewSet(viewsets.ModelViewSet):
@@ -270,7 +312,7 @@ def _recipe_to_dict(recipe: int, scout: data_scout.scout.Scout, use_sample=True,
     definition["data_source"] = data_source
 
     definition["pipeline"] = _get_pipeline(recipe)
-    return definition
+    return definition, recipe
 
 
 def data(request, recipe: int):
@@ -290,8 +332,12 @@ def data(request, recipe: int):
     records_export, columns = [], []
     try:
         scout = data_scout.scout.Scout(logger=logger)
-        definition = _recipe_to_dict(recipe, scout, use_sample=True, column_types=True)
+        definition, recipe = _recipe_to_dict(recipe, scout, use_sample=True, column_types=True)
         records, columns = scout.execute_json(definition, data_scout.executor.PandasExecutor)
+
+        # After running the script, we store the new data schema
+        recipe.schema = json.dumps(columns[-1])
+        recipe.save()
 
         records_export = []
         clean_func = CleanJSON()
@@ -314,7 +360,7 @@ def data(request, recipe: int):
 
 def pipeline(request, recipe: int):
     scout = data_scout.scout.Scout()
-    definition = _recipe_to_dict(recipe, scout)
+    definition, _ = _recipe_to_dict(recipe, scout)
     if request.GET.get("output") == "python":
         scout = data_scout.scout.Scout()
         code, _ = scout.execute_json(definition, data_scout.executor.CodeExecutor)

@@ -9,15 +9,14 @@ Other Functions
     SOURCEROWNUMBER Function
 
 
-SQL connector
-
-Join datasets/recipes
-Help function
-Improve logout timer
-Store data schemas
-Return result until an error in the recipe
 Multitype input (INPUT_value, INPUT_type)
+
+Store data schemas
+Join datasets/recipes
+Improve logout timer
+Return result until an error in the recipe
 Spark support
+Help function
 
 Automatically build the menu
 Custom transformations

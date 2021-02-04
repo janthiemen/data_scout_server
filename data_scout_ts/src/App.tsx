@@ -65,7 +65,6 @@ export default class App extends React.Component<IProps> {
 	constructor(props: IProps) {
 		super(props);
 		this.addToast = this.addToast.bind(this);
-		this.getToaster = this.getToaster.bind(this);
 		this.setLoggedIn = this.setLoggedIn.bind(this);
 	}
 
@@ -76,13 +75,6 @@ export default class App extends React.Component<IProps> {
 	private addToast(toast: IToastProps, key?: string): string {
 		toast.timeout = 5000;
 		return this.toaster.show(toast, key);
-	}
-
-	/**
-	 * Get the toaster object.
-	 */
-	private getToaster(): Toaster {
-		return this.toaster;
 	}
 
 	/**
@@ -110,7 +102,7 @@ export default class App extends React.Component<IProps> {
 						</Route>
 						<Route path="/data_sources">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
-							<DataSources getToaster={this.getToaster} addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
+							<DataSources addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
 						</Route>
 						<Route path="/recipes">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />

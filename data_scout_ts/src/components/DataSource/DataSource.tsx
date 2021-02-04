@@ -2,8 +2,8 @@ import * as React from "react";
 import autobind from 'class-autobind';
 
 import {
-    MenuItem, IProps, IToastProps, Intent, 
-    FormGroup, InputGroup, NumericInput, Switch, Button, FileInput, ControlGroup, Toaster, ProgressBar
+    MenuItem, IProps, IToastProps, Intent,
+    FormGroup, InputGroup, NumericInput, Switch, Button, FileInput, ControlGroup, ProgressBar, HTMLSelect, TextArea
 } from "@blueprintjs/core";
 
 import { Select, ItemRenderer, ItemPredicate } from "@blueprintjs/select";
@@ -63,7 +63,6 @@ const dataSourceTypeFilterer: ItemPredicate<DataSourceType> = (query, item, _ind
 interface DataSourceProps extends IProps {
     dataSourceService: DataSourceService,
     addToast: (toast: IToastProps, key?: string) => string;
-    getToaster: () => Toaster;
     updateDataSources: () => void;
     dataSourceType?: DataSourceType,
     dataSource: DataSource,
@@ -86,7 +85,6 @@ interface DataSourceState {
 export class DataSourceComponent extends React.Component<DataSourceProps, DataSourceState> {
     private dataSourceService: DataSourceService;
     private addToast: (toast: IToastProps, key?: string) => string;
-    private getToaster: () => Toaster;
     private updateDataSources: () => void;
     private submitProgress = {
         "step": 0,
@@ -111,7 +109,6 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
         this.dataSourceService = props.dataSourceService;
         this.updateDataSources = props.updateDataSources;
         this.addToast = props.addToast;
-        this.getToaster = props.getToaster;
     }
 
     /**
@@ -121,10 +118,10 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
         let fields = this.getFields()
         let kwargs = this.state.dataSource.kwargs;
 
-        let fieldValues: { [key: string]: string|{} } = {};
+        let fieldValues: { [key: string]: string | {} } = {};
         for (let key in fields) {
-            if (fields[key]["type"] === "file") {
-                fieldValues[key] = {"id": key in kwargs && kwargs[key] !== null ? kwargs[key] : -1, "file": null};
+            if (fields[key]["input"] === "file") {
+                fieldValues[key] = { "id": key in kwargs && kwargs[key] !== null ? kwargs[key] : -1, "file": null };
             } else {
                 fieldValues[key] = key in kwargs ? kwargs[key] : "";
             }
@@ -150,7 +147,7 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
      * @param prevState The old state
      */
     public componentDidUpdate(prevProps: DataSourceProps, prevState: DataSourceState) {
-        if (this.state.dataSourceType !== prevState.dataSourceType || 
+        if (this.state.dataSourceType !== prevState.dataSourceType ||
             this.state.dataSource !== prevState.dataSource) {
             // The data source has updated, so we ought to update the field values
             this.updateFields();
@@ -173,21 +170,42 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
     }
 
     /**
+     * Update a field value, given a key and a value.
+     * @param key The key of the field
+     * @param value The new value of the field
+     */
+    private updateFieldValue(key: string, value: any) {
+        let fieldValues = this.state.fieldValues;
+        fieldValues[key] = value;
+        this.setState({ fieldValues: fieldValues });
+    }
+
+    /**
      * Update a field value, given a change event.
      * @param event The change event
      */
-    private updateFieldValue(event: React.ChangeEvent<HTMLInputElement>) {
+    private onInputBoolChange(event: React.ChangeEvent<HTMLInputElement>) {
+        this.updateFieldValue(event.target.id, event.target.checked);
+    }
+
+    /**
+     * Update a field value, given a change event.
+     * @param event The change event
+     */
+    private onInputFileChange(event: React.ChangeEvent<HTMLInputElement>) {
         let fieldValues = this.state.fieldValues;
-        let fields = this.getFields();
-        if (fields[event.target.id]["type"] === "boolean") {
-            fieldValues[event.target.id] = event.target.checked;
-        } else if (fields[event.target.id]["type"] === "file") {
-            fieldValues[event.target.id]["file"] = event.target.files[0];
-        } else {
-            fieldValues[event.target.id] = event.target.value;
-        }
+        fieldValues[event.target.id]["file"] = event.target.files[0];
         this.setState({ fieldValues: fieldValues });
     }
+
+    /**
+     * Called when an input (text or select) has been changed.
+     * @param e The event
+     */
+    private onInputChange(event: React.ChangeEvent<HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement>) {
+        this.updateFieldValue(event.target.id, event.target.value);
+    }
+
 
     /**
      * Updates the name in the state
@@ -209,14 +227,12 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
 
         if (this.state.dataSourceType !== undefined) {
             let fields = this.getFields();
-            let kwargs: { [key: string]: any } = {};
-
             // Check if there are file to be uploaded, if so, put them in the queue
             this.fileUploadQueue = [];
             for (let [key, fieldValue] of Object.entries(this.state.fieldValues)) {
                 // TODO: On loading of the kwargs, replace the id in a file field by an object {"id": X, "file": null}
-                if (fields[key]["type"] == "file" && fieldValue["file"] !== null) {
-                    this.fileUploadQueue.push({"key": key, "id": fieldValue["id"], "file": fieldValue["file"]});
+                if (fields[key]["input"] == "file" && fieldValue["file"] !== null) {
+                    this.fileUploadQueue.push({ "key": key, "id": fieldValue["id"], "file": fieldValue["file"] });
                 }
             }
 
@@ -247,7 +263,7 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
         let fields = this.getFields();
         let kwargs: { [key: string]: any } = {};
         for (let [key, fieldValue] of Object.entries(this.state.fieldValues)) {
-            if (fields[key]["type"] != "file") {
+            if (fields[key]["input"] != "file") {
                 kwargs[key] = fieldValue;
             } else {
                 kwargs[key] = fieldValue["id"];
@@ -289,18 +305,18 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
     }
 
     private createUserFile(key: string) {
-        this.dataSourceService.saveFile({"data_source": this.state.dataSource.id, "field_name": key}, this.doUploadFile);
+        this.dataSourceService.saveFile({ "data_source": this.state.dataSource.id, "field_name": key }, this.doUploadFile);
     }
 
     private uploadFile() {
         if (this.fileUploadQueue.length == 0) {
             this.finalSubmitDataSource();
         } else {
-            let key = this.fileUploadQueue[this.fileUploadQueue.length-1]["key"];
+            let key = this.fileUploadQueue[this.fileUploadQueue.length - 1]["key"];
             if (this.state.fieldValues[key]["id"] === -1) {
                 this.createUserFile(key);
             } else {
-                this.doUploadFile({"id": this.state.fieldValues[key]["id"], "field_name": key});
+                this.doUploadFile({ "id": this.state.fieldValues[key]["id"], "field_name": key });
             }
         }
     }
@@ -308,10 +324,10 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
     private doUploadFile(body: {}) {
         if ("id" in body) {
             this.renderProgress();
-            let uploading = this.fileUploadQueue[this.fileUploadQueue.length-1];
+            let uploading = this.fileUploadQueue[this.fileUploadQueue.length - 1];
             let fieldValues = this.state.fieldValues;
             fieldValues[uploading["key"]]["id"] = body["id"];
-            this.setState({fieldValues: fieldValues});
+            this.setState({ fieldValues: fieldValues });
             this.dataSourceService.uploadFile(uploading["file"], body["id"], this.finishUploadFile);
         } else {
             this.addToast({ intent: Intent.DANGER, message: "There was an error while uploading the file." });
@@ -323,7 +339,7 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
             let uploading = this.fileUploadQueue.pop();
             let fieldValues = this.state.fieldValues;
             fieldValues[uploading["key"]]["file"] = null;
-            this.setState({fieldValues: fieldValues});
+            this.setState({ fieldValues: fieldValues });
             this.uploadFile();
         } else {
             this.addToast({ intent: Intent.DANGER, message: "There was an error while uploading the file." });
@@ -358,18 +374,30 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
             "labelInfo": field.required ? "(required)" : ""
         }
 
-        switch (field["type"]) {
-            case "string":
+        switch (field["input"]) {
+            case "text":
                 return <FormGroup {...paramsFormGroup} label={field.name}>
-                    <InputGroup id={key} value={this.state.fieldValues[key]} onChange={this.updateFieldValue} />
+                    <InputGroup id={key} value={this.state.fieldValues[key]} onChange={this.onInputChange} />
+                </FormGroup>
+            case "text-area":
+                return <FormGroup {...paramsFormGroup} label={field.name}>
+                    <TextArea id={key} fill value={this.state.fieldValues[key]} onChange={this.onInputChange} growVertically={true} large={true} />
                 </FormGroup>
             case "number":
                 return <FormGroup {...paramsFormGroup} label={field.name}>
-                    <NumericInput id={key} min={field.min} max={field.max} value={this.state.fieldValues[key]} onChange={this.updateFieldValue} />
+                    <NumericInput id={key} min={field.min} fill max={field.max} value={this.state.fieldValues[key]} onChange={this.onInputChange} />
                 </FormGroup>
-            case "boolean":
+            case "switch":
                 return <FormGroup {...paramsFormGroup}>
-                    <Switch id={key} checked={this.state.fieldValues[key]} label={field.name} onChange={this.updateFieldValue} />
+                    <Switch id={key} checked={this.state.fieldValues[key]} label={field.name} onChange={this.onInputBoolChange} />
+                </FormGroup>
+            case "select":
+                // TODO
+                return <FormGroup {...paramsFormGroup} label={field.name}>
+                    <HTMLSelect value={this.state.fieldValues[key]} fill id={key} onChange={this.onInputChange}>
+                        <option></option>
+                        {Object.values(field["options"]).map((option: string) => <option value={option}>{[option]}</option>)}
+                    </HTMLSelect>
                 </FormGroup>
             case "file":
                 let title = "Choose file...";
@@ -384,18 +412,18 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
                 }
 
                 return <div>
-                        <FormGroup {...paramsFormGroup}>
-                            <ControlGroup>
+                    <FormGroup {...paramsFormGroup} label={field.name}>
+                        <ControlGroup>
                             <Button disabled={!downloadLink} onClick={() => this.dataSourceService.downloadUserFile(this.state.fieldValues[key]["id"])}>
                                 Download current file
                             </Button>
-                            <FileInput text={title} fill inputProps={{"id": key}} onInputChange={this.updateFieldValue} />
-                            </ControlGroup>
-                        </FormGroup>
-                    </div>
+                            <FileInput text={title} fill inputProps={{ "id": key }} onInputChange={this.onInputFileChange} />
+                        </ControlGroup>
+                    </FormGroup>
+                </div>
             default:
                 return <FormGroup {...paramsFormGroup} label={field.name}>
-                    <InputGroup id={key} value={this.state.fieldValues[key]} onChange={this.updateFieldValue} />
+                    <InputGroup id={key} value={this.state.fieldValues[key]} onChange={this.onInputChange} />
                 </FormGroup>
         }
     }

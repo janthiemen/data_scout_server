@@ -17,10 +17,11 @@ class Excel(Connector):
     MAX_SIZE = 2000000
     MAX_ROWS = 200
     fields = {
-        "filename": {"name": "Filename", "type": "file", "help": "The filename of the CSV file.", "required": True},
-        "sheet_name": {"name": "Sheet name", "type": "string", "help": "The name or number of the sheet.",
-                       "required": True, "default": ","},
-        "has_header": {"name": "Has header", "type": "boolean", "required": True, "default": False,
+        "filename": {"name": "Filename", "type": "file", "input": "file", "help": "The filename of the CSV file.",
+                     "required": True},
+        "sheet_name": {"name": "Sheet name", "type": "string", "input": "text", "required": True, "default": ",",
+                       "help": "The name or number of the sheet."},
+        "has_header": {"name": "Has header", "type": "boolean", "input": "switch", "required": True, "default": False,
                        "help": "Does the file have a header containing the column names?."},
     }
 

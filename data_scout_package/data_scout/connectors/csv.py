@@ -16,16 +16,15 @@ class CSV(Connector):
     MAX_SIZE = 2000000
     MAX_ROWS = 200
     fields = {
-        "filename": {"name": "Filename", "type": "file", "help": "The filename of the CSV file.", "required": True},
-        "delimiter": {"name": "Delimiter", "type": "string", "help": "The delimiter in the CSV file.", "required": True,
-                      "default": ","},
-        "has_header": {"name": "Has header",
-                       "type": "boolean",
-                       "help": "Does the file have a header containing the column names?.",
-                       "required": True,
-                       "default": False},
-        "encoding": {"name": "Encoding", "type": "select", "options": ["UTF-8", "latin-1"], "default": "UTF-8",
-                     "help": "The encoding of the CSB file.", "required": True, "is_advanced": True},
+        "filename": {"name": "Filename", "type": "file", "input": "file", "help": "The filename of the CSV file.",
+                     "required": True},
+        "delimiter": {"name": "Delimiter", "type": "string", "input": "text", "help": "The delimiter in the CSV file.",
+                      "required": True, "default": ","},
+        "has_header": {"name": "Has header", "type": "boolean", "input": "switch", "required": True, "default": False,
+                       "help": "Does the file have a header containing the column names?."},
+        "encoding": {"name": "Encoding", "type": "string", "input": "select", "options": ["UTF-8", "latin-1"],
+                     "default": "UTF-8", "help": "The encoding of the CSV file.", "required": True,
+                     "is_advanced": True},
     }
 
     def __init__(self, arguments):

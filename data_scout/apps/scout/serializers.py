@@ -6,7 +6,7 @@ from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep, Re
 class DataSourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = DataSource
-        fields = ['id', 'name', 'parent', 'source', 'kwargs']
+        fields = ['id', 'name', 'parent', 'source', 'kwargs', 'schema']
 
 
 class UserFileSerializer(serializers.ModelSerializer):
