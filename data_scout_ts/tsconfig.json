@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es2019",
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      // "esnext"
     ],
     "allowJs": true,
     "strictPropertyInitialization": false,
@@ -14,7 +14,7 @@
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
-    "module": "esnext",
+    // "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,

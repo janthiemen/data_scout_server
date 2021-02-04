@@ -7,10 +7,11 @@ import { History } from 'history'
 
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import { PageProps } from "../../helpers/props";
-import { DataSourceService } from "../../helpers/userService";
+import { DataSourceService, JoinService } from "../../helpers/userService";
 
 import { DataSourceComponent } from "../DataSource/DataSource";
 import { SearchTree, SearchTreeNode } from "../SearchTree/SearchTree";
+import { JoinDialog } from "../Join/JoinDialog";
 import { withRouter } from "react-router-dom";
 
 export interface DataSource {
@@ -111,6 +112,10 @@ export class DataSourcesComponent extends React.Component<PageProps> {
         this.setState({ dataSources: dataSources });
     }
 
+    onCloseJoin() {
+        console.log("TODO: Close join!")
+    }
+
     /**
      * Renders data sources
      * @returns  
@@ -118,6 +123,7 @@ export class DataSourcesComponent extends React.Component<PageProps> {
     render() {
         return (
             <Grid fluid>
+                <JoinDialog joinService={new JoinService(this.addToast, this.dataSourceService.setLoggedIn)} isOpen={true} onClose={this.onCloseJoin}></JoinDialog>
                 <Row>
                     <Col md={3}>
                         <SearchTree onNewElement={this.onNewElement} 

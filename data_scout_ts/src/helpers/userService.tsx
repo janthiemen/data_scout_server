@@ -5,8 +5,8 @@ import { Transformation } from "../components/Wrangler/Transformation";
  * The API caller handles all API requests to the Scout backend.
  */
 export class APICaller {
-    private addToast: (toast: IToastProps, key?: string) => string;
-    private setLoggedIn: (loggedIn: boolean) => void;
+    public addToast: (toast: IToastProps, key?: string) => string;
+    public setLoggedIn: (loggedIn: boolean) => void;
 
     /**
      * Construct an API caller object. It will also check if the user is logged in on creation.
@@ -291,6 +291,38 @@ export class WranglerService extends APICaller {
     }
 
     putTransformationOrder(id: number, data: Transformation, callback: (body: {}) => void) {
+        this.call(`/scout/api/transformation/${id}/`, "PUT", data, callback);
+    }
+
+    postTransformation(data: Transformation, callback: (body: {}) => void) {
+        this.call(`/scout/api/transformation/`, "POST", data, callback);
+    }
+
+    deleteTransformation(id: number | string, callback: (body: {}) => void) {
+        this.call(`/scout/api/transformation/${id}/`, "DELETE", {}, callback);
+    }
+
+    save(data: { [key: string]: any }, callback: (body: {}) => void) {
+        if (data["id"] > 0) {
+            this.call(`/scout/api/datasource/${data["id"]}/`, "PUT", data, callback);
+        } else {
+            this.call("/scout/api/datasource/", "POST", data, callback);
+        }
+    }
+
+    delete(id: number | string, callback: (body: {}) => void) {
+        this.call(`/scout/api/datasource/${id}/`, "DELETE", {}, callback);
+    }
+}
+
+
+export class JoinService extends APICaller {
+
+    get(callback: (body: {}) => void) {
+        this.call("/scout/api/datasource/", "GET", {}, callback);
+    }
+
+    putTransformation(id: number, data: Transformation, callback: (body: {}) => void) {
         this.call(`/scout/api/transformation/${id}/`, "PUT", data, callback);
     }
 
