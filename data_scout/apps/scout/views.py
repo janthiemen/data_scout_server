@@ -297,22 +297,69 @@ class CleanJSON:
         return row, index
 
 
-def _recipe_to_dict(recipe: int, scout: data_scout.scout.Scout, use_sample=True, column_types=True):
-    recipe = get_object_or_404(Recipe, pk=recipe)
-    definition = {"use_sample": use_sample,
-                  "sampling_technique": recipe.sampling_technique,
-                  "column_types": column_types}
-    data_source = {"source": recipe.input.source, "kwargs": json.loads(recipe.input.kwargs)}
-
+def _data_source_to_dict(data_source: DataSource, scout: data_scout.scout.Scout):
+    data_source = {"source": data_source.source, "kwargs": json.loads(data_source.kwargs)}
     ds = scout.get_data_source(data_source["source"])
     for field_name, field in ds.fields.items():
         if field["type"] == "file":
             user_file = UserFile.objects.get(pk=data_source["kwargs"][field_name])
             data_source["kwargs"][field_name] = os.path.join(settings.MEDIA_ROOT, user_file.file_name)
-    definition["data_source"] = data_source
+    return data_source
 
-    definition["pipeline"] = _get_pipeline(recipe)
-    return definition, recipe
+
+def _data_source_to_pipeline(data_source: DataSource, scout: data_scout.scout.Scout, use_sample=True, column_types=True,
+                             sampling_technique: str = 'top'):
+    # data_source = get_object_or_404(DataSource, pk=data_source)
+    return {
+        "use_sample": use_sample,
+        "sampling_technique": sampling_technique,
+        "column_types": column_types,
+        "data_source": _data_source_to_dict(data_source, scout),
+        "pipeline": []
+    }
+
+
+def _recipe_to_pipeline(recipe: Recipe, scout: data_scout.scout.Scout, use_sample=True, column_types=True):
+    if recipe.input is not None:
+        data_source = _data_source_to_dict(recipe.input, scout)
+    elif recipe.input_join is not None:
+        if recipe.input_join.data_source_left is not None:
+            data_source_left = _data_source_to_pipeline(recipe.input_join.data_source_left, scout, use_sample,
+                                                        column_types)
+        elif recipe.input_join.recipe_left is not None:
+            data_source_left = _recipe_to_pipeline(recipe.input_join.recipe_left, scout, use_sample, column_types)
+        else:
+            raise ValueError("You need a data source OR a pipeline on the left")
+
+        if recipe.input_join.data_source_right is not None:
+            data_source_right = _data_source_to_pipeline(recipe.input_join.data_source_right, scout, use_sample,
+                                                         column_types)
+        elif recipe.input_join.recipe_right is not None:
+            data_source_right = _recipe_to_pipeline(recipe.input_join.recipe_right, scout, use_sample, column_types)
+        else:
+            raise ValueError("You need a data source OR a pipeline on the right")
+
+        data_source = {
+            "source": "join",
+            "kwargs": {
+                "left": data_source_left,
+                "right": data_source_right,
+                "on_left": recipe.input_join.field_left.split(","),
+                "on_right": recipe.input_join.field_right.split(","),
+                "how": recipe.input_join.method
+            }
+        }
+    else:
+        raise ValueError("You need a data source to generate the pipeline")
+
+    definition = {
+        "use_sample": use_sample,
+        "sampling_technique": recipe.sampling_technique,
+        "column_types": column_types,
+        "data_source": data_source,
+        "pipeline": _get_pipeline(recipe)
+    }
+    return definition
 
 
 def data(request, recipe: int):
@@ -332,7 +379,8 @@ def data(request, recipe: int):
     records_export, columns = [], []
     try:
         scout = data_scout.scout.Scout(logger=logger)
-        definition, recipe = _recipe_to_dict(recipe, scout, use_sample=True, column_types=True)
+        recipe = get_object_or_404(Recipe, pk=recipe)
+        definition = _recipe_to_pipeline(recipe, scout, use_sample=True, column_types=True)
         records, columns = scout.execute_json(definition, data_scout.executor.PandasExecutor)
 
         # After running the script, we store the new data schema
@@ -360,7 +408,8 @@ def data(request, recipe: int):
 
 def pipeline(request, recipe: int):
     scout = data_scout.scout.Scout()
-    definition, _ = _recipe_to_dict(recipe, scout)
+    recipe = get_object_or_404(Recipe, pk=recipe)
+    definition = _recipe_to_pipeline(recipe, scout)
     if request.GET.get("output") == "python":
         scout = data_scout.scout.Scout()
         code, _ = scout.execute_json(definition, data_scout.executor.CodeExecutor)

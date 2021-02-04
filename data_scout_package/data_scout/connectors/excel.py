@@ -1,4 +1,3 @@
-import csv
 import random
 import sys
 from typing import List
@@ -39,7 +38,7 @@ class Excel(Connector):
     def _get_row_values(self, row: tuple) -> list:
         return [cell.value for cell in row]
 
-    def __call__(self, sample: bool = False, sampling_technique: str = "top") -> List[dict]:
+    def __call__(self, sample: bool = False, sampling_technique: str = "top", column_types: bool = False) -> List[dict]:
         """This class is called when the data needs to be loaded.
 
         Arguments:

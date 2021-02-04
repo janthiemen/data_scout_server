@@ -34,7 +34,7 @@ class SQL(Connector):
         self.connection_string = arguments["connection_string"]
         self.sql = arguments["sql"]
 
-    def __call__(self, sample: bool = False, sampling_technique: str = "top") -> List[dict]:
+    def __call__(self, sample: bool = False, sampling_technique: str = "top", column_types: bool = False) -> List[dict]:
         """This class is called when the data needs to be loaded.
 
         Arguments:

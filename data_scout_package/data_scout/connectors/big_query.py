@@ -31,6 +31,6 @@ class BigQuery(Connector):
         self.query = arguments["query"]
         self.output = arguments["output"]
 
-    def __call__(self, sample: bool = False, sampling_technique: str = "top"):
+    def __call__(self, sample: bool = False, sampling_technique: str = "top", column_types: bool = False):
         # TODO: Return the data (as a beam stream)
         pass

@@ -3,6 +3,7 @@ from typing import List, Tuple, Type, Any, Optional
 import pandas as pd
 
 from .connectors.data_source_type import DataSourceType
+from .connectors.join import Join
 from .exceptions import TransformationUnavailableException, IndexFilterException, PipelineException
 from .scout import Scout
 from .transformations.data import MissingColumns, GetFields
@@ -17,10 +18,27 @@ class Executor:
     def __init__(self, data_source: dict, pipeline: List[dict], scout: Scout):
         self.scout = scout
         self.pipeline = pipeline
-        self.data_source = self.scout.get_data_source(data_source["source"])(data_source["kwargs"])
+        if data_source["source"] == "join":
+            # If the data source is a join, the kwargs should hold a JSON definition
+            # We only allow complete pipeline definitions as join tables. If you want to use just a raw data source,
+            # enter an empty list as transformations.
+            self.data_source = Join({
+                "left": self.__class__(data_source=data_source["kwargs"]["left"]["data_source"],
+                                       pipeline=data_source["kwargs"]["left"]["pipeline"], scout=self.scout),
+                "right": self.__class__(data_source=data_source["kwargs"]["right"]["data_source"],
+                                        pipeline=data_source["kwargs"]["right"]["pipeline"], scout=self.scout),
+                "on_left": data_source["kwargs"]["on_left"],
+                "on_right": data_source["kwargs"]["on_right"],
+                "how": data_source["kwargs"]["how"],
+            })
+        else:
+            self.data_source = self.scout.get_data_source(data_source["source"])(data_source["kwargs"])
+
+    def join(self, left, right, on_left: List[str], on_right: List[str], how: str):
+        raise NotImplementedError()
 
     def load_data(self, use_sample: bool = False, sampling_technique: str = "top") -> List[dict]:
-        data = self.data_source(use_sample, sampling_technique)
+        data = self.data_source(use_sample, sampling_technique, False)
         return data
 
     def _make_dataframe(self, records: List[dict]):

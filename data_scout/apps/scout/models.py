@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 """
@@ -43,7 +44,8 @@ class Recipe(models.Model):
 
     name = models.CharField(max_length=512)
     parent = models.ForeignKey(RecipeFolder, on_delete=models.CASCADE, null=True, blank=True, related_name="children")
-    input = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="recipe_input")
+    input = models.ForeignKey(DataSource, on_delete=models.CASCADE, null=True, blank=True, related_name="recipe_input")
+    input_join = models.ForeignKey('Join', on_delete=models.CASCADE, null=True, blank=True, related_name="recipe_join")
     output = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="recipe_output", null=True)
     sampling_technique = models.CharField(
         max_length=64,
@@ -76,13 +78,39 @@ class Flow(models.Model):
 
 
 class Join(models.Model):
-    data_source_left = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="join_data_source_left")
-    data_source_right = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="join_data_source_right")
+    data_source_left = models.ForeignKey(DataSource, null=True, blank=True, on_delete=models.CASCADE,
+                                         related_name="join_data_source_left")
+    recipe_left = models.ForeignKey(Recipe, null=True, blank=True, on_delete=models.CASCADE,
+                                    related_name="join_recipe_left")
+    data_source_right = models.ForeignKey(DataSource, null=True, blank=True, on_delete=models.CASCADE,
+                                          related_name="join_data_source_right")
+    recipe_right = models.ForeignKey(Recipe, null=True, blank=True, on_delete=models.CASCADE,
+                                     related_name="join_recipe_right")
     # It's possible to create a join by selecting the fields to join on or by manually entering a join query
-    method = models.CharField(max_length=512)
-    field_left = models.CharField(max_length=1024)
-    field_right = models.CharField(max_length=1024)
-    join_query = models.TextField()
+
+    JOIN_METHOD_CHOICES = (
+        ('inner', 'Inner'),
+        ('outer', 'Outer'),
+        ('left', 'Left'),
+        ('right', 'Right'),
+        ('cross', 'Cartesian product'),
+    )
+
+    method = models.CharField(max_length=512, choices=JOIN_METHOD_CHOICES, default="inner",)
+    field_left = models.TextField()
+    field_right = models.TextField()
+    # join_query = models.TextField()
+
+    def clean(self):
+        super().clean()
+        if (self.data_source_left is None and self.recipe_left is None) or \
+                (self.data_source_left is not None and self.recipe_left is not None):
+            raise ValidationError('You need a data source OR a pipeline on the left')
+        if (self.data_source_right is None and self.recipe_right is None) or \
+                (self.data_source_right is not None and self.recipe_right is not None):
+            raise ValidationError('You need a data source OR a pipeline on the right')
+
+        # TODO: Add a check for recursion!
 
 
 class FlowStep(models.Model):
