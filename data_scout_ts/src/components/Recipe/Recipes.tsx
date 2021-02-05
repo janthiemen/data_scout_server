@@ -229,14 +229,14 @@ export class RecipesComponent extends React.Component<PageProps> {
         return folderItems;
     }
 
-    private onSetParent(id: number, isFolder: boolean, parent: number) {
+    private onSetParent(id: string, key: number, isFolder: boolean, parent: number) {
         // Set the parent for a recipe
         if (isFolder) {
             // TODO: Check if you're not moving it to be its own child
-            let recipeFolder = this.flattenRecipeFolders(this.state.recipeFolders).filter(item => item.id === id)[0];
+            let recipeFolder = this.flattenRecipeFolders(this.state.recipeFolders).filter(item => item.id === key)[0];
             this.recipeService.saveFolder({id: recipeFolder.id, name: recipeFolder.name, parent: parent}, this.finishUpdate);
         } else {
-            let recipe = this.state.recipes.filter(item => item.id === id)[0];
+            let recipe = this.state.recipes.filter(item => item.id === key)[0];
             recipe.parent = parent;
             this.recipeService.save(recipe, this.finishUpdate);
         }

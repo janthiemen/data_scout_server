@@ -294,14 +294,17 @@ export class DataSourcesComponent extends React.Component<PageProps> {
         return folderItems;
     }
 
-    private onSetParent(id: number, isFolder: boolean, parent: number) {
+    private onSetParent(id: string, key: number, isFolder: boolean, parent: number) {
         // Set the parent for a dataSource
         if (isFolder) {
             // TODO: Check if you're not moving it to be its own child
-            let dataSourceFolder = this.flattenDataSourceFolders(this.state.dataSourceFolders).filter(item => item.id === id)[0];
+            let dataSourceFolder = this.flattenDataSourceFolders(this.state.dataSourceFolders).filter(item => item.id === key)[0];
             this.dataSourceService.saveFolder({id: dataSourceFolder.id, name: dataSourceFolder.name, parent: parent}, this.finishUpdate);
+        } else if (id.startsWith("J-")) {
+            // If it starts with a J, it's a join
+            this.addToast({ intent: Intent.WARNING, message: `Putting joins in folders isn't supported yet.` })
         } else {
-            let dataSource = this.state.dataSources.filter(item => item.id === id)[0];
+            let dataSource = this.state.dataSources.filter(item => item.id === key)[0];
             dataSource.parent = parent;
             this.dataSourceService.save({
                 id: dataSource.id,

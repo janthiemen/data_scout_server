@@ -29,7 +29,8 @@ interface SetParentState {
     isOpen: boolean;
     isFolder: boolean;
     parent: DefaultItem;
-    id: number;
+    id: string;
+    key: number;
 }
 
 export interface SearchTreeNode<T = {}> extends ITreeNode {
@@ -53,7 +54,7 @@ interface SearchTreeProps extends RouteComponentProps<any>, IProps {
     onNewFolder: (name: string, id?: number) => void;
     onDelete: (id: number, isFolder: boolean) => void;
     onDoubleClick: (id: number) => void;
-    onSetParent: (id: number, isFolder: boolean, parent: number) => void;
+    onSetParent: (id: string, key: number, isFolder: boolean, parent: number) => void;
     nodes: SearchTreeNode[];
     extraButton: any;
 }
@@ -65,7 +66,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
     public state: SearchTreeState = {
         delete: {isOpen: false, title: "", id: undefined, isFolder: false},
         newFolder: {isOpen: false, name: "", id: undefined, parent: undefined},
-        setParent: {isOpen: false, isFolder: false, parent: undefined, id: undefined},
+        setParent: {isOpen: false, isFolder: false, parent: undefined, id: undefined, key: undefined},
         nodeContextMenu: undefined,
         nodes: [],
     };
@@ -74,7 +75,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
     private onNewFolder: (name: string, parent?: number, id?: number) => void;
     private onDelete: (id: number, isFolder: boolean) => void;
     private onDoubleClick: (id: number) => void;
-    private onSetParent: (id: number, isFolder: boolean, parent: number) => void;
+    private onSetParent: (id: string, key: number, isFolder: boolean, parent: number) => void;
 
     /**
      * Create a new data source tree.
@@ -166,7 +167,8 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
     public openSetParent(event: any) {
         let setParent = this.state.setParent;
         setParent.isOpen = true;
-        setParent.id = Number(this.state.nodeContextMenu.key);
+        setParent.id = String(this.state.nodeContextMenu.id);
+        setParent.key = Number(this.state.nodeContextMenu.key);
         setParent.isFolder = this.state.nodeContextMenu.isFolder;
         this.setState({setParent: setParent})
     }
@@ -194,7 +196,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
      * Set the parent of an item or folder (i.e. move it).
      */
     public setParent(event: any) {
-        this.onSetParent(this.state.setParent.id, this.state.setParent.isFolder, this.state.setParent.parent.id);
+        this.onSetParent(this.state.setParent.id, this.state.setParent.key, this.state.setParent.isFolder, this.state.setParent.parent.id);
         this.closeSetParent(undefined);
     }
 

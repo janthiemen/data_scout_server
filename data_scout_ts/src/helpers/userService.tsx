@@ -332,19 +332,6 @@ export class JoinService extends APICaller {
         this.call("/scout/api/recipe/", "GET", {}, callback);
     }
 
-
-    putTransformation(id: number, data: Transformation, callback: (body: {}) => void) {
-        this.call(`/scout/api/transformation/${id}/`, "PUT", data, callback);
-    }
-
-    postTransformation(data: Transformation, callback: (body: {}) => void) {
-        this.call(`/scout/api/transformation/`, "POST", data, callback);
-    }
-
-    deleteTransformation(id: number | string, callback: (body: {}) => void) {
-        this.call(`/scout/api/transformation/${id}/`, "DELETE", {}, callback);
-    }
-
     save(data: { [key: string]: any }, callback: (body: {}) => void) {
         if (data["id"] > 0) {
             this.call(`/scout/api/join/${data["id"]}/`, "PUT", data, callback);

@@ -179,7 +179,7 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
             this.joinService.addToast({ intent: Intent.SUCCESS, message: `The join has been save.` });
             this.setState({isOpen: false});
         } else {
-            this.joinService.addToast({ intent: Intent.SUCCESS, message: `The was an error while saving the join.` });
+            this.joinService.addToast({ intent: Intent.DANGER, message: `The was an error while saving the join.` });
         }
     }
 
