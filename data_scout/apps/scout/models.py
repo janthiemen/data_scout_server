@@ -78,6 +78,7 @@ class Flow(models.Model):
 
 
 class Join(models.Model):
+    name = models.CharField(max_length=512)
     data_source_left = models.ForeignKey(DataSource, null=True, blank=True, on_delete=models.CASCADE,
                                          related_name="join_data_source_left")
     recipe_left = models.ForeignKey(Recipe, null=True, blank=True, on_delete=models.CASCADE,

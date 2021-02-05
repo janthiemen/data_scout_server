@@ -20,6 +20,7 @@ export interface Recipe {
     parent?: number,
     input: number,
     sampling_technique: string,
+    schema?: {[key: string]: string},
 }
 
 export interface RecipeFolder {
@@ -50,6 +51,17 @@ export const newRecipe = function(): Recipe {
         input: undefined,
         parent: undefined,
         sampling_technique: "top"
+    }
+}
+
+export const parseRecipe = function(recipe: {}): Recipe {
+    return {
+        id: recipe["id"],
+        name: recipe["name"],
+        input: recipe["input"],
+        parent: recipe["parent"],
+        sampling_technique: recipe["sampling_technique"],
+        schema: JSON.parse(recipe["schema"])
     }
 }
 
@@ -105,7 +117,7 @@ export class RecipesComponent extends React.Component<PageProps> {
      * @param body 
      */
     private setRecipes(body: { [key: string]: any }) {
-        let recipes: Recipe[] = body["results"];
+        let recipes: Recipe[] = body["results"].map((recipe: {}) => parseRecipe(recipe));
         recipes.push(newRecipe());
         this.setState({ recipes: recipes });
     }
@@ -122,9 +134,9 @@ export class RecipesComponent extends React.Component<PageProps> {
                         <SearchTree onNewElement={this.onNewElement} 
                                     onNewFolder={this.onNewFolder} 
                                     onDelete={this.onDelete} 
-                                    onClick={this.onClick} 
                                     onDoubleClick={this.onDoubleClick} 
                                     onSetParent={this.onSetParent} 
+                                    extraButton={<></>}
                                     nodes={this.makeNodes(this.state.recipeFolders, this.state.recipes.filter((recipe: Recipe) => recipe.parent === null && recipe.id !== -1))} 
                         />
                     </Col>
@@ -145,7 +157,8 @@ export class RecipesComponent extends React.Component<PageProps> {
         for (let recipeFolder of recipeFolders) {
             let childNodes = this.makeNodes(recipeFolder.child_folders, recipeFolder.children);
             let node = {
-                id: recipeFolder.id,
+                id: `F-${recipeFolder.id}`,
+                key: recipeFolder.id,
                 icon: <Icon icon={IconNames.FOLDER_CLOSE} />,
                 isExpanded: false,
                 parent: recipeFolder.parent,
@@ -158,7 +171,9 @@ export class RecipesComponent extends React.Component<PageProps> {
         }
         for (let recipe of recipes) {
             nodes.push({
-                id: recipe.id,
+                id: `R-${recipe.id}`,
+                key: recipe.id,
+                onClick: this.onClick,
                 isFolder: false,
                 parent: recipe.parent,
                 icon: <Icon icon={IconNames.DOCUMENT} />,

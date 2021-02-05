@@ -13,11 +13,13 @@ export class APICaller {
      * @param addToast Method to add a toast with
      * @param setLoggedIn Method to set if the user is logged in
      */
-    constructor(addToast: (toast: IToastProps, key?: string) => string, setLoggedIn: (loggedIn: boolean) => void) {
+    constructor(addToast: (toast: IToastProps, key?: string) => string, setLoggedIn: (loggedIn: boolean) => void, doCheck: boolean = false) {
         this.addToast = addToast;
         this.call = this.call.bind(this);
         this.setLoggedIn = setLoggedIn;
-        this.checkLoggedIn();
+        if (doCheck) {
+            this.checkLoggedIn();
+        }
     }
 
     /**
@@ -319,8 +321,17 @@ export class WranglerService extends APICaller {
 export class JoinService extends APICaller {
 
     get(callback: (body: {}) => void) {
+        this.call("/scout/api/join/", "GET", {}, callback);
+    }
+
+    getDataSources(callback: (body: {}) => void) {
         this.call("/scout/api/datasource/", "GET", {}, callback);
     }
+
+    getRecipes(callback: (body: {}) => void) {
+        this.call("/scout/api/recipe/", "GET", {}, callback);
+    }
+
 
     putTransformation(id: number, data: Transformation, callback: (body: {}) => void) {
         this.call(`/scout/api/transformation/${id}/`, "PUT", data, callback);
@@ -336,13 +347,13 @@ export class JoinService extends APICaller {
 
     save(data: { [key: string]: any }, callback: (body: {}) => void) {
         if (data["id"] > 0) {
-            this.call(`/scout/api/datasource/${data["id"]}/`, "PUT", data, callback);
+            this.call(`/scout/api/join/${data["id"]}/`, "PUT", data, callback);
         } else {
-            this.call("/scout/api/datasource/", "POST", data, callback);
+            this.call("/scout/api/join/", "POST", data, callback);
         }
     }
 
     delete(id: number | string, callback: (body: {}) => void) {
-        this.call(`/scout/api/datasource/${id}/`, "DELETE", {}, callback);
+        this.call(`/scout/api/join/${id}/`, "DELETE", {}, callback);
     }
 }

@@ -30,9 +30,10 @@ class TransformationSerializerUpdate(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     transformations = TransformationSerializer(many=True, read_only=True)
 
+    # TODO: Add the option to return a more limited set
     class Meta:
         model = Recipe
-        fields = ['id', 'name', 'input', 'output', 'transformations', 'parent']
+        fields = ['id', 'name', 'input', 'output', 'transformations', 'parent', 'schema']
 
 
 class RecursiveField(serializers.Serializer):
@@ -65,10 +66,16 @@ class FlowSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['id', 'name', 'sink']
 
 
-class JoinSerializer(serializers.HyperlinkedModelSerializer):
+class JoinSerializer(serializers.ModelSerializer):
+    data_source_left = DataSourceSerializer(many=False, read_only=True)
+    data_source_right = DataSourceSerializer(many=False, read_only=True)
+    recipe_left = RecipeSerializer(many=False, read_only=True)
+    recipe_right = RecipeSerializer(many=False, read_only=True)
+
     class Meta:
         model = Join
-        fields = ['id', 'data_source_left', 'data_source_right', 'method', 'field_left', 'field_right', 'join_query']
+        fields = ['id', 'name', 'data_source_left', 'recipe_left', 'data_source_right', 'recipe_right', 'method',
+                  'field_left', 'field_right']
 
 
 class FlowStepSerializer(serializers.HyperlinkedModelSerializer):

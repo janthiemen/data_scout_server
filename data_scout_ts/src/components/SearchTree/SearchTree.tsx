@@ -33,6 +33,8 @@ interface SetParentState {
 }
 
 export interface SearchTreeNode<T = {}> extends ITreeNode {
+    key: number;
+    onClick?: (id: number) => void;
     isFolder?: boolean;
     parent?: number;
     childNodes?: SearchTreeNode[];
@@ -50,10 +52,10 @@ interface SearchTreeProps extends RouteComponentProps<any>, IProps {
     onNewElement: () => void;
     onNewFolder: (name: string, id?: number) => void;
     onDelete: (id: number, isFolder: boolean) => void;
-    onClick: (id: number) => void;
     onDoubleClick: (id: number) => void;
     onSetParent: (id: number, isFolder: boolean, parent: number) => void;
     nodes: SearchTreeNode[];
+    extraButton: any;
 }
 
 /**
@@ -67,10 +69,10 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
         nodeContextMenu: undefined,
         nodes: [],
     };
+    private extraButton: any;
     private onNewElement: () => void;
     private onNewFolder: (name: string, parent?: number, id?: number) => void;
     private onDelete: (id: number, isFolder: boolean) => void;
-    private onClick: (id: number) => void;
     private onDoubleClick: (id: number) => void;
     private onSetParent: (id: number, isFolder: boolean, parent: number) => void;
 
@@ -85,9 +87,9 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
         this.onNewElement = props.onNewElement
         this.onNewFolder = props.onNewFolder
         this.onDelete = props.onDelete
-        this.onClick = props.onClick
         this.onDoubleClick = props.onDoubleClick
         this.onSetParent = props.onSetParent
+        this.extraButton = props.extraButton
     }
 
 
@@ -113,7 +115,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
         let newFolder = this.state.newFolder;
         newFolder.isOpen = true;
         if (this.state.nodeContextMenu.isFolder) {
-            newFolder.parent = Number(this.state.nodeContextMenu.id);
+            newFolder.parent = Number(this.state.nodeContextMenu.key);
         }
         this.setState({newFolder: newFolder});
     }
@@ -125,7 +127,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
         if (this.state.nodeContextMenu.isFolder) {
             let newFolder = this.state.newFolder;
             newFolder.isOpen = true;
-            newFolder.id = Number(this.state.nodeContextMenu.id);
+            newFolder.id = Number(this.state.nodeContextMenu.key);
             newFolder.name = String(this.state.nodeContextMenu.label);
             newFolder.parent = this.state.nodeContextMenu.parent === null ? this.state.nodeContextMenu.parent : Number(this.state.nodeContextMenu.parent);
             this.setState({newFolder: newFolder});
@@ -164,7 +166,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
     public openSetParent(event: any) {
         let setParent = this.state.setParent;
         setParent.isOpen = true;
-        setParent.id = Number(this.state.nodeContextMenu.id);
+        setParent.id = Number(this.state.nodeContextMenu.key);
         setParent.isFolder = this.state.nodeContextMenu.isFolder;
         this.setState({setParent: setParent})
     }
@@ -203,7 +205,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
         this.setState({ delete: { 
             isOpen: true, 
             title: this.state.nodeContextMenu.label, 
-            id: this.state.nodeContextMenu.id, 
+            id: this.state.nodeContextMenu.key, 
             isFolder: this.state.nodeContextMenu.isFolder
         }});
     }
@@ -224,7 +226,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
         if (nodeData.isFolder) {
             this.handleNodeCollapseExpand(nodeData);
         } else {
-            this.onClick(Number(nodeData.id))
+            nodeData.onClick(Number(nodeData.key))
         }
     };
 
@@ -232,14 +234,14 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
      * Handle node click of data sources tree
      */
     private handleNodeDoubleClick = (nodeData: SearchTreeNode, _nodePath: number[], e: React.MouseEvent<HTMLElement>) => {
-        this.onDoubleClick(Number(nodeData.id));
+        this.onDoubleClick(Number(nodeData.key));
     };
 
     /**
      * Open the wrangler from the context menu
      */
     private use = (event: any) => {
-        this.onClick(Number(this.state.nodeContextMenu.id))
+        this.state.nodeContextMenu.onClick(Number(this.state.nodeContextMenu.key))
     };
 
     /**
@@ -289,7 +291,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
         let folderItems: DefaultItem[] = [];
         for (let node of nodes) {
             if (node.isFolder) {
-                folderItems.push({title: String(node.label), id: Number(node.id), label: ""});
+                folderItems.push({title: String(node.label), id: Number(node.key), label: ""});
                 if (node.childNodes.length > 0) {
                     folderItems = folderItems.concat(this.flattenFolders(node.childNodes));
                 }
@@ -354,6 +356,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
 
                 <ButtonGroup fill={true} className="pagination">
                     <Button icon="plus" outlined onClick={this.newElement}>New</Button>
+                    {this.extraButton}
                 </ButtonGroup>
 
             </div>
