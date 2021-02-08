@@ -2,60 +2,19 @@ import * as React from "react";
 import autobind from 'class-autobind';
 
 import {
-    MenuItem, IProps, IToastProps, Intent,
+    IProps, IToastProps, Intent,
     FormGroup, InputGroup, Button, HTMLSelect
 } from "@blueprintjs/core";
 
-import { Select, ItemRenderer, ItemPredicate } from "@blueprintjs/select";
-
 import { RecipeService } from "../../helpers/userService";
-import { DefaultItem, DefaultSelect, defaultSelectSettings, highlightText } from "../../helpers/select";
+import { DefaultItem, DefaultSelect, defaultSelectSettings } from "../../helpers/select";
 import { Recipe, newRecipe } from "./Recipes";
 import { DataSource } from "../DataSource/DataSources";
 import PropTypes from "prop-types";
 import { Join } from "../Join/JoinDialog";
 
 /**
- * Render a data source in the select menu.
- * @param item The item to render
- * @param param1 ItemRenderer params
- */
-const dataSourceRenderer: ItemRenderer<DataSource> = (item, { handleClick, modifiers, query }) => {
-    if (!modifiers.matchesPredicate) {
-        return null;
-    }
-    const text = `${item.name}`;
-    return (
-        <MenuItem
-            active={modifiers.active}
-            disabled={modifiers.disabled}
-            key={item.name}
-            onClick={handleClick}
-            text={highlightText(text, query)}
-        />
-    );
-};
-
-/**
- * Filter the data sources based on a query.
- * @param query The query to search for
- * @param item The item to check
- * @param _index The index
- * @param exactMatch Whether to look for an exact match or not
- */
-const dataSourceFilterer: ItemPredicate<DataSource> = (query, item, _index, exactMatch) => {
-    const normalizedTitle = item.name.toLowerCase();
-    const normalizedQuery = query.toLowerCase();
-
-    if (exactMatch) {
-        return normalizedTitle === normalizedQuery;
-    } else {
-        return `${normalizedTitle}`.indexOf(normalizedQuery) >= 0;
-    }
-};
-
-/**
- * Data source props
+ * Recipe props
  */
 interface RecipeProps extends IProps {
     recipeService: RecipeService,
@@ -120,7 +79,6 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
      * @param props The new props
      */
     componentWillReceiveProps(props: RecipeProps) {
-        // TODO: Check if this selects the right one
         this.setState({
             recipe: props.recipe,
             dataSource: props.dataSources.filter(item => item.id === props.recipe.input)[0],
@@ -142,13 +100,9 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
     }
 
     /**
-     * Change the data source type.
-     * @param newType The new type
+     * Set the input of the pipeline
+     * @param item 
      */
-    private setDataSource(newDataSource: DataSource) {
-        this.setState({ dataSource: newDataSource });
-    }
-
     private onInputChange(item: InputItem) {
         this.setState({ dataSource: item.dataSource, join: item.join })
     }
@@ -222,20 +176,8 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
         });
         let items = itemsJoin.concat(itemsDataSource);
 
-        const DataSourceSelect = Select.ofType<DataSource>();
-
         return <form onSubmit={this.submitRecipe}>
             <FormGroup label="Input" labelFor="input" labelInfo="(required)" helperText="The data source that will be used as input">
-                {/* <DataSourceSelect
-                    itemPredicate={dataSourceFilterer}
-                    itemRenderer={dataSourceRenderer}
-                    items={this.state.dataSources}
-                    noResults={<MenuItem disabled={true} text="No results." />}
-                    onItemSelect={this.setDataSource}
-                >
-                    <Button icon="database" rightIcon="caret-down" text={this.state.dataSource ? `${this.state.dataSource.name}` : "(No selection)"}
-                    />
-                </DataSourceSelect> */}
                 <DefaultSelect {...defaultSelectSettings} items={items} onItemSelect={this.onInputChange}>
                     <Button icon="database" rightIcon="caret-down" text={this.state.dataSource ? `${this.state.dataSource.name}` : this.state.join ? this.state.join.name: "(No selection)"} />
                 </DefaultSelect>

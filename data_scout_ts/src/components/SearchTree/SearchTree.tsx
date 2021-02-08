@@ -60,7 +60,7 @@ interface SearchTreeProps extends RouteComponentProps<any>, IProps {
 }
 
 /**
- * The component represents all of the data sources in a tree.
+ * This component creates a tree view.
  */
 class SearchTreeComponent extends React.Component<SearchTreeProps> {
     public state: SearchTreeState = {
@@ -70,6 +70,10 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
         nodeContextMenu: undefined,
         nodes: [],
     };
+
+    /**
+     * An extra button that will be displayed next to the "New" button.
+     */
     private extraButton: any;
     private onNewElement: () => void;
     private onNewFolder: (name: string, parent?: number, id?: number) => void;
@@ -103,14 +107,14 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
     }
 
     /**
-     * Create a new data source.
+     * Create a new element.
      */
     public newElement(event: any) {
         this.onNewElement();
     }
 
     /**
-     * Create a new folder.
+     * Open the new folder dialog.
      */
     public openNewFolder(event: any) {
         let newFolder = this.state.newFolder;
@@ -122,7 +126,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
     }
 
     /**
-     * Create a new folder.
+     * Open the update folder dialog.
      */
     public openUpdateFolder(event: any) {
         if (this.state.nodeContextMenu.isFolder) {
@@ -136,7 +140,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
     }
 
     /**
-     * Create a new folder.
+     * Close the new folder dialog.
      */
     public closeNewFolder(event: any) {
         let newFolder = this.state.newFolder;
@@ -153,7 +157,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
     }
 
     /**
-     * Create a new folder.
+     * Update the name of the folder in the state.
      */
     public onNewFolderName(e: React.ChangeEvent<HTMLInputElement>) {
         let newFolder = this.state.newFolder;
@@ -184,7 +188,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
     }
 
     /**
-     * Set the parent of an item or folder (i.e. move it).
+     * Select the new parent of an item or folder.
      */
     public selectParent(item: DefaultItem) {
         let setParent = this.state.setParent;
@@ -201,7 +205,7 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
     }
 
     /**
-     * Delete a data source or folder.
+     * Open the delete (confirm or cancel) dialog.
      */
     public delete(event: any) {
         this.setState({ delete: { 
@@ -212,17 +216,23 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
         }});
     }
 
+    /**
+     * Cancel the delete action.
+     */
     private handleDeleteCancel() {
         this.setState({ delete: { isOpen: false, title: "", id: undefined } });
     }
 
+    /**
+     * Confirm the delete action and call the delete method.
+     */
     private handleDeleteConfirm() {
         this.onDelete(this.state.delete.id, this.state.delete.isFolder);
         this.setState({ delete: { isOpen: false, title: "", id: undefined } });
     }
 
     /**
-     * Handle node click of data sources tree
+     * Handle node click
      */
     private handleNodeClick = (nodeData: SearchTreeNode, _nodePath: number[], e: React.MouseEvent<HTMLElement>) => {
         if (nodeData.isFolder) {
@@ -233,21 +243,21 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
     };
 
     /**
-     * Handle node click of data sources tree
+     * Handle node double click
      */
     private handleNodeDoubleClick = (nodeData: SearchTreeNode, _nodePath: number[], e: React.MouseEvent<HTMLElement>) => {
         this.onDoubleClick(Number(nodeData.key));
     };
 
     /**
-     * Open the wrangler from the context menu
+     * Call the double click method
      */
     private use = (event: any) => {
-        this.state.nodeContextMenu.onClick(Number(this.state.nodeContextMenu.key))
+        this.onDoubleClick(Number(this.state.nodeContextMenu.key))
     };
 
     /**
-     * Handle node collapse of data sources tree
+     * Handle node collapse
      */
     private handleNodeCollapseExpand = (nodeData: SearchTreeNode) => {
         nodeData.isExpanded = !nodeData.isExpanded;
@@ -281,6 +291,9 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
         );
     };
 
+    /**
+     * Render extra warning in case the user wants to delete a folder.
+     */
     renderDeleteFolder() {
         if (this.state.delete.isFolder) {
             return <b><i>This will delete all subfolders and recipes in the folder!</i></b>
@@ -289,6 +302,10 @@ class SearchTreeComponent extends React.Component<SearchTreeProps> {
         }
     }
 
+    /**
+     * Flatten the folders in the tree to a list.
+     * @param nodes 
+     */
     flattenFolders(nodes: SearchTreeNode[]) {
         let folderItems: DefaultItem[] = [];
         for (let node of nodes) {

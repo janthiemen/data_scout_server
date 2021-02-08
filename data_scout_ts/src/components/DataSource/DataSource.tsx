@@ -218,7 +218,14 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
     }
 
     /**
-     * Submits the data source
+     * Submits the data source. When there are files to be uploaded, the following steps are taken:
+     * 1. Create a "queue" containing all the files that should be uploaded
+     * Then there are three options:
+     * 2. If the data source is new and there are files to be uploaded; Submit the data source (to get an ID)
+     * 3. For each file:
+     *  3.a If it doesn't exist yes, create a UserFile object
+     *  3.b Upload the file
+     * 4. Submit the full data source with all fields filled out
      */
     private submitDataSource(event: React.SyntheticEvent) {
         if (event !== null) {
@@ -230,8 +237,7 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
             // Check if there are file to be uploaded, if so, put them in the queue
             this.fileUploadQueue = [];
             for (let [key, fieldValue] of Object.entries(this.state.fieldValues)) {
-                // TODO: On loading of the kwargs, replace the id in a file field by an object {"id": X, "file": null}
-                if (fields[key]["input"] == "file" && fieldValue["file"] !== null) {
+                if (fields[key]["input"] === "file" && fieldValue["file"] !== null) {
                     this.fileUploadQueue.push({ "key": key, "id": fieldValue["id"], "file": fieldValue["file"] });
                 }
             }
@@ -259,11 +265,14 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
         }
     }
 
+    /**
+     * Perform the final submit of the data source (including all file IDs).
+     */
     private finalSubmitDataSource() {
         let fields = this.getFields();
         let kwargs: { [key: string]: any } = {};
         for (let [key, fieldValue] of Object.entries(this.state.fieldValues)) {
-            if (fields[key]["input"] != "file") {
+            if (fields[key]["input"] !== "file") {
                 kwargs[key] = fieldValue;
             } else {
                 kwargs[key] = fieldValue["id"];
@@ -272,6 +281,10 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
         this.doSubmitDataSource(kwargs);
     }
 
+    /**
+     * Submit a data source, with the given keyword arguments.
+     * @param kwargs An object containing the keyword arguments
+     */
     private doSubmitDataSource(kwargs) {
         let data = {
             id: this.state.dataSource.id,
@@ -293,8 +306,8 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
             let dataSource = this.state.dataSource;
             dataSource.id = body["id"];
             this.setState({ dataSource: dataSource });
-            // TODO: Add some sort of progress bar for uploading
-            if (this.fileUploadQueue.length == 0) {
+
+            if (this.fileUploadQueue.length === 0) {
                 this.updateDataSources();
             } else {
                 this.uploadFile();
@@ -304,12 +317,19 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
         }
     }
 
+    /**
+     * Create a UserFile object.
+     * @param key The field name for which to create a file object
+     */
     private createUserFile(key: string) {
         this.dataSourceService.saveFile({ "data_source": this.state.dataSource.id, "field_name": key }, this.doUploadFile);
     }
 
+    /**
+     * Create a user file if it doesn't exist yet, otherwise upload a file.
+     */
     private uploadFile() {
-        if (this.fileUploadQueue.length == 0) {
+        if (this.fileUploadQueue.length === 0) {
             this.finalSubmitDataSource();
         } else {
             let key = this.fileUploadQueue[this.fileUploadQueue.length - 1]["key"];
@@ -321,6 +341,10 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
         }
     }
 
+    /**
+     * Upload a file.
+     * @param body The body object should contain the ID of the UserFile object to upload the file to
+     */
     private doUploadFile(body: {}) {
         if ("id" in body) {
             this.renderProgress();
@@ -334,6 +358,10 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
         }
     }
 
+    /**
+     * Finish uploading a file
+     * @param body 
+     */
     private finishUploadFile(body: {}) {
         if ("id" in body) {
             let uploading = this.fileUploadQueue.pop();
@@ -346,6 +374,9 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
         }
     }
 
+    /**
+     * Render the progress of saving the data source.
+     */
     private renderProgress() {
         this.submitProgress["step"]++;
         this.submitProgress["key"] = this.addToast({

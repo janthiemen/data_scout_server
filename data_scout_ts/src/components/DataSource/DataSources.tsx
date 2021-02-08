@@ -60,7 +60,6 @@ export const newDataSource = function(): DataSource {
  */
 export const parseDataSource = function(data_source: {}): DataSource {
     let kwargs: { [key: string]: any } = JSON.parse(data_source["kwargs"]);
-    console.log(data_source);
     return { 
         id: data_source["id"], 
         name: data_source["name"], 
@@ -124,17 +123,24 @@ export class DataSourcesComponent extends React.Component<PageProps> {
 
 
     /**
-     * Sets types
+     * Receive types from the service
      * @param types 
      */
     public setTypes(types: {}) {
         this.setState({ types: types });
     }
 
+    /**
+     * Receive folders from the service
+     * @param folders 
+     */
     public setFolders(folders: any) {
         this.setState({ dataSourceFolders: folders["results"] });
     }
 
+    /**
+     * Refresh the data
+     */
     public refresh() {
         this.dataSourceService.getFolders(this.setFolders);
         this.dataSourceService.get(this.setDataSources);
@@ -159,21 +165,30 @@ export class DataSourcesComponent extends React.Component<PageProps> {
         this.setState({ joins: body["results"] });
     }
 
+    /**
+     * Open a join dialog
+     * @param id The ID of the join
+     */
     private onOpenJoin(id: number) {
-        console.log(this.state.joins.filter(join => join.id === id)[0])
         this.setState({ join: this.state.joins.filter(join => join.id === id)[0] });
     }
 
+    /**
+     * Open the join dialog for a new join
+     */
     private onNewJoin() {
         this.setState({ join: newJoin() });
     }
 
+    /**
+     * Close the join dialog
+     */
     private onCloseJoin() {
         this.setState({ join: undefined });
     }
 
     /**
-     * Renders data sources
+     * Renders data sources tree and a data source component
      * @returns  
      */
     render() {
@@ -188,7 +203,7 @@ export class DataSourcesComponent extends React.Component<PageProps> {
                                     onDoubleClick={this.onDoubleClick} 
                                     onSetParent={this.onSetParent} 
                                     extraButton={<Button icon="data-lineage" outlined onClick={this.onNewJoin}>New join</Button>}
-                                    nodes={this.makeNodes(this.state.dataSourceFolders, this.state.dataSources.filter((dataSource: DataSource) => dataSource.parent === null && dataSource.id !== -1),  this.state.joins.filter((join: Join) => join.parent === null && join.id !== -1))} 
+                                    nodes={this.makeNodesDataSources(this.state.dataSourceFolders, this.state.dataSources.filter((dataSource: DataSource) => dataSource.parent === null && dataSource.id !== -1),  this.state.joins.filter((join: Join) => join.parent === null && join.id !== -1))} 
                         />
                     </Col>
                     <Col md={6}>
@@ -199,14 +214,12 @@ export class DataSourcesComponent extends React.Component<PageProps> {
         );
     }
 
-
-    //-----------------------------------------------
-    // Methods for the search tree
-    //-----------------------------------------------
-    private makeNodes(dataSourceFolders: DataSourceFolder[], dataSources: DataSource[], joins: Join[]): SearchTreeNode[] {
-        let nodes = this.makeNodesDataSources(dataSourceFolders, dataSources, joins);
-        return nodes;
-    }
+    /**
+     * Create the nodes that make up the tree.
+     * @param dataSourceFolders The folders
+     * @param dataSources The data sources
+     * @param joins The joins
+     */
     private makeNodesDataSources(dataSourceFolders: DataSourceFolder[], dataSources: DataSource[], joins: Join[]): SearchTreeNode[] {
         let nodes: SearchTreeNode[] = [];
         for (let dataSourceFolder of dataSourceFolders) {
@@ -250,22 +263,40 @@ export class DataSourcesComponent extends React.Component<PageProps> {
         return nodes;
     }
 
+    /**
+     * Create a new data source.
+     */
     private onNewElement() {
         // Create a new DataSource
         this.onClick(-1);
     }
+
+    /**
+     * Create a new folder or update an existing
+     * @param name The folder's name
+     * @param parent The folder's parent
+     * @param id The folder's id (only if updating a folder, else null or undefined)
+     */
     private onNewFolder(name: string, parent?: number, id?: number) {
         // Create a new folder
         this.dataSourceService.saveFolder({id: id, name: name, parent: parent}, this.finishUpdate);
     }
 
+    /**
+     * Finish the update and refresh the data.
+     * @param body 
+     */
     private finishUpdate(body: {}) {
         this.refresh();
         this.addToast({ intent: Intent.SUCCESS, message: `The Update has been processed.` });
     }
 
+    /**
+     * Delete a data source or folder
+     * @param id 
+     * @param isFolder 
+     */
     private onDelete(id: number, isFolder: boolean) {
-        // Delete a dataSource or folder
         if (isFolder) {
             this.dataSourceService.deleteFolder(id, this.finishUpdate);
         } else {
@@ -273,17 +304,28 @@ export class DataSourcesComponent extends React.Component<PageProps> {
         }
     }
 
+    /**
+     * Select a dataSource
+     * @param id 
+     */
     private onClick(id: number) {
         // Select a dataSource
         let dataSource = this.state.dataSources.filter(item => item.id === id)[0];
         this.setState({ dataSource: dataSource });
     }
 
+    /**
+     * Go to the recipes page.
+     * @param id 
+     */
     private onDoubleClick(id: number) {
-        // Open dataSource in wrangler
         this.history.push(`/recipes`)
     }
 
+    /**
+     * Get a list of all data source folders (instead of a tree).
+     * @param dataSourceFolders 
+     */
     private flattenDataSourceFolders(dataSourceFolders: DataSourceFolder[]) {
         let folderItems: DataSourceFolder[] = [];
         for (let dataSourceFolder of dataSourceFolders) {
@@ -295,6 +337,13 @@ export class DataSourcesComponent extends React.Component<PageProps> {
         return folderItems;
     }
 
+    /**
+     * Set the parent for a folder, data source or join
+     * @param id The ID in the tree. This starts with F- for folders, D- for data sources and J- for joins
+     * @param key The ID of the object that is selected
+     * @param isFolder Whether the item is a folder or not
+     * @param parent The new parent of the object
+     */
     private onSetParent(id: string, key: number, isFolder: boolean, parent: number) {
         // Set the parent for a dataSource
         if (isFolder) {

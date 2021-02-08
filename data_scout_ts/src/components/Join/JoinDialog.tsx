@@ -1,7 +1,6 @@
 import * as React from "react";
 import autobind from 'class-autobind';
-import { HTMLSelect, FormGroup, Button, Dialog, MultistepDialog, Classes, Intent, InputGroup, TextArea, Card, Elevation, ControlGroup, DialogStep, IToastProps } from "@blueprintjs/core";
-import { Grid, Row, Col } from 'react-flexbox-grid';
+import { HTMLSelect, FormGroup, Button, MultistepDialog, Classes, Intent, InputGroup, ControlGroup, DialogStep, IToastProps } from "@blueprintjs/core";
 import { DefaultItem, DefaultSelect, defaultSelectSettings } from "../../helpers/select";
 
 import { JoinService } from "../../helpers/userService";
@@ -9,6 +8,9 @@ import { parseRecipe, Recipe } from "../Recipe/Recipes";
 import { DataSource, parseDataSource } from "../DataSource/DataSources";
 
 
+/**
+ * Props for the join dialog
+ */
 interface JoinDialogProps {
     onClose: () => void,
     addToast: (toast: IToastProps, key?: string) => string;
@@ -17,6 +19,9 @@ interface JoinDialogProps {
     isOpen: boolean,
 }
 
+/**
+ * A join item (this let's the user pick either a data source or a recipe as input).
+ */
 interface JoinItem extends DefaultItem {
     recipe?: Recipe;
     dataSource?: DataSource;
@@ -43,6 +48,7 @@ interface JoinState {
     right: JoinItem,
     right_type: string,
     method: string,
+    parent: number,
     fields: string[][]
 }
 
@@ -54,10 +60,17 @@ interface JoinDialogState {
     join: JoinState
 }
 
+/**
+ * This join dialog allows the user to edit or create a Join object.
+ */
 export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState> {
     private joinService: JoinService;
     public addToast: (toast: IToastProps, key?: string) => string;
 
+    /**
+     * Convert a DataSource to a select item.
+     * @param dataSource 
+     */
     private dataSourceToItem(dataSource: DataSource): JoinItem {
         if (dataSource === undefined || dataSource === null) {
             return undefined;
@@ -71,6 +84,10 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
         }
     }
 
+    /**
+     * Convert a recipe to a select item.
+     * @param recipe 
+     */
     private recipeToItem(recipe: Recipe): JoinItem {
         if (recipe === undefined || recipe === null) {
             return undefined;
@@ -84,6 +101,10 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
         }
     }
 
+    /**
+     * Parse a join object and set it in the state.
+     * @param join 
+     */
     private parseJoin(join: Join) {
         if (join === undefined) {
             return {
@@ -138,11 +159,19 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
         this.joinService.getDataSources(this.getDataSources)
     }
 
+    /**
+     * Receive the recipes.
+     * @param body 
+     */
     public getRecipes(body: {}) {
         let recipes = body["results"].map((recipe: { [key: string]: string }) => parseRecipe(recipe));
         this.setState({ recipes: recipes })
     }
 
+    /**
+     * Receive the data sources.
+     * @param body 
+     */
     public getDataSources(body: {}) {
         let dataSources = body["results"].map((dataSource: { [key: string]: string }) => parseDataSource(dataSource));
         this.setState({ dataSources: dataSources })
@@ -164,7 +193,6 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
      * Saves the join.
      */
     private save() {
-        // TODO: Set the methd
         let join: JoinState = this.state.join;
         this.joinService.save({
             "id": join.id,
@@ -175,10 +203,15 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
             "recipe_right": join.right.recipe === undefined ? null : join.right.recipe.id,
             "field_left": join.fields.map(fields => fields[0]).join(","),
             "field_right": join.fields.map(fields => fields[1]).join(","),
-            "method": join.method
+            "method": join.method,
+            "parent": join.parent
         }, this.saveFinish)
     }
 
+    /**
+     * Finish saving the join.
+     * @param body 
+     */
     private saveFinish(body: {}) {
         if ("id" in body) {
             this.addToast({ intent: Intent.SUCCESS, message: `The join has been saved` });
@@ -193,7 +226,7 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
      */
     public onInputTypeChange(event: React.ChangeEvent<HTMLSelectElement>) {
         let join: JoinState = this.state.join;
-        if (event.target.dataset["side"] == "left") {
+        if (event.target.dataset["side"] === "left") {
             join.left_type = event.target.value;
         } else {
             join.right_type = event.target.value;
@@ -216,7 +249,7 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
     }
 
     /**
-     * Set the parent of an item or folder (i.e. move it).
+     * Set the new input of the join (either left or right depending on the data-side attribute)
      */
     public onInputFieldChange(event: React.ChangeEvent<HTMLSelectElement>) {
         let join: JoinState = this.state.join;
@@ -226,24 +259,39 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
 
     }
 
+    /**
+     * Add a field to join on.
+     */
     public addField() {
         let join: JoinState = this.state.join;
         join.fields.push(["", ""]);
         this.setState({ join: join });
     }
 
+    /**
+     * Set the join method (inner, left, etc.).
+     * @param event 
+     */
     public onMethodChange(event: React.ChangeEvent<HTMLSelectElement>) {
         let join: JoinState = this.state.join;
         join.method = event.target.value
         this.setState({ join: join });
     }
 
+    /**
+     * Change the name of the input
+     * @param event 
+     */
     public onInputNameChange(event: React.ChangeEvent<HTMLInputElement>) {
         let join: JoinState = this.state.join;
         join.name = event.target.value
         this.setState({ join: join });
     }
 
+    /**
+     * Get the schema of the given recipe or data source.
+     * @param item 
+     */
     private getSchema(item: JoinItem) {
         if (item !== undefined) {
             if (item.recipe !== undefined) {
@@ -257,7 +305,7 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
     }
 
     /**
-     * Renders transformation dialog.
+     * Renders join dialog.
      * @returns  
      */
     render() {
@@ -268,10 +316,8 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
         let itemsDataSource: JoinItem[] = this.state.dataSources.map((dataSource: DataSource) => {
             return { title: dataSource.name, id: dataSource.id, label: "", dataSource: dataSource };
         });
-        let itemsLeft = join.left_type == "pipeline" ? itemsRecipe : itemsDataSource;
-        let itemsRight = join.right_type == "pipeline" ? itemsRecipe : itemsDataSource;
-
-        // [{ title: "a", id: 1, label: "" }, { title: "b", id: 2, label: "" }, { title: "c", id: 3, label: "" }]
+        let itemsLeft = join.left_type === "pipeline" ? itemsRecipe : itemsDataSource;
+        let itemsRight = join.right_type === "pipeline" ? itemsRecipe : itemsDataSource;
 
         return <MultistepDialog icon="data-lineage" title={"Join"} isOpen={this.state.isOpen} onClose={this.state.onClose}
             finalButtonProps={{ intent: "primary", onClick: this.save, text: "Save" }}>

@@ -45,7 +45,7 @@ interface RecipesState {
 
 
 /**
- * Empty data source object.
+ * Empty recipe object.
  */
 export const newRecipe = function(): Recipe {
     return {
@@ -58,6 +58,10 @@ export const newRecipe = function(): Recipe {
     }
 }
 
+/**
+ * Parse a recipe.
+ * @param recipe 
+ */
 export const parseRecipe = function(recipe: {}): Recipe {
     return {
         id: recipe["id"],
@@ -71,7 +75,7 @@ export const parseRecipe = function(recipe: {}): Recipe {
 }
 
 /**
- * The page with all the data sources.
+ * The page with all the pipelines.
  */
 export class RecipesComponent extends React.Component<PageProps> {
     private recipeService: RecipeService;
@@ -87,7 +91,7 @@ export class RecipesComponent extends React.Component<PageProps> {
     }
 
     /**
-     * Creates an instance of data sources.
+     * Creates an instance of recipes.
      * @param props 
      */
     constructor(props: PageProps) {
@@ -102,28 +106,39 @@ export class RecipesComponent extends React.Component<PageProps> {
         this.refresh();
     }
 
+    /**
+     * Receive the folders
+     * @param folders 
+     */
     public setFolders(folders: any) {
         this.setState({ recipeFolders: folders["results"] });
     }
 
     /**
-     * Sets data sources
+     * Receive the data sources
      * @param types 
      */
     public setDataSources(dataSources: []) {
         this.setState({ dataSources: dataSources["results"] });
     }
+    /**
+     * Receive the joins
+     * @param joins 
+     */
     public setJoins(joins: {}) {
         this.setState({ joins: joins["results"] });
     }
 
+    /**
+     * Refresh the data
+     */
     public refresh() {
         this.recipeService.getFolders(this.setFolders);
         this.recipeService.get(this.setRecipes);
     }
 
     /**
-     * Sets data sources based on the API response
+     * Receive the recipes
      * @param body 
      */
     private setRecipes(body: { [key: string]: any }) {
@@ -133,7 +148,7 @@ export class RecipesComponent extends React.Component<PageProps> {
     }
 
     /**
-     * Renders data sources
+     * Renders recipes
      * @returns  
      */
     render() {
@@ -159,9 +174,11 @@ export class RecipesComponent extends React.Component<PageProps> {
     }
 
 
-    //-----------------------------------------------
-    // Methods for the search tree
-    //-----------------------------------------------
+    /**
+     * Create the nodes that make up the tree.
+     * @param recipeFolders The folders
+     * @param recipes The recipes
+     */
     private makeNodes(recipeFolders: RecipeFolder[], recipes: Recipe[]): SearchTreeNode[] {
         let nodes: SearchTreeNode[] = [];
         for (let recipeFolder of recipeFolders) {
@@ -194,20 +211,39 @@ export class RecipesComponent extends React.Component<PageProps> {
         return nodes;
     }
 
+    /**
+     * Create a new reco[e].
+     */
     private onNewElement() {
         // Create a new Recipe
         this.onClick(-1);
     }
+
+    /**
+     * Create a new folder or update an existing
+     * @param name The folder's name
+     * @param parent The folder's parent
+     * @param id The folder's id (only if updating a folder, else null or undefined)
+     */
     private onNewFolder(name: string, parent?: number, id?: number) {
         // Create a new folder
         this.recipeService.saveFolder({id: id, name: name, parent: parent}, this.finishUpdate.bind("TEST"));
     }
 
+    /**
+     * Finish the update and refresh the data.
+     * @param body 
+     */
     private finishUpdate(body: {}) {
         this.refresh();
         this.addToast({ intent: Intent.SUCCESS, message: `The Update has been processed.` });
     }
 
+    /**
+     * Delete a recipe or folder
+     * @param id 
+     * @param isFolder 
+     */
     private onDelete(id: number, isFolder: boolean) {
         // Delete a recipe or folder
         if (isFolder) {
@@ -217,17 +253,28 @@ export class RecipesComponent extends React.Component<PageProps> {
         }
     }
 
+    /**
+     * Select a recipe
+     * @param id 
+     */
     private onClick(id: number) {
-        // Select a recipe
         let recipe = this.state.recipes.filter(item => item.id === id)[0];
         this.setState({ recipe: recipe });
     }
 
+    /**
+     * Open the wrangler with this pipeline.
+     * @param id 
+     */
     private onDoubleClick(id: number) {
         // Open recipe in wrangler
         this.history.push(`/wrangler/${id}`)
     }
 
+    /**
+     * Get a list of all recipe folders (instead of a tree).
+     * @param dataSourceFolders 
+     */
     private flattenRecipeFolders(recipeFolders: RecipeFolder[]) {
         let folderItems: RecipeFolder[] = [];
         for (let recipeFolder of recipeFolders) {
@@ -239,6 +286,13 @@ export class RecipesComponent extends React.Component<PageProps> {
         return folderItems;
     }
 
+    /**
+     * Set the parent for a folder or recipe.
+     * @param id The ID in the tree
+     * @param key The ID of the object that is selected
+     * @param isFolder Whether the item is a folder or not
+     * @param parent The new parent of the object
+     */
     private onSetParent(id: string, key: number, isFolder: boolean, parent: number) {
         // Set the parent for a recipe
         if (isFolder) {
