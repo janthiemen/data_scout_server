@@ -238,6 +238,10 @@ export class RecipeService extends APICaller {
         this.call("/scout/api/datasource/", "GET", {}, callback);
     }
 
+    getJoins(callback: (body: {}) => void) {
+        this.call("/scout/api/join/", "GET", {}, callback);
+    }
+
     get(callback: (body: {}) => void) {
         this.call("/scout/api/recipe/", "GET", {}, callback);
     }

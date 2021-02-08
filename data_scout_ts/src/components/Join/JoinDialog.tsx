@@ -11,6 +11,7 @@ import { DataSource, parseDataSource } from "../DataSource/DataSources";
 
 interface JoinDialogProps {
     onClose: () => void,
+    addToast: (toast: IToastProps, key?: string) => string;
     joinService: JoinService,
     join: Join,
     isOpen: boolean,
@@ -54,6 +55,7 @@ interface JoinDialogState {
 
 export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState> {
     private joinService: JoinService;
+    public addToast: (toast: IToastProps, key?: string) => string;
 
     private dataSourceToItem(dataSource: DataSource): JoinItem {
         if (dataSource === undefined || dataSource === null) {
@@ -128,7 +130,7 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
             dataSources: [],
             onClose: props.onClose
         };
-
+        this.addToast = props.addToast;
         this.joinService.getRecipes(this.getRecipes)
         this.joinService.getDataSources(this.getDataSources)
     }
@@ -176,10 +178,10 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
 
     private saveFinish(body: {}) {
         if ("id" in body) {
-            this.joinService.addToast({ intent: Intent.SUCCESS, message: `The join has been save.` });
+            this.addToast({ intent: Intent.SUCCESS, message: `The join has been saved` });
             this.setState({isOpen: false});
         } else {
-            this.joinService.addToast({ intent: Intent.DANGER, message: `The was an error while saving the join.` });
+            this.addToast({ intent: Intent.DANGER, message: `The was an error while saving the join` });
         }
     }
 

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep, RecipeFolder, DataSourceFolder, UserFile
+from .models import DataSource, Recipe, Transformation, Join, RecipeFolder, DataSourceFolder, UserFile
 
 
 class DataSourceSerializer(serializers.ModelSerializer):
@@ -33,7 +33,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     # TODO: Add the option to return a more limited set
     class Meta:
         model = Recipe
-        fields = ['id', 'name', 'input', 'output', 'transformations', 'parent', 'schema']
+        fields = ['id', 'name', 'input', 'input_join', 'output', 'transformations', 'parent', 'schema']
 
 
 class RecursiveField(serializers.Serializer):
@@ -60,12 +60,6 @@ class DataSourceFolderSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'parent', 'child_folders', 'children']
 
 
-class FlowSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Flow
-        fields = ['id', 'name', 'sink']
-
-
 class JoinSerializer(serializers.ModelSerializer):
     data_source_left = DataSourceSerializer(many=False, read_only=True)
     data_source_right = DataSourceSerializer(many=False, read_only=True)
@@ -76,9 +70,3 @@ class JoinSerializer(serializers.ModelSerializer):
         model = Join
         fields = ['id', 'name', 'data_source_left', 'recipe_left', 'data_source_right', 'recipe_right', 'method',
                   'field_left', 'field_right']
-
-
-class FlowStepSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = FlowStep
-        fields = ['id', 'flow', 'recipe', 'join']

@@ -25,9 +25,7 @@ router.register(r'datasourcefolder', views.DataSourceFolderViewSet)
 router.register(r'recipe', views.RecipeViewSet)
 router.register(r'recipefolder', views.RecipeFolderViewSet)
 router.register(r'transformation', views.TransformationViewSet)
-router.register(r'flow', views.FlowViewSet)
 router.register(r'join', views.JoinViewSet)
-router.register(r'flowstep', views.FlowStepViewSet)
 router.register(r'datasource_file', views.UserFileViewSet)
 
 urlpatterns = [
@@ -39,7 +37,6 @@ urlpatterns = [
     path('datasource_types/', views.DataSourceTypesView.as_view(), name='hello'),
     path('transformation_types_view/', views.TransformationTypesView.as_view(), name='hello'),
     path('data/<int:recipe>', views.data, name='data'),
-    # path('data/<int:recipe>/<int:step>', views.data, name='data'),
     path('pipeline/<int:recipe>/', views.pipeline, name='pipeline_json'),
     path('meta/transformations', views.meta_transformations, name='meta_transformations'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))

@@ -13,11 +13,11 @@ Multitype input (INPUT_value, INPUT_type)
 
 Join datasets/recipes
     - Add the option to put a join in a dataset folder
-    - Allow recipe creation based on a join
 
 Improve logout timer
 Return result until an error in the recipe
 
+Documentation
 
 Spark support
 Help function

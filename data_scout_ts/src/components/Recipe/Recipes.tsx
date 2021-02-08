@@ -13,12 +13,14 @@ import { RecipeComponent } from "./Recipe";
 import { DataSource } from "../DataSource/DataSources";
 import { SearchTree, SearchTreeNode } from "../SearchTree/SearchTree";
 import { withRouter } from "react-router-dom";
+import { Join } from "../Join/JoinDialog";
 
 export interface Recipe {
     id: number,
     name: string,
     parent?: number,
     input: number,
+    input_join: number,
     sampling_technique: string,
     schema?: {[key: string]: string},
 }
@@ -33,6 +35,7 @@ export interface RecipeFolder {
 
 
 interface RecipesState {
+    joins: Join[],
     dataSources: DataSource[],
     dataSource?: DataSource,
     recipes: Recipe[],
@@ -49,6 +52,7 @@ export const newRecipe = function(): Recipe {
         id: -1,
         name: "New recipe",
         input: undefined,
+        input_join: undefined,
         parent: undefined,
         sampling_technique: "top"
     }
@@ -59,6 +63,7 @@ export const parseRecipe = function(recipe: {}): Recipe {
         id: recipe["id"],
         name: recipe["name"],
         input: recipe["input"],
+        input_join: recipe["input_join"], 
         parent: recipe["parent"],
         sampling_technique: recipe["sampling_technique"],
         schema: JSON.parse(recipe["schema"])
@@ -73,6 +78,7 @@ export class RecipesComponent extends React.Component<PageProps> {
     private addToast: (toast: IToastProps, key?: string) => string;
     private history: History;
     public state: RecipesState = {
+        joins: [],
         dataSources: [],
         dataSource: undefined,
         recipes: [],
@@ -92,6 +98,7 @@ export class RecipesComponent extends React.Component<PageProps> {
 
         this.addToast = props.addToast;
         this.recipeService.getDataSources(this.setDataSources);
+        this.recipeService.getJoins(this.setJoins);
         this.refresh();
     }
 
@@ -105,6 +112,9 @@ export class RecipesComponent extends React.Component<PageProps> {
      */
     public setDataSources(dataSources: []) {
         this.setState({ dataSources: dataSources["results"] });
+    }
+    public setJoins(joins: {}) {
+        this.setState({ joins: joins["results"] });
     }
 
     public refresh() {
@@ -141,7 +151,7 @@ export class RecipesComponent extends React.Component<PageProps> {
                         />
                     </Col>
                     <Col md={6}>
-                        <RecipeComponent updateRecipes={this.refresh} dataSources={this.state.dataSources} recipe={this.state.recipe} recipeService={this.recipeService} addToast={this.addToast} />
+                        <RecipeComponent updateRecipes={this.refresh} dataSources={this.state.dataSources} joins={this.state.joins} recipe={this.state.recipe} recipeService={this.recipeService} addToast={this.addToast} />
                     </Col>
                 </Row>
             </Grid>

@@ -4,7 +4,5 @@ from . import models
 admin.site.register(models.Recipe)
 admin.site.register(models.RecipeFolder)
 admin.site.register(models.Transformation)
-admin.site.register(models.Flow)
 admin.site.register(models.DataSource)
-admin.site.register(models.FlowStep)
 admin.site.register(models.UserFile)

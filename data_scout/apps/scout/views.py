@@ -20,10 +20,10 @@ from rest_framework.response import Response
 import data_scout
 import math
 import numpy as np
-from .serializers import DataSourceSerializer, RecipeSerializer, TransformationSerializer, FlowSerializer, \
-    JoinSerializer, FlowStepSerializer, TransformationSerializerUpdate, RecipeFolderSerializer, \
+from .serializers import DataSourceSerializer, RecipeSerializer, TransformationSerializer, \
+    JoinSerializer, TransformationSerializerUpdate, RecipeFolderSerializer, \
     DataSourceFolderSerializer, UserFileSerializer
-from .models import DataSource, Recipe, Transformation, Flow, Join, FlowStep, RecipeFolder, DataSourceFolder, UserFile
+from .models import DataSource, Recipe, Transformation, Join, RecipeFolder, DataSourceFolder, UserFile
 from django.core.exceptions import ObjectDoesNotExist
 
 from .variable_logger import VariableLogger
@@ -238,30 +238,12 @@ class TransformationViewSet(viewsets.ModelViewSet):
         return serializer_class
 
 
-class FlowViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = Flow.objects.all()
-    serializer_class = FlowSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
 class JoinViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
     queryset = Join.objects.all()
     serializer_class = JoinSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class FlowStepViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = FlowStep.objects.all()
-    serializer_class = FlowStepSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

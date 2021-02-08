@@ -2,17 +2,18 @@ import * as React from "react";
 import autobind from 'class-autobind';
 
 import {
-    MenuItem, IProps, IToastProps, Intent, 
+    MenuItem, IProps, IToastProps, Intent,
     FormGroup, InputGroup, Button, HTMLSelect
 } from "@blueprintjs/core";
 
 import { Select, ItemRenderer, ItemPredicate } from "@blueprintjs/select";
 
 import { RecipeService } from "../../helpers/userService";
-import { highlightText } from "../../helpers/select";
+import { DefaultItem, DefaultSelect, defaultSelectSettings, highlightText } from "../../helpers/select";
 import { Recipe, newRecipe } from "./Recipes";
 import { DataSource } from "../DataSource/DataSources";
 import PropTypes from "prop-types";
+import { Join } from "../Join/JoinDialog";
 
 /**
  * Render a data source in the select menu.
@@ -63,7 +64,13 @@ interface RecipeProps extends IProps {
     dataSource?: DataSource,
     recipe: Recipe,
     dataSources: DataSource[],
+    joins: Join[],
     history: any,
+}
+
+interface InputItem extends DefaultItem {
+    join?: Join;
+    dataSource?: DataSource;
 }
 
 /**
@@ -72,7 +79,9 @@ interface RecipeProps extends IProps {
 interface RecipeState {
     recipe: Recipe,
     dataSource?: DataSource,
+    join?: Join,
     dataSources: DataSource[];
+    joins: Join[];
 }
 
 /**
@@ -90,7 +99,8 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
     public state: RecipeState = {
         recipe: newRecipe(),
         dataSource: undefined,
-        dataSources: []
+        dataSources: [],
+        joins: []
     }
 
     /**
@@ -114,6 +124,8 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
         this.setState({
             recipe: props.recipe,
             dataSource: props.dataSources.filter(item => item.id === props.recipe.input)[0],
+            join: props.joins.filter(item => item.id === props.recipe.input_join)[0],
+            joins: props.joins,
             dataSources: props.dataSources
         });
     }
@@ -124,7 +136,7 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
      * @param prevState The old state
      */
     public componentDidUpdate(prevProps: RecipeProps, prevState: RecipeState) {
-        if (this.state.dataSource !== prevState.dataSource || 
+        if (this.state.dataSource !== prevState.dataSource ||
             this.state.recipe !== prevState.recipe) {
         }
     }
@@ -135,6 +147,10 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
      */
     private setDataSource(newDataSource: DataSource) {
         this.setState({ dataSource: newDataSource });
+    }
+
+    private onInputChange(item: InputItem) {
+        this.setState({ dataSource: item.dataSource, join: item.join })
     }
 
     /**
@@ -181,11 +197,12 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
     private submitRecipe(event: React.SyntheticEvent) {
         event.preventDefault();
 
-        if (this.state.dataSource !== undefined) {
+        if (this.state.dataSource !== undefined || this.state.join !== undefined) {
             let data = {
                 id: this.state.recipe.id,
                 name: this.state.recipe.name,
-                input: this.state.dataSource.id
+                input: this.state.dataSource ? this.state.dataSource.id : null,
+                input_join: this.state.join ? this.state.join.id : null
             }
             this.recipeService.save(data, this.finishSubmit);
         } else {
@@ -197,11 +214,19 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
      * Render a recipe, including a type selector and a name field, as well as the required recipe specific fields.
      */
     render() {
+        let itemsJoin: InputItem[] = this.state.joins.map((join: Join) => {
+            return { title: join.name, id: join.id, label: "", join: join };
+        });
+        let itemsDataSource: InputItem[] = this.state.dataSources.map((dataSource: DataSource) => {
+            return { title: dataSource.name, id: dataSource.id, label: "", dataSource: dataSource };
+        });
+        let items = itemsJoin.concat(itemsDataSource);
+
         const DataSourceSelect = Select.ofType<DataSource>();
 
         return <form onSubmit={this.submitRecipe}>
             <FormGroup label="Input" labelFor="input" labelInfo="(required)" helperText="The data source that will be used as input">
-                <DataSourceSelect
+                {/* <DataSourceSelect
                     itemPredicate={dataSourceFilterer}
                     itemRenderer={dataSourceRenderer}
                     items={this.state.dataSources}
@@ -210,7 +235,10 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
                 >
                     <Button icon="database" rightIcon="caret-down" text={this.state.dataSource ? `${this.state.dataSource.name}` : "(No selection)"}
                     />
-                </DataSourceSelect>
+                </DataSourceSelect> */}
+                <DefaultSelect {...defaultSelectSettings} items={items} onItemSelect={this.onInputChange}>
+                    <Button icon="database" rightIcon="caret-down" text={this.state.dataSource ? `${this.state.dataSource.name}` : this.state.join ? this.state.join.name: "(No selection)"} />
+                </DefaultSelect>
             </FormGroup>
             <FormGroup label="Name" labelFor="name" labelInfo="(required)" helperText="The human readable name of the recipe">
                 <InputGroup id="name" placeholder="Placeholder text" onChange={this.updateName} value={this.state.recipe.name} />
@@ -223,7 +251,7 @@ export class RecipeComponent extends React.Component<RecipeProps, RecipeState> {
                 </HTMLSelect>
             </FormGroup>
 
-            <Button type="submit" icon="floppy-disk" text="Save" disabled={this.state.dataSource === undefined} intent={Intent.SUCCESS} />
+            <Button type="submit" icon="floppy-disk" text="Save" disabled={this.state.dataSource === undefined && this.state.join === undefined} intent={Intent.SUCCESS} />
         </form>
     }
 }

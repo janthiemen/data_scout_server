@@ -178,7 +178,7 @@ export class DataSourcesComponent extends React.Component<PageProps> {
     render() {
         return (
             <Grid fluid>
-                <JoinDialog joinService={this.joinService} isOpen={this.state.join !== undefined} join={this.state.join} onClose={this.onCloseJoin}></JoinDialog>
+                <JoinDialog addToast={this.addToast} joinService={this.joinService} isOpen={this.state.join !== undefined} join={this.state.join} onClose={this.onCloseJoin}></JoinDialog>
                 <Row>
                     <Col md={3}>
                         <SearchTree onNewElement={this.onNewElement} 
