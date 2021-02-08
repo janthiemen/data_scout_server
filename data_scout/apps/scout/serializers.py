@@ -51,15 +51,6 @@ class RecipeFolderSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'parent', 'child_folders', 'children']
 
 
-class DataSourceFolderSerializer(serializers.ModelSerializer):
-    child_folders = RecursiveField(many=True, read_only=True)
-    children = DataSourceSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = DataSourceFolder
-        fields = ['id', 'name', 'parent', 'child_folders', 'children']
-
-
 class JoinSerializer(serializers.ModelSerializer):
     data_source_left = DataSourceSerializer(many=False, read_only=True)
     data_source_right = DataSourceSerializer(many=False, read_only=True)
@@ -69,4 +60,16 @@ class JoinSerializer(serializers.ModelSerializer):
     class Meta:
         model = Join
         fields = ['id', 'name', 'data_source_left', 'recipe_left', 'data_source_right', 'recipe_right', 'method',
-                  'field_left', 'field_right']
+                  'field_left', 'field_right', 'parent']
+
+
+class DataSourceFolderSerializer(serializers.ModelSerializer):
+    child_folders = RecursiveField(many=True, read_only=True)
+    children = DataSourceSerializer(many=True, read_only=True)
+    child_joins = JoinSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = DataSourceFolder
+        fields = ['id', 'name', 'parent', 'child_folders', 'children', 'child_joins']
+
+

@@ -32,6 +32,7 @@ export interface Join {
     field_left: string;
     field_right: string;
     method: string;
+    parent: number;
 }
 
 interface JoinState {
@@ -94,6 +95,7 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
                 right_type: "data_source",
                 method: "inner",
                 fields: [],
+                parent: null,
             };
         }
         let dataSourceLeft = this.dataSourceToItem(join["data_source_left"])
@@ -114,6 +116,7 @@ export class JoinDialog extends React.Component<JoinDialogProps, JoinDialogState
             right: dataSourceRight !== undefined ? dataSourceRight : recipeRight,
             right_type: recipeRight !== undefined ? "pipeline" : "data_source",
             method: join["method"],
+            parent: join["parent"],
             fields: fields,
         };
     }

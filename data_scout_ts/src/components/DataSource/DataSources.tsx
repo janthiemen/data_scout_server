@@ -30,6 +30,7 @@ export interface DataSourceFolder {
     name: string,
     child_folders: DataSourceFolder[],
     children: DataSource[],
+    child_joins: Join[],
 }
 
 interface DataSourcesState {
@@ -83,7 +84,8 @@ export const newJoin = function(): Join {
         recipe_right: undefined,
         field_left: "",
         field_right: "",
-        method: "inner"
+        method: "inner",
+        parent: null
     }
 }
 
@@ -167,7 +169,6 @@ export class DataSourcesComponent extends React.Component<PageProps> {
     }
 
     private onCloseJoin() {
-        console.log("TODO: Close join!")
         this.setState({ join: undefined });
     }
 
@@ -187,7 +188,7 @@ export class DataSourcesComponent extends React.Component<PageProps> {
                                     onDoubleClick={this.onDoubleClick} 
                                     onSetParent={this.onSetParent} 
                                     extraButton={<Button icon="data-lineage" outlined onClick={this.onNewJoin}>New join</Button>}
-                                    nodes={this.makeNodes(this.state.dataSourceFolders, this.state.dataSources.filter((dataSource: DataSource) => dataSource.parent === null && dataSource.id !== -1))} 
+                                    nodes={this.makeNodes(this.state.dataSourceFolders, this.state.dataSources.filter((dataSource: DataSource) => dataSource.parent === null && dataSource.id !== -1),  this.state.joins.filter((join: Join) => join.parent === null && join.id !== -1))} 
                         />
                     </Col>
                     <Col md={6}>
@@ -202,25 +203,14 @@ export class DataSourcesComponent extends React.Component<PageProps> {
     //-----------------------------------------------
     // Methods for the search tree
     //-----------------------------------------------
-    private makeNodes(dataSourceFolders: DataSourceFolder[], dataSources: DataSource[]): SearchTreeNode[] {
-        let nodes = this.makeNodesDataSources(dataSourceFolders, dataSources);
-        for (let join of this.state.joins) {
-            nodes.push({
-                id: `J-${join.id}`,
-                key: join.id,
-                onClick: this.onOpenJoin,
-                isFolder: false,
-                parent: null,
-                icon: <Icon icon={IconNames.DATA_LINEAGE} />,
-                label: join.name,
-            });
-        }
+    private makeNodes(dataSourceFolders: DataSourceFolder[], dataSources: DataSource[], joins: Join[]): SearchTreeNode[] {
+        let nodes = this.makeNodesDataSources(dataSourceFolders, dataSources, joins);
         return nodes;
     }
-    private makeNodesDataSources(dataSourceFolders: DataSourceFolder[], dataSources: DataSource[]): SearchTreeNode[] {
+    private makeNodesDataSources(dataSourceFolders: DataSourceFolder[], dataSources: DataSource[], joins: Join[]): SearchTreeNode[] {
         let nodes: SearchTreeNode[] = [];
         for (let dataSourceFolder of dataSourceFolders) {
-            let childNodes = this.makeNodesDataSources(dataSourceFolder.child_folders, dataSourceFolder.children);
+            let childNodes = this.makeNodesDataSources(dataSourceFolder.child_folders, dataSourceFolder.children, dataSourceFolder.child_joins);
             let node = {
                 id: `F-${dataSourceFolder.id}`,
                 key: dataSourceFolder.id,
@@ -245,6 +235,17 @@ export class DataSourcesComponent extends React.Component<PageProps> {
                 label: dataSource.name,
             })
         }
+        for (let join of joins) {
+            nodes.push({
+                id: `J-${join.id}`,
+                key: join.id,
+                onClick: this.onOpenJoin,
+                isFolder: false,
+                parent: join.parent,
+                icon: <Icon icon={IconNames.DATA_LINEAGE} />,
+                label: join.name,
+            })
+        }
       
         return nodes;
     }
@@ -255,7 +256,7 @@ export class DataSourcesComponent extends React.Component<PageProps> {
     }
     private onNewFolder(name: string, parent?: number, id?: number) {
         // Create a new folder
-        this.dataSourceService.saveFolder({id: id, name: name, parent: parent}, this.finishUpdate.bind("TEST"));
+        this.dataSourceService.saveFolder({id: id, name: name, parent: parent}, this.finishUpdate);
     }
 
     private finishUpdate(body: {}) {
@@ -302,7 +303,9 @@ export class DataSourcesComponent extends React.Component<PageProps> {
             this.dataSourceService.saveFolder({id: dataSourceFolder.id, name: dataSourceFolder.name, parent: parent}, this.finishUpdate);
         } else if (id.startsWith("J-")) {
             // If it starts with a J, it's a join
-            this.addToast({ intent: Intent.WARNING, message: `Putting joins in folders isn't supported yet.` })
+            let join = this.state.joins.filter(item => item.id === key)[0];
+            join.parent = parent;
+            this.joinService.save(join, this.finishUpdate);
         } else {
             let dataSource = this.state.dataSources.filter(item => item.id === key)[0];
             dataSource.parent = parent;
