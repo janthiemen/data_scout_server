@@ -13,7 +13,6 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
 from . import views
@@ -41,9 +40,3 @@ urlpatterns = [
     path('meta/transformations', views.meta_transformations, name='meta_transformations'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
-
-# urlpatterns = [
-#     path('recipe/<int:recipe>/recipe', recipe.get_recipe),
-#     path('recipe/<int:recipe>/data', recipe.get_data),
-# ]
-

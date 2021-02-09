@@ -1,4 +1,4 @@
-import { IToastProps } from "@blueprintjs/core";
+import { Intent, IToastProps } from "@blueprintjs/core";
 import { Transformation } from "../components/Wrangler/Transformation";
 
 /**
@@ -56,7 +56,7 @@ export class APICaller {
         // If we're refreshing we may assume that the old token is obsolete
         localStorage.removeItem("jwt_access_token");
         let refresh_token = localStorage.getItem("jwt_refresh_token");
-        fetch(url, {
+        fetch('/scout/token/refresh/', {
             method: "POST",
             headers: this.getHeaders(),
             body: JSON.stringify({ "refresh": refresh_token })
@@ -70,21 +70,17 @@ export class APICaller {
                         localStorage.removeItem("jwt_refresh_token");
                         this.setLoggedIn(false);
                         break;
-                    default:
+                    case 200:
+                        console.log(body);
                         localStorage.setItem("jwt_access_token", body["access"]);
                         this.call(url, type, body, callback, true);
                         break;
+                    default:
+                        this.addToast({ intent: Intent.DANGER, message: "An error occured!" })
+                        this.setLoggedIn(false);
+                        console.error(body);        
                 }
-
-            })
-            .then((error) => {
-                // console.log("ERROR");
-                // this.addToast({ intent: Intent.DANGER, message: "An error occured!" })
-                this.setLoggedIn(false);
-                // console.log(error);
             });
-
-        this.call(url, type, body, callback, true);
     }
 
     protected _prepareCall(type: string, body: {}, headers: {} = {}) {
@@ -318,6 +314,14 @@ export class WranglerService extends APICaller {
 
     delete(id: number | string, callback: (body: {}) => void) {
         this.call(`/scout/api/datasource/${id}/`, "DELETE", {}, callback);
+    }
+
+    getDefinition(recipe: number, callback: (body: {}) => void) {
+        this.call(`/scout/pipeline/${recipe}`, "GET", {}, callback);
+    }
+
+    downloadCode(id) {
+        this.callDownloadFile(`/scout/pipeline/${id}/?output=python`);
     }
 }
 

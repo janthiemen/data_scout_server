@@ -11,13 +11,20 @@ Other Functions
 
 Multitype input (INPUT_value, INPUT_type)
 
-Join datasets/recipes
-    - Add the option to put a join in a dataset folder
+Return human-readable filename when outputting code
 
-Improve logout timer
+Input validation for transformations
+
+Only allow users to see their own projects, data sources, etc.
+ - Add project ids to all elements
+ - Add IAM roles
+
+Make it possible to view as read only
+
 Return result until an error in the recipe
 
 Write tests
+
 
 Documentation
 

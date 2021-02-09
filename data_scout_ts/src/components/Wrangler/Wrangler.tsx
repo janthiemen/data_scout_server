@@ -12,6 +12,7 @@ import { ReactSortable, Sortable, SortableEvent } from "react-sortablejs";
 import { Transformation, TRANSFORMATIONS } from "./Transformation"
 import { TransformationButton } from "./TransformationButton"
 import { TransformationDialog } from "./TransformationDialog"
+import { ExportDialog } from "./ExportDialog"
 import { TransformationPanel } from "./panels/TransformationPanel"
 import { withRouter } from "react-router-dom";
 
@@ -24,6 +25,7 @@ interface WranglerState {
     columns: DataColumn[];
     columnInfo: { [key: string]: string}[];
     isOpen: boolean;
+    exportOpen: boolean;
     loading: boolean;
     recipe: number;
     // recipeStep: number;
@@ -55,6 +57,7 @@ export class WranglerComponent extends React.Component<PageProps, WranglerState>
         this.state = {
             recipe: parseInt(this.props.match.params.recipe),
             isOpen: false,
+            exportOpen: false,
             loading: true,
             // recipeStep: 4,
             transformationsUpdating: [],
@@ -314,6 +317,14 @@ export class WranglerComponent extends React.Component<PageProps, WranglerState>
         }
     }
 
+    protected openExport() {
+        this.setState( {exportOpen: true} );
+    }
+
+    protected closeExport() {
+        this.setState( {exportOpen: false} );
+    }
+
     /**
      * Renders wrangler
      * @returns  
@@ -321,9 +332,10 @@ export class WranglerComponent extends React.Component<PageProps, WranglerState>
     public render() {
         return (
             <Grid fluid>
+                <ExportDialog recipe={this.state.recipe} isOpen={this.state.exportOpen} close={this.closeExport} wranglerService={this.wranglerService} />
                 <Row>
                     <Col md={12}>
-                        <TransformationPanel newTransformation={this.newTransformation} /> 
+                        <TransformationPanel newTransformation={this.newTransformation} openExport={this.openExport} /> 
                     </Col>
                 </Row>
                 <Divider />

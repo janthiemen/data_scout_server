@@ -15,3 +15,7 @@
 .pagination {
     margin-top: 5px;
 }
+
+.code-block {
+    white-space: pre-wrap;
+}

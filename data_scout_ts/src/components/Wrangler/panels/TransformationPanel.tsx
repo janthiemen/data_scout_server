@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { ButtonGroup } from "@blueprintjs/core";
+import { Alignment, Button, ButtonGroup } from "@blueprintjs/core";
 import { StringTransformationButton } from "../transformations/StringTranformation";
 import { ArrayTransformationButton } from "../transformations/ArrayTransformation";
 import { DatetimeTransformationButton } from "../transformations/DatetimeTransformation";
@@ -14,7 +14,7 @@ import { FilterTransformationButton } from "../transformations/FilterTransformat
 import { StatsTransformationButton } from "../transformations/StatsTransformation";
 import { QuickAccess } from "../QuickAccess";
 
-export const TransformationPanel: React.SFC<{newTransformation: (transformationType: string, kwargs: { [key: string]: any }) => void}> = (props) => (
+export const TransformationPanel: React.SFC<{openExport: () => void, newTransformation: (transformationType: string, kwargs: { [key: string]: any }) => void}> = (props) => (
     <div>
         <ButtonGroup vertical={false} alignText="left">
             <StringTransformationButton newTransformation={props.newTransformation} />
@@ -35,6 +35,7 @@ export const TransformationPanel: React.SFC<{newTransformation: (transformationT
             <DataTransformationButton newTransformation={props.newTransformation} />
             <StatsTransformationButton newTransformation={props.newTransformation} />
             <QuickAccess newTransformation={props.newTransformation} />
+            <Button minimal onClick={props.openExport} >Export</Button>
         </ButtonGroup>
         {/* <input className="bp3-input" type="text" placeholder="Search help" /> */}
  
