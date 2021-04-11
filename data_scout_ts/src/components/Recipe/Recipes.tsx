@@ -23,6 +23,7 @@ export interface Recipe {
     input_join: number,
     sampling_technique: string,
     schema?: {[key: string]: string},
+    project: number,
 }
 
 export interface RecipeFolder {
@@ -31,6 +32,7 @@ export interface RecipeFolder {
     name: string,
     child_folders: RecipeFolder[],
     children: Recipe[],
+    project: number,
 }
 
 
@@ -54,7 +56,8 @@ export const newRecipe = function(): Recipe {
         input: undefined,
         input_join: undefined,
         parent: undefined,
-        sampling_technique: "top"
+        sampling_technique: "top",
+        project: Number(localStorage.getItem("project_id"))
     }
 }
 
@@ -70,7 +73,8 @@ export const parseRecipe = function(recipe: {}): Recipe {
         input_join: recipe["input_join"], 
         parent: recipe["parent"],
         sampling_technique: recipe["sampling_technique"],
-        schema: JSON.parse(recipe["schema"])
+        schema: JSON.parse(recipe["schema"]),
+        project: recipe["project"],
     }
 }
 

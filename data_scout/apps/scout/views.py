@@ -22,8 +22,9 @@ import math
 import numpy as np
 from .serializers import DataSourceSerializer, RecipeSerializer, TransformationSerializer, \
     JoinSerializer, TransformationSerializerUpdate, RecipeFolderSerializer, \
-    DataSourceFolderSerializer, UserFileSerializer
-from .models import DataSource, Recipe, Transformation, Join, RecipeFolder, DataSourceFolder, UserFile
+    DataSourceFolderSerializer, UserFileSerializer, UserProjectSerializer, UserProfileSerializer
+from .models import DataSource, Recipe, Transformation, Join, RecipeFolder, DataSourceFolder, UserFile, UserProject, \
+    UserProfile
 from django.core.exceptions import ObjectDoesNotExist
 
 from .variable_logger import VariableLogger
@@ -37,13 +38,50 @@ def _is_int(val):
         return False
 
 
-class DataSourceViewSet(viewsets.ModelViewSet):
+class ProjectPermission(permissions.BasePermission):
+    """
+    Object-level permission to only allow member of the respective projects to read or edit an object.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        user_permissions = [up
+                            for up in obj.project.users.all()
+                            if up.user == request.user and (request.method in permissions.SAFE_METHODS or
+                                                            up.role in ('owner', 'admin', 'editor'))]
+        if len(user_permissions) == 0:
+            return False
+        else:
+            return True
+
+
+class ProjectModelView(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated, ProjectPermission]
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        for obj in queryset:
+            self.check_object_permissions(request, obj)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(project=self.request.user.profile.project.project)
+        return queryset
+
+
+class DataSourceViewSet(ProjectModelView):
     """
     API endpoint that allows users to be viewed or edited.
     """
     queryset = DataSource.objects.all()
     serializer_class = DataSourceSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
     def _make_schema(self, request):
         # We try if the data source actually works and what the data schema looks like
@@ -80,13 +118,12 @@ class DataSourceViewSet(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
 
-class UserFileViewSet(viewsets.ModelViewSet):
+class UserFileViewSet(ProjectModelView):
     """
     API endpoint that allows users to be viewed or edited.
     """
     queryset = UserFile.objects.all()
     serializer_class = UserFileSerializer
-    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, user_file: int):
         return JsonResponse({"user_file": user_file})
@@ -102,6 +139,10 @@ class UserFileViewSet(viewsets.ModelViewSet):
             serializer = self.serializer_class(user_file)
             return Response(serializer.data)
     # TODO: Add some sort of on delete to delete the accompanying file
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(project=self.request.user.profile.project.project)
+        return queryset
 
 
 class UserFileUploadView(views.APIView):
@@ -161,24 +202,23 @@ class TransformationTypesView(views.APIView):
         return response.Response(serialized)
 
 
-class RecipeViewSet(viewsets.ModelViewSet):
+class RecipeViewSet(ProjectModelView):
     """
     API endpoint that allows users to be viewed or edited.
     Use ?orphans_only=1 to only select top level recipes
     """
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         orphans_only = self.request.query_params.get("orphans_only", 0) == 1
-        queryset = self.queryset
+        queryset = self.queryset.filter(project=self.request.user.profile.project.project)
         if orphans_only:
             queryset = queryset.filter(parent=None)
         return queryset
 
 
-class RecipeFolderViewSet(viewsets.ModelViewSet):
+class RecipeFolderViewSet(ProjectModelView):
     """
     API endpoint that allows users to be viewed or edited.
     Use ?orphans_only=1 to only select top level folders
@@ -189,28 +229,26 @@ class RecipeFolderViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         orphans_only = int(self.request.query_params.get("orphans_only", 0)) == 1
-        queryset = self.queryset
+        queryset = self.queryset.filter(project=self.request.user.profile.project.project)
         if orphans_only:
             queryset = queryset.filter(parent=None)
         return queryset
 
 
-class DataSourceFolderViewSet(RecipeFolderViewSet):
+class DataSourceFolderViewSet(ProjectModelView):
     """
     API endpoint that allows users to be viewed or edited.
     Use ?orphans_only=1 to only select top level folders
     """
     queryset = DataSourceFolder.objects.all()
     serializer_class = DataSourceFolderSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
-class TransformationViewSet(viewsets.ModelViewSet):
+class TransformationViewSet(ProjectModelView):
     """
     API endpoint that allows users to be viewed or edited.
     """
     queryset = Transformation.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
     serializer_class = TransformationSerializer
 
     def destroy(self, request, *args, **kwargs):
@@ -238,13 +276,9 @@ class TransformationViewSet(viewsets.ModelViewSet):
         return serializer_class
 
 
-class JoinViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
+class JoinViewSet(ProjectModelView):
     queryset = Join.objects.all()
     serializer_class = JoinSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 def _get_pipeline(recipe):
@@ -264,6 +298,22 @@ def _get_pipeline(recipe):
             # When there's no next transformation we're done
             break
     return pipeline
+
+
+class UserProjectViewSet(ProjectModelView):
+    queryset = UserProject.objects.all()
+    serializer_class = UserProjectSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
 
 
 class CleanJSON:
@@ -414,23 +464,6 @@ def meta_transformations(request):
         key: {"title": transformation.title, "key": transformation.key, "fields": transformation.fields}
         for key, transformation in scout.transformations.items()}
     )
-
-
-# Create your views here.
-def recipe_get_recipe():
-    pass
-
-
-def flows_get_flows():
-    pass
-
-
-def flows_get_flow():
-    pass
-
-
-def flows_post_flows():
-    pass
 
 """
 

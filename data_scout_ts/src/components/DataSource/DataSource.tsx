@@ -322,7 +322,7 @@ export class DataSourceComponent extends React.Component<DataSourceProps, DataSo
      * @param key The field name for which to create a file object
      */
     private createUserFile(key: string) {
-        this.dataSourceService.saveFile({ "data_source": this.state.dataSource.id, "field_name": key }, this.doUploadFile);
+        this.dataSourceService.saveFile({ "data_source": this.state.dataSource.id, "field_name": key, "project": Number(localStorage.getItem("project_id")) }, this.doUploadFile);
     }
 
     /**

@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -8,11 +9,46 @@ Projects
 User projects
 """
 
+"""
+Project/user management
+"""
 
-# Create your models here.
+
+class Project(models.Model):
+    name = models.CharField(max_length=512)
+
+
+class UserProject(models.Model):
+    ROLES = (
+        ('owner', 'Owner'),
+        ('admin', 'Administrator'),
+        ('editor', 'Editor'),
+        ('viewer', 'Viewer'),
+    )
+
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="users")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="projects")
+    role = models.CharField(
+        max_length=64,
+        choices=ROLES,
+        default="admin",
+    )
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    project = models.ForeignKey(UserProject, null=True, blank=True, on_delete=models.SET_NULL)
+
+
+"""
+Data Scout
+"""
+
+
 class DataSourceFolder(models.Model):
     name = models.CharField(max_length=512)
     parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="child_folders")
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="data_source_folders")
 
 
 class DataSource(models.Model):
@@ -25,6 +61,7 @@ class DataSource(models.Model):
     kwargs = models.TextField()
 
     schema = models.TextField(null=True, blank=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="data_sources")
 
     def __str__(self):
         return self.name
@@ -33,6 +70,7 @@ class DataSource(models.Model):
 class RecipeFolder(models.Model):
     name = models.CharField(max_length=512)
     parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="child_folders")
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="recipe_folders")
 
 
 class Recipe(models.Model):
@@ -53,6 +91,7 @@ class Recipe(models.Model):
         default="top",
     )
     schema = models.TextField(null=True, blank=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="recipes")
 
     def __str__(self):
         return self.name
@@ -93,6 +132,7 @@ class Join(models.Model):
     field_right = models.TextField()
     parent = models.ForeignKey(DataSourceFolder, on_delete=models.CASCADE, null=True, blank=True,
                                related_name="child_joins")
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="joins")
 
     def clean(self):
         super().clean()
@@ -111,5 +151,6 @@ class UserFile(models.Model):
     field_name = models.CharField(max_length=1024)
     file_name = models.CharField(max_length=1024, null=True)
     original_file_name = models.CharField(max_length=1024, null=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="user_files")
     # TODO: Add some sort of on delete
 

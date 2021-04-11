@@ -17,20 +17,22 @@ import { withRouter } from "react-router-dom";
 export interface DataSource {
     id: number,
     name: string,
-    parent: number,
+    parent?: number,
     source?: string,
     schema?: { [key: string]: string },
     kwargs: { [key: string]: any },
+    project: number
 }
 
 // TODO: Can we combine this with the recipe folder?
 export interface DataSourceFolder {
     id: number,
-    parent: number,
+    parent?: number,
     name: string,
     child_folders: DataSourceFolder[],
     children: DataSource[],
     child_joins: Join[],
+    project: number
 }
 
 interface DataSourcesState {
@@ -51,7 +53,8 @@ export const newDataSource = function(): DataSource {
         parent: undefined,
         name: "New data source",
         source: undefined,
-        kwargs: {}
+        kwargs: {},
+        project: Number(localStorage.getItem("project_id"))
     }
 }
 
@@ -66,7 +69,8 @@ export const parseDataSource = function(data_source: {}): DataSource {
         source: data_source["source"], 
         parent: data_source["parent"], 
         kwargs: kwargs,
-        schema: JSON.parse(data_source["schema"]) 
+        schema: JSON.parse(data_source["schema"]),
+        project: data_source["project"], 
     };
 }
 
@@ -84,7 +88,8 @@ export const newJoin = function(): Join {
         field_left: "",
         field_right: "",
         method: "inner",
-        parent: null
+        parent: null,
+        project: Number(localStorage.getItem("project_id"))
     }
 }
 

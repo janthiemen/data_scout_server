@@ -90,7 +90,7 @@ export default class App extends React.Component<IProps> {
 			<Router>
 				<div>
 					<Toaster autoFocus={false} canEscapeKeyClear={true} position={Position.TOP} ref={this.refHandlers.toaster} />
-					<ScoutNavbar></ScoutNavbar>
+					<ScoutNavbar addToast={this.addToast} setLoggedIn={this.setLoggedIn}></ScoutNavbar>
 					<Switch>
 						<Route path="/about">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />

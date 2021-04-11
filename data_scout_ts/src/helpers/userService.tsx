@@ -170,6 +170,34 @@ export class APICaller {
 				}
 			)
 	}
+
+}
+
+export class UserService extends APICaller {
+    public getUserProfile(callback: (body: {}) => void) {
+        this.call("/scout/api/user_profile/", "GET", {}, callback);
+    }
+
+    public setUserProfile(callback: (body: {}) => void) {
+        this.call("/scout/api/user_profile/", "GET", {}, callback);
+    }
+
+    public setCurrentProject(userProfileId: number, projectId: number) {
+        this.call(`/scout/api/user_profile/${userProfileId}/?partial=1`, "PATCH", {"project_id": projectId}, this.finishSetUserProject);
+    }
+
+    public getUserProjects(callback: (body: {}) => void) {
+        this.call("/scout/api/user_project/", "GET", {}, callback);
+    }
+
+    public setUserProject(projectId) {
+        this.call("/scout/api/user_project/", "PUT", {"project_id": projectId}, this.finishSetUserProject);
+    }
+
+    public finishSetUserProject(body: {}) {
+        // TODO!
+    }
+
 }
 
 export class DataSourceService extends APICaller {

@@ -37,7 +37,8 @@ export interface Join {
     field_left: string;
     field_right: string;
     method: string;
-    parent: number;
+    parent?: number;
+    project: number;
 }
 
 interface JoinState {

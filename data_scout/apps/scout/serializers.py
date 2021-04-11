@@ -1,18 +1,40 @@
-from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import DataSource, Recipe, Transformation, Join, RecipeFolder, DataSourceFolder, UserFile
+from .models import DataSource, Recipe, Transformation, Join, RecipeFolder, DataSourceFolder, UserFile, UserProject, \
+    Project, UserProfile
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ['id', 'name']
+
+
+class UserProjectSerializer(serializers.ModelSerializer):
+    project = ProjectSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = UserProject
+        fields = ['id', 'project', 'user', 'role']
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    project = UserProjectSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ['id', 'user', 'project']
 
 
 class DataSourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = DataSource
-        fields = ['id', 'name', 'parent', 'source', 'kwargs', 'schema']
+        fields = ['id', 'name', 'parent', 'source', 'kwargs', 'schema', 'project']
 
 
 class UserFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserFile
-        fields = ['id', 'data_source', 'field_name', 'file_name', 'original_file_name']
+        fields = ['id', 'data_source', 'field_name', 'file_name', 'original_file_name', 'project']
 
 
 class TransformationSerializer(serializers.ModelSerializer):
@@ -33,7 +55,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     # TODO: Add the option to return a more limited set
     class Meta:
         model = Recipe
-        fields = ['id', 'name', 'input', 'input_join', 'output', 'transformations', 'parent', 'schema']
+        fields = ['id', 'name', 'input', 'input_join', 'output', 'transformations', 'parent', 'schema', 'project']
 
 
 class RecursiveField(serializers.Serializer):
@@ -48,7 +70,7 @@ class RecipeFolderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RecipeFolder
-        fields = ['id', 'name', 'parent', 'child_folders', 'children']
+        fields = ['id', 'name', 'parent', 'child_folders', 'children', 'project']
 
 
 class JoinSerializer(serializers.ModelSerializer):
@@ -60,7 +82,7 @@ class JoinSerializer(serializers.ModelSerializer):
     class Meta:
         model = Join
         fields = ['id', 'name', 'data_source_left', 'recipe_left', 'data_source_right', 'recipe_right', 'method',
-                  'field_left', 'field_right', 'parent']
+                  'field_left', 'field_right', 'parent', 'project']
 
 
 class DataSourceFolderSerializer(serializers.ModelSerializer):
@@ -70,6 +92,6 @@ class DataSourceFolderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DataSourceFolder
-        fields = ['id', 'name', 'parent', 'child_folders', 'children', 'child_joins']
+        fields = ['id', 'name', 'parent', 'child_folders', 'children', 'child_joins', 'project']
 
 

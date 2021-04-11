@@ -302,6 +302,11 @@ export class WranglerComponent extends React.Component<PageProps, WranglerState>
         }
     }
 
+    /**
+     * This method is called when the update ordering call has finished.
+     * It should update the order in the state.
+     * @param body 
+     */
     protected finishUpdateOrdering(body: { [key: string]: any }) {
         if ("id" in body) {
             let transformationsUpdating = this.state.transformationsUpdating.filter(id => id !== body["id"]);
@@ -317,10 +322,16 @@ export class WranglerComponent extends React.Component<PageProps, WranglerState>
         }
     }
 
+    /**
+     * Open the export popup.
+     */
     protected openExport() {
         this.setState( {exportOpen: true} );
     }
 
+    /**
+     * Close the export popup.
+     */
     protected closeExport() {
         this.setState( {exportOpen: false} );
     }
