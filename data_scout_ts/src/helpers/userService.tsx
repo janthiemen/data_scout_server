@@ -1,4 +1,5 @@
 import { Intent, IToastProps } from "@blueprintjs/core";
+import { Project } from "../components/ScoutNavbar";
 import { Transformation } from "../components/Wrangler/Transformation";
 
 /**
@@ -196,6 +197,23 @@ export class UserService extends APICaller {
 
     public finishSetUserProject(body: {}) {
         // TODO!
+    }
+
+    public saveProject(project: Project, callback: (body: {}) => void) {
+        if (project["id"] > 0) {
+            this.call(`/scout/api/project/${project["id"]}/`, "PUT", project, callback);
+        } else {
+            this.call("/scout/api/project/", "POST", project, callback);
+        }
+    }
+
+    public saveUserProject(userProject: { [key: string]: any }, callback: (body: {}) => void) {
+        console.log(userProject);
+        if (userProject["id"] > 0) {
+            this.call(`/scout/api/user_project/${userProject["id"]}/`, "PUT", userProject, callback);
+        } else {
+            this.call("/scout/api/user_project/", "POST", userProject, callback);
+        }
     }
 
 }

@@ -26,6 +26,7 @@ router.register(r'recipefolder', views.RecipeFolderViewSet)
 router.register(r'transformation', views.TransformationViewSet)
 router.register(r'join', views.JoinViewSet)
 router.register(r'datasource_file', views.UserFileViewSet)
+router.register(r'project', views.ProjectViewSet)
 router.register(r'user_project', views.UserProjectViewSet)
 router.register(r'user_profile', views.UserProfileViewSet)
 

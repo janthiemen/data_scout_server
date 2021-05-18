@@ -88,11 +88,29 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
         );
     };
 
-    private onProjectChange(item: UserProjectItem): void {
-        this.userService.setCurrentProject(this.state.userProfile.id, item.id);
+    private setUserProject(userProject: { [key: string]: any }): void {
+        this.userService.setCurrentProject(this.state.userProfile.id, userProject.id);
         let userProfile = this.state.userProfile;
-        userProfile.project = this.state.userProjects.filter((userProject: UserProject) => userProject.id === item.id)[0];
-        this.setState({ userProfile: userProfile })
+        userProfile.project = this.state.userProjects.filter((userProject: UserProject) => userProject.id === userProject.id)[0];
+        this.setState({ userProfile: userProfile });
+    }
+
+    private onProjectCreated(project: Project): void {
+        console.log({id: null, project: project["id"], user: this.state.userProfile.id, role: "owner"});
+        this.userService.saveUserProject({id: null, project: project["id"], user: this.state.userProfile.id, role: "owner"}, this.setUserProject);
+    }
+
+    private onProjectChange(item: UserProjectItem): void {
+        if (item.id === null) {
+            this.userService.saveProject({id: null, name: item.title}, this.onProjectCreated)
+            console.log("Create new project");
+        } else {
+            this.setUserProject(item);
+            this.userService.setCurrentProject(this.state.userProfile.id, item.id);
+            let userProfile = this.state.userProfile;
+            userProfile.project = this.state.userProjects.filter((userProject: UserProject) => userProject.id === item.id)[0];
+            this.setState({ userProfile: userProfile });
+        }
     }
     
     protected receiveUserProjects(body: {}) {

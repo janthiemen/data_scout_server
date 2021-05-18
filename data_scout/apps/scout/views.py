@@ -22,9 +22,9 @@ import math
 import numpy as np
 from .serializers import DataSourceSerializer, RecipeSerializer, TransformationSerializer, \
     JoinSerializer, TransformationSerializerUpdate, RecipeFolderSerializer, \
-    DataSourceFolderSerializer, UserFileSerializer, UserProjectSerializer, UserProfileSerializer
+    DataSourceFolderSerializer, UserFileSerializer, UserProjectSerializer, UserProfileSerializer, ProjectSerializer
 from .models import DataSource, Recipe, Transformation, Join, RecipeFolder, DataSourceFolder, UserFile, UserProject, \
-    UserProfile
+    UserProfile, Project
 from django.core.exceptions import ObjectDoesNotExist
 
 from .variable_logger import VariableLogger
@@ -298,6 +298,15 @@ def _get_pipeline(recipe):
             # When there's no next transformation we're done
             break
     return pipeline
+
+
+class ProjectViewSet(ProjectModelView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+
+    # TODO: Add some kind of security here
+    # def get_queryset(self):
+    #     return self.queryset.filter(user=self.request.user)
 
 
 class UserProjectViewSet(ProjectModelView):
