@@ -184,7 +184,7 @@ export class UserService extends APICaller {
     }
 
     public setCurrentProject(userProfileId: number, projectId: number) {
-        this.call(`/scout/api/user_profile/${userProfileId}/?partial=1`, "PATCH", {"project_id": projectId}, this.finishSetUserProject);
+        this.call(`/scout/api/user_profile/${userProfileId}/?partial=1`, "PATCH", {"project": projectId}, this.finishSetUserProject);
     }
 
     public getUserProjects(callback: (body: {}) => void) {
@@ -196,7 +196,8 @@ export class UserService extends APICaller {
     }
 
     public finishSetUserProject(body: {}) {
-        // TODO!
+        // TODO: Find a better way to do this!
+        window.location.reload();
     }
 
     public saveProject(project: Project, callback: (body: {}) => void) {

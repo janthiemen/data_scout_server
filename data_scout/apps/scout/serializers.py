@@ -17,8 +17,23 @@ class UserProjectSerializer(serializers.ModelSerializer):
         fields = ['id', 'project', 'user', 'role']
 
 
+class UserProjectCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProject
+        fields = ['id', 'project', 'user', 'role']
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     project = UserProjectSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ['id', 'user', 'project']
+
+
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    # project = UserProjectSerializer(many=False, read_only=False)
+    project = serializers.PrimaryKeyRelatedField(queryset=UserProject.objects.all(), read_only=False)
 
     class Meta:
         model = UserProfile

@@ -88,28 +88,25 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
         );
     };
 
-    private setUserProject(userProject: { [key: string]: any }): void {
+    private setUserProject(userProject: UserProject): void {
         this.userService.setCurrentProject(this.state.userProfile.id, userProject.id);
+        let userProjects = this.state.userProjects;
+        userProjects.push(userProject);
+
         let userProfile = this.state.userProfile;
-        userProfile.project = this.state.userProjects.filter((userProject: UserProject) => userProject.id === userProject.id)[0];
-        this.setState({ userProfile: userProfile });
+        userProfile.project = userProject;
+        this.setState({ userProfile: userProfile, userProjects: userProjects });
     }
 
     private onProjectCreated(project: Project): void {
-        console.log({id: null, project: project["id"], user: this.state.userProfile.id, role: "owner"});
         this.userService.saveUserProject({id: null, project: project["id"], user: this.state.userProfile.id, role: "owner"}, this.setUserProject);
     }
 
     private onProjectChange(item: UserProjectItem): void {
         if (item.id === null) {
             this.userService.saveProject({id: null, name: item.title}, this.onProjectCreated)
-            console.log("Create new project");
         } else {
-            this.setUserProject(item);
-            this.userService.setCurrentProject(this.state.userProfile.id, item.id);
-            let userProfile = this.state.userProfile;
-            userProfile.project = this.state.userProjects.filter((userProject: UserProject) => userProject.id === item.id)[0];
-            this.setState({ userProfile: userProfile });
+            this.setUserProject(this.state.userProjects.filter((userProject: UserProject) => userProject.id === item.id)[0]);
         }
     }
     
@@ -138,12 +135,11 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
     private getUserMenu() {
         if (this.state.userProjects !== undefined && this.state.userProjects !== null) {
             let projects: UserProjectItem[] = this.state.userProjects.map((userProject: UserProject) => {
-                return { title: userProject.project.name, id: userProject.project.id, label: "", role: userProject.role }
+                return { title: userProject.project.name, id: userProject.id, label: "", role: userProject.role }
             });
 
-            let activeProject = projects.filter((userProject: UserProjectItem) => this.state.userProfile !== undefined && userProject.id === this.state.userProfile.project.id)[0];
-            console.log("Active project");
-            console.log(activeProject);
+            let activeProject = projects.filter(
+                (userProject: UserProjectItem) => this.state.userProfile !== undefined && userProject.id === this.state.userProfile.project.id)[0];
 
             return <Navbar.Group align={Alignment.RIGHT}>
                 <DefaultSelect {...defaultSelectSettings} itemRenderer={this.projectItemRenderer} items={projects} 

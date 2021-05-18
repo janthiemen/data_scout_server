@@ -170,7 +170,13 @@ export class RecipesComponent extends React.Component<PageProps> {
                         />
                     </Col>
                     <Col md={6}>
-                        <RecipeComponent updateRecipes={this.refresh} dataSources={this.state.dataSources} joins={this.state.joins} recipe={this.state.recipe} recipeService={this.recipeService} addToast={this.addToast} />
+                        <RecipeComponent history={this.history} 
+                                         updateRecipes={this.refresh} 
+                                         dataSources={this.state.dataSources} 
+                                         joins={this.state.joins} 
+                                         recipe={this.state.recipe} 
+                                         recipeService={this.recipeService} 
+                                         addToast={this.addToast} />
                     </Col>
                 </Row>
             </Grid>

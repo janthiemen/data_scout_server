@@ -22,7 +22,8 @@ import math
 import numpy as np
 from .serializers import DataSourceSerializer, RecipeSerializer, TransformationSerializer, \
     JoinSerializer, TransformationSerializerUpdate, RecipeFolderSerializer, \
-    DataSourceFolderSerializer, UserFileSerializer, UserProjectSerializer, UserProfileSerializer, ProjectSerializer
+    DataSourceFolderSerializer, UserFileSerializer, UserProjectSerializer, UserProfileSerializer, ProjectSerializer, \
+    UserProjectCreateSerializer, UserProfileUpdateSerializer
 from .models import DataSource, Recipe, Transformation, Join, RecipeFolder, DataSourceFolder, UserFile, UserProject, \
     UserProfile, Project
 from django.core.exceptions import ObjectDoesNotExist
@@ -316,6 +317,16 @@ class UserProjectViewSet(ProjectModelView):
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
 
+    def create(self, request, *args, **kwargs):
+        serializer = UserProjectCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        serializer = self.get_serializer(self.get_queryset().get(pk=serializer.data.get("id")))
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
@@ -323,6 +334,12 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        if self.action == "partial_update":
+            return UserProfileUpdateSerializer
+        else:
+            return self.serializer_class
 
 
 class CleanJSON:
