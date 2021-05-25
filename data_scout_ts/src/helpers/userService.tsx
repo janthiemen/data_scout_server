@@ -227,7 +227,6 @@ export class UserService extends APICaller {
     }
 
     public deleteUserProject(userProject: number, callback: (body: {}) => void) {
-        console.log(userProject);
         this.call(`/scout/api/user_project/${userProject}/`, "DELETE", {}, callback);
     }
 

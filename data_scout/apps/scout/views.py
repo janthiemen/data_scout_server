@@ -92,6 +92,17 @@ class ProjectModelView(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    def create(self, request, *args, **kwargs):
+        request.data["project"] = request.user.profile.project_id
+        return super(ProjectModelView, self).create(request)
+
+    """
+    Update a model instance.
+    """
+    def update(self, request, *args, **kwargs):
+        request.data["project"] = request.user.profile.project_id
+        return super(ProjectModelView, self).update(request)
+
     def get_queryset(self):
         queryset = self.queryset.filter(project=self.request.user.profile.project.project)
         return queryset
@@ -265,10 +276,26 @@ class DataSourceFolderViewSet(ProjectModelView):
     serializer_class = DataSourceFolderSerializer
 
 
-class TransformationViewSet(ProjectModelView):
+class TransformationPermission(permissions.BasePermission):
+    """
+    Object-level permission to only allow member of the respective projects to read or edit an object.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        users = obj.recipe.project.users.all()
+        user_permissions = [up
+                            for up in users
+                            if up.user == request.user and (request.method in permissions.SAFE_METHODS or
+                                                            up.role in ('owner', 'admin', 'editor'))]
+
+        return len(user_permissions) != 0
+
+
+class TransformationViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
+    permission_classes = [permissions.IsAuthenticated, TransformationPermission]
     queryset = Transformation.objects.all()
     serializer_class = TransformationSerializer
 

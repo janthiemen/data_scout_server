@@ -92,8 +92,8 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
             userProfile: undefined,
             projectEdit: null
         };
-        this.userService.getUserProjects(this.receiveUserProjects)
-        this.userService.getUserProfile(this.receiveUserProfile)
+        this.userService.getUserProjects(this.receiveUserProjects);
+        this.userService.getUserProfile(this.receiveUserProfile);
     }
 
     private openProjectEdit(project) {
