@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import DataSource, Recipe, Transformation, Join, RecipeFolder, DataSourceFolder, UserFile, UserProject, \
     Project, UserProfile
@@ -7,6 +8,21 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ['id', 'name']
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['id', 'username']
+
+
+class UserProjectFullSerializer(serializers.ModelSerializer):
+    user = UserSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = UserProject
+        fields = ['id', 'user', 'role']
 
 
 class UserProjectSerializer(serializers.ModelSerializer):
@@ -21,6 +37,14 @@ class UserProjectCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProject
         fields = ['id', 'project', 'user', 'role']
+
+
+class ProjectFullSerializer(serializers.ModelSerializer):
+    users = UserProjectFullSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Project
+        fields = ['id', 'name', 'users']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

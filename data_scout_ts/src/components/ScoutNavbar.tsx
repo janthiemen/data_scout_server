@@ -8,7 +8,27 @@ import autobind from 'class-autobind';
 import { Dialog, Classes, Intent } from "@blueprintjs/core";
 import { UserService, WranglerService } from "../helpers/userService";
 import { BasePageProps, PageProps } from "../helpers/props";
+import { ProjectDialog } from "./ProjectDialog"
 
+
+export interface User {
+    id: number;
+    username: string;
+}
+
+
+export interface ProjectFull {
+    id: number;
+    name: string;
+    users: UserProjectFull[];
+}
+
+
+export interface UserProjectFull {
+    id: number;
+    user: User;
+    role: string;
+}
 
 export interface Project {
     id: number;
@@ -31,6 +51,7 @@ export interface UserProfile {
 
 interface UserProjectItem extends DefaultItem {
     role: string;
+    project: number;
 }
 
 // interface ScoutNavbarProps {
@@ -39,10 +60,11 @@ interface UserProjectItem extends DefaultItem {
 interface ScoutNavbarState {
     userProjects: UserProject[];
     userProfile: UserProfile;
+    projectEdit: number;
 }
 
 function createProject(title: string): UserProjectItem {
-    return { title: title, id: null, label: "", role: "owner" }
+    return { title: title, id: null, label: "", role: "owner", project: null }
 }
 
 function renderCreateProject(query: string, active: boolean, handleClick: React.MouseEventHandler<HTMLElement>) {
@@ -68,9 +90,14 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
         this.state = {
             userProjects: undefined,
             userProfile: undefined,
+            projectEdit: null
         };
         this.userService.getUserProjects(this.receiveUserProjects)
         this.userService.getUserProfile(this.receiveUserProfile)
+    }
+
+    private openProjectEdit(project) {
+        this.setState({projectEdit: project});
     }
 
     private projectItemRenderer: ItemRenderer<UserProjectItem> = (item, { handleClick, modifiers, query }) => {
@@ -82,7 +109,7 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
             <li>
                 <ButtonGroup fill alignText={Alignment.LEFT}>
                     <Button onClick={handleClick} minimal fill>{highlightText(text, query)}</Button>
-                    <Button minimal icon="cog"></Button>
+                    <Button minimal icon="cog" onClick={this.openProjectEdit.bind(this, item.project)}></Button>
                 </ButtonGroup>
             </li>
         );
@@ -135,7 +162,7 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
     private getUserMenu() {
         if (this.state.userProjects !== undefined && this.state.userProjects !== null) {
             let projects: UserProjectItem[] = this.state.userProjects.map((userProject: UserProject) => {
-                return { title: userProject.project.name, id: userProject.id, label: "", role: userProject.role }
+                return { title: userProject.project.name, id: userProject.id, label: "", role: userProject.role, project: userProject.project.id }
             });
 
             let activeProject = projects.filter(
@@ -158,23 +185,26 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
         }
     }
 
+    protected closeProjectEdit() {
+        this.setState({projectEdit: null});
+    }
+
     /**
      * Renders the navigation bar.
      * @returns  
      */
     render() {
-        return <Navbar className={"scout-navbar"}>
+        return <>
+            <ProjectDialog project={this.state.projectEdit} isOpen={this.state.projectEdit !== null} close={this.closeProjectEdit} userService={this.userService} />
+            <Navbar className={"scout-navbar"}>
                 <Navbar.Group align={Alignment.LEFT}>
                     <Navbar.Heading>Data Scout</Navbar.Heading>
                     <Navbar.Divider />
-                    {/* <Link className="bp3-minimal" icon="home" to="/" />Home</Link>
-                    <Link className="bp3-minimal" icon="document" to="/" />Data Sources</Link>
-                    <Link className="bp3-minimal" icon="data-lineage" to="/about" />Flows</Link>
-                    <Link className="bp3-minimal" icon="help" to="/users" />Help</Link> */}
                     {this.getMenuItems()}
                 </Navbar.Group>
                 {this.getUserMenu()}
-            </Navbar>;
+            </Navbar>
+            </>;
         }
 }
 

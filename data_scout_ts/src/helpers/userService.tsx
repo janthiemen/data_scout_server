@@ -1,5 +1,5 @@
 import { Intent, IToastProps } from "@blueprintjs/core";
-import { Project } from "../components/ScoutNavbar";
+import { Project, ProjectFull } from "../components/ScoutNavbar";
 import { Transformation } from "../components/Wrangler/Transformation";
 
 /**
@@ -175,6 +175,10 @@ export class APICaller {
 }
 
 export class UserService extends APICaller {
+    public getUsers(callback: (body: {}) => void) {
+        this.call("/scout/api/user/", "GET", {}, callback);
+    }
+
     public getUserProfile(callback: (body: {}) => void) {
         this.call("/scout/api/user_profile/", "GET", {}, callback);
     }
@@ -189,6 +193,11 @@ export class UserService extends APICaller {
 
     public getUserProjects(callback: (body: {}) => void) {
         this.call("/scout/api/user_project/", "GET", {}, callback);
+    }
+
+    // TODO: Move this to its own service
+    public getProject(project: number, callback: (body: ProjectFull) => void) {
+        this.call(`/scout/api/project/${project}`, "GET", {}, callback);
     }
 
     public setUserProject(projectId) {
@@ -215,6 +224,11 @@ export class UserService extends APICaller {
         } else {
             this.call("/scout/api/user_project/", "POST", userProject, callback);
         }
+    }
+
+    public deleteUserProject(userProject: number, callback: (body: {}) => void) {
+        console.log(userProject);
+        this.call(`/scout/api/user_project/${userProject}/`, "DELETE", {}, callback);
     }
 
 }

@@ -29,6 +29,7 @@ router.register(r'datasource_file', views.UserFileViewSet)
 router.register(r'project', views.ProjectViewSet)
 router.register(r'user_project', views.UserProjectViewSet)
 router.register(r'user_profile', views.UserProfileViewSet)
+router.register(r'user', views.UserViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),

@@ -6,6 +6,7 @@ import uuid
 from wsgiref.util import FileWrapper
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.http import JsonResponse, HttpResponse
@@ -23,10 +24,10 @@ import numpy as np
 from .serializers import DataSourceSerializer, RecipeSerializer, TransformationSerializer, \
     JoinSerializer, TransformationSerializerUpdate, RecipeFolderSerializer, \
     DataSourceFolderSerializer, UserFileSerializer, UserProjectSerializer, UserProfileSerializer, ProjectSerializer, \
-    UserProjectCreateSerializer, UserProfileUpdateSerializer
+    UserProjectCreateSerializer, UserProfileUpdateSerializer, ProjectFullSerializer, UserSerializer
 from .models import DataSource, Recipe, Transformation, Join, RecipeFolder, DataSourceFolder, UserFile, UserProject, \
     UserProfile, Project
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, FieldDoesNotExist
 
 from .variable_logger import VariableLogger
 
@@ -45,14 +46,33 @@ class ProjectPermission(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
+        try:
+            obj._meta.get_field("project")
+            users = obj.project.users.all()
+        except FieldDoesNotExist:
+            # The "Project" object itself doesn't have a project field
+            users = obj.users.all()
         user_permissions = [up
-                            for up in obj.project.users.all()
+                            for up in users
                             if up.user == request.user and (request.method in permissions.SAFE_METHODS or
                                                             up.role in ('owner', 'admin', 'editor'))]
+
         if len(user_permissions) == 0:
             return False
         else:
             return True
+
+
+class UserProfilePermission(permissions.BasePermission):
+    """
+    Object-level permission to only allow member of the respective projects to read or edit an object.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        if obj.user == request.user:
+            return True
+        else:
+            return False
 
 
 class ProjectModelView(viewsets.ModelViewSet):
@@ -301,9 +321,11 @@ def _get_pipeline(recipe):
     return pipeline
 
 
-class ProjectViewSet(ProjectModelView):
+class ProjectViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated, ProjectPermission]
+
     queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
+    serializer_class = ProjectFullSerializer
 
     # TODO: Add some kind of security here
     # def get_queryset(self):
@@ -329,8 +351,23 @@ class UserProjectViewSet(ProjectModelView):
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated, UserProfilePermission]
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
@@ -340,6 +377,11 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             return UserProfileUpdateSerializer
         else:
             return self.serializer_class
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 class CleanJSON:
