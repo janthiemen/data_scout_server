@@ -12,8 +12,7 @@ from django.core.files.storage import default_storage
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 
-from pyparsing import ParseException
-from rest_framework import viewsets, views, response, status
+from rest_framework import viewsets, views, response, status, generics
 from rest_framework import permissions
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
@@ -24,7 +23,8 @@ import numpy as np
 from .serializers import DataSourceSerializer, RecipeSerializer, TransformationSerializer, \
     JoinSerializer, TransformationSerializerUpdate, RecipeFolderSerializer, \
     DataSourceFolderSerializer, UserFileSerializer, UserProjectSerializer, UserProfileSerializer, ProjectSerializer, \
-    UserProjectCreateSerializer, UserProfileUpdateSerializer, ProjectFullSerializer, UserSerializer
+    UserProjectCreateSerializer, UserProfileUpdateSerializer, ProjectFullSerializer, UserSerializer, \
+    ChangePasswordSerializer, UserDetailSerializer, CreateUserSerializer
 from .models import DataSource, Recipe, Transformation, Join, RecipeFolder, DataSourceFolder, UserFile, UserProject, \
     UserProfile, Project
 from django.core.exceptions import ObjectDoesNotExist, FieldDoesNotExist
@@ -205,6 +205,40 @@ class LoginCheckView(views.APIView):
 
     def get(self, request):
         return response.Response({"success": True})
+
+
+class UserDetailView(views.APIView):
+    serializer_class = UserDetailSerializer
+    model = User
+    permission_classes = (permissions.IsAuthenticated, )
+
+    def get(self, request):
+        serializer = self.serializer_class(request.user, many=False)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = CreateUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        # UserProfileUpdateSerializer(data={user: user.id})
+
+        return Response(self.serializer_class(user, many=False).data)
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    """
+    An endpoint for changing password.
+    """
+    serializer_class = ChangePasswordSerializer
+    model = User
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser, )
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
 class DataSourceTypesView(views.APIView):

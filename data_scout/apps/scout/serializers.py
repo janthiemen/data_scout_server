@@ -1,5 +1,7 @@
+from django.contrib.auth import password_validation
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
 from .models import DataSource, Recipe, Transformation, Join, RecipeFolder, DataSourceFolder, UserFile, UserProject, \
     Project, UserProfile
 
@@ -15,6 +17,54 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username']
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'first_name', 'last_name', 'is_staff']
+
+
+class CreateUserSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=128, write_only=True, required=True)
+    password = serializers.CharField(max_length=128, write_only=True, required=True)
+    password_repeat = serializers.CharField(max_length=128, write_only=True, required=True)
+
+    def validate(self, data):
+        if data['password'] != data['password_repeat']:
+            raise serializers.ValidationError({'password_repeat': _("The two password fields didn't match.")})
+        password_validation.validate_password(data['password'])
+        return data
+
+    def save(self, **kwargs):
+        data = self.validated_data
+        user = User(username=data["username"])
+        user.set_password(data['password'])
+        user.save()
+        return user
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(max_length=128, write_only=True, required=True)
+    password_repeat = serializers.CharField(max_length=128, write_only=True, required=True)
+    user = serializers.IntegerField(write_only=True, required=True)
+
+    def get_user(self, data):
+        return User.objects.get(pk=data["user"])
+
+    def validate(self, data):
+        if data['password'] != data['password_repeat']:
+            raise serializers.ValidationError({'password_repeat': _("The two password fields didn't match.")})
+        password_validation.validate_password(data['password'])
+        return data
+
+    def save(self, **kwargs):
+        data = self.validated_data
+        user = self.get_user(data)
+        user.set_password(data['password'])
+        user.save()
+        return user
 
 
 class UserProjectFullSerializer(serializers.ModelSerializer):

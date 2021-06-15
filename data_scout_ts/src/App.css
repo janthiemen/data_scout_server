@@ -19,3 +19,7 @@
 .code-block {
     white-space: pre-wrap;
 }
+
+.settings-tab {
+    width: 100%;
+}

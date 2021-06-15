@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import include, path
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import routers
 from . import views
 from rest_framework_simplejwt import views as jwt_views
@@ -41,6 +42,8 @@ urlpatterns = [
     path('transformation_types_view/', views.TransformationTypesView.as_view(), name='hello'),
     path('data/<int:recipe>', views.data, name='data'),
     path('pipeline/<int:recipe>/', views.pipeline, name='pipeline_json'),
+    path('change_password', csrf_exempt(views.ChangePasswordView.as_view()), name='change_password'),
+    path('user_detail', csrf_exempt(views.UserDetailView.as_view()), name='user_detail'),
     path('meta/transformations', views.meta_transformations, name='meta_transformations'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

@@ -5,6 +5,7 @@ import * as React from "react";
 import { ScoutNavbar } from "./components/ScoutNavbar";
 import { DataSources } from "./components/DataSource/DataSources";
 import { Recipes } from "./components/Recipe/Recipes";
+import { Settings } from "./components/Settings/Settings";
 import { Login } from "./components/User";
 import { Toaster, Position, IProps, IToastProps } from "@blueprintjs/core";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
@@ -76,6 +77,10 @@ export default class App extends React.Component<IProps> {
 						<Route path="/recipes">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
 							<Recipes addToast={this.addToast} setLoggedIn={this.setLoggedIn} isLoggedIn={this.state.isLoggedIn} />
+						</Route>
+						<Route path="/settings"> 
+							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
+							<Settings addToast={this.addToast} setLoggedIn={this.setLoggedIn} isLoggedIn={this.state.isLoggedIn} />
 						</Route>
 						<Route path="/login">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={false} />

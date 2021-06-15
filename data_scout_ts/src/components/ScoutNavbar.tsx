@@ -244,7 +244,8 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
 
                 {/* <Button className="bp3-minimal" icon="projects" text="Projects" /> */}
                 <Navbar.Divider />
-                <Button minimal icon="cog" text="" />
+                <Link to="/settings"><Button minimal icon="cog" text="" /></Link>
+                {/* <Button minimal icon="cog" text="" /> */}
                 <Button minimal icon="user" text="" />
             </Navbar.Group>;
         } else {

@@ -188,9 +188,8 @@ export class ProjectDialog extends React.Component<ProjectDialogProps, ProjectDi
         });
 
 
-        return <Dialog icon="data-lineage" title="Pipeline definition" isOpen={this.state.isOpen} onClose={this.close}>
+        return <Dialog icon="data-lineage" title="Project settings" isOpen={this.state.isOpen} onClose={this.close}>
             <div className={Classes.DIALOG_BODY}>
-                Project
                 <FormGroup label="Name" labelFor="name" labelInfo="(required)" helperText="The human readable name of the project">
                     <InputGroup id="name" placeholder="Placeholder text" onChange={this.updateName} value={this.state.project.name} />
                 </FormGroup>

@@ -27,7 +27,7 @@ export class APICaller {
      * Check if the user is logged in.
      */
     public checkLoggedIn() {
-        this.call("/scout/token/check/", "GET", {}, (body: {}) => {this.setLoggedIn(true);})
+        this.call("/scout/token/check/", "GET", {}, (body: {}) => { this.setLoggedIn(true); })
     }
 
     /**
@@ -80,7 +80,7 @@ export class APICaller {
                         default:
                             this.addToast({ intent: Intent.DANGER, message: "An error occured!" })
                             this.setLoggedIn(false);
-                            console.error(body);        
+                            console.error(body);
                     }
                 });
         } else {
@@ -91,12 +91,12 @@ export class APICaller {
     protected _prepareCall(type: string, body: {}, headers: {} = {}) {
         let properties;
         if (type === "GET") {
-            properties = {method: type, headers: this.getHeaders()}
+            properties = { method: type, headers: this.getHeaders() }
         } else if (body instanceof File) {
-            properties = {method: type, headers: this.getHeaders(), body: body};
+            properties = { method: type, headers: this.getHeaders(), body: body };
             properties["headers"]["Content-Type"] = "multipart/form-data";
         } else {
-            properties = {method: type, headers: this.getHeaders(), body: JSON.stringify(body)};
+            properties = { method: type, headers: this.getHeaders(), body: JSON.stringify(body) };
         }
 
         for (let [key, value] of Object.entries(headers)) {
@@ -123,6 +123,18 @@ export class APICaller {
                             this.refreshToken(url, type, body, callback);
                         } else {
                             this.setLoggedIn(false);
+                        }
+                        break;
+                    case 403:
+                    case 400:
+                        for (let key in body) {
+                            if (Array.isArray(body[key])) {
+                                for (let message of body[key]) {
+                                    this.addToast({ intent: Intent.WARNING, message: message });
+                                }
+                            } else {
+                                this.addToast({ intent: Intent.WARNING, message: body[key] });
+                            }
                         }
                         break;
                     default:
@@ -155,26 +167,26 @@ export class APICaller {
     }
 
     public login(email: string, password: string, callbackSuccess: (body: {}) => void, callbackError: (body: {}) => void) {
-		fetch("/scout/token/", {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ "username": email, "password": password })
-		})
-			.then(res => res.json())
-			.then(
-				(result) => {
-					localStorage.setItem('jwt_access_token', result["access"]);
-					localStorage.setItem('jwt_refresh_token', result["refresh"]);
+        fetch("/scout/token/", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "username": email, "password": password })
+        })
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    localStorage.setItem('jwt_access_token', result["access"]);
+                    localStorage.setItem('jwt_refresh_token', result["refresh"]);
                     this.setLoggedIn(true);
                     callbackSuccess(result);
-				},
-				(error) => {
+                },
+                (error) => {
                     // console.log(error);
                     this.setLoggedIn(false);
-					// callbackError(error);
-				}
-			)
-	}
+                    // callbackError(error);
+                }
+            )
+    }
 
 }
 
@@ -195,7 +207,7 @@ export class UserService extends APICaller {
     }
 
     public setCurrentProject(userProfileId: number, projectId: number) {
-        this.call(`/scout/api/user_profile/${userProfileId}/?partial=1`, "PATCH", {"project": projectId}, this.finishSetUserProject);
+        this.call(`/scout/api/user_profile/${userProfileId}/?partial=1`, "PATCH", { "project": projectId }, this.finishSetUserProject);
     }
 
     public getUserProjects(callback: (body: {}) => void) {
@@ -208,7 +220,7 @@ export class UserService extends APICaller {
     }
 
     public setUserProject(projectId) {
-        this.call("/scout/api/user_project/", "PUT", {"project_id": projectId}, this.finishSetUserProject);
+        this.call("/scout/api/user_project/", "PUT", { "project_id": projectId }, this.finishSetUserProject);
     }
 
     public finishSetUserProject(body: {}) {
@@ -235,6 +247,23 @@ export class UserService extends APICaller {
 
     public deleteUserProject(userProject: number, callback: (body: {}) => void) {
         this.call(`/scout/api/user_project/${userProject}/`, "DELETE", {}, callback);
+    }
+
+    public deleteUser(user: number, callback: (body: {}) => void) {
+        this.call(`/scout/api/user/${user}/`, "DELETE", {}, callback);
+    }
+
+    public getUserDetail(callback: (body: {}) => void) {
+        // this.call(`/scout/user_detail`, "POST", {}, callback);
+        this.call(`/scout/user_detail`, "GET", {}, callback);
+    }
+
+    public createUser(username: string, password: string, passwordRepeat: string, callback: (body: {}) => void) {
+        this.call(`/scout/user_detail`, "POST", { "username": username, "password": password, "password_repeat": passwordRepeat }, callback);
+    }
+
+    public changePassword(user: number, password: string, passwordRepeat: string, callback: (body: {}) => void) {
+        this.call(`/scout/change_password`, "PUT", { "password": password, "password_repeat": passwordRepeat, "user": user }, callback);
     }
 
 }
@@ -266,7 +295,7 @@ export class DataSourceService extends APICaller {
     }
 
     uploadFile(file: File, id, callback: (body: {}) => void) {
-        this.call(`/scout/api/datasource_file/${id}/upload`, "PUT", file, callback, false, {"Content-Disposition": `attachment; filename="${file.name}"`});
+        this.call(`/scout/api/datasource_file/${id}/upload`, "PUT", file, callback, false, { "Content-Disposition": `attachment; filename="${file.name}"` });
     }
 
     downloadUserFile(id) {
@@ -405,6 +434,28 @@ export class JoinService extends APICaller {
 
     getRecipes(callback: (body: {}) => void) {
         this.call("/scout/api/recipe/", "GET", {}, callback);
+    }
+
+    save(data: { [key: string]: any }, callback: (body: {}) => void) {
+        if (data["id"] > 0) {
+            this.call(`/scout/api/join/${data["id"]}/`, "PUT", data, callback);
+        } else {
+            this.call("/scout/api/join/", "POST", data, callback);
+        }
+    }
+
+    delete(id: number | string, callback: (body: {}) => void) {
+        this.call(`/scout/api/join/${id}/`, "DELETE", {}, callback);
+    }
+}
+
+/**
+ * Settings service. These settings are only available to users with the admin role.
+ */
+export class SettingsService extends APICaller {
+
+    get(callback: (body: {}) => void) {
+        this.call("/scout/api/join/", "GET", {}, callback);
     }
 
     save(data: { [key: string]: any }, callback: (body: {}) => void) {
