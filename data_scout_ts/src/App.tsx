@@ -90,7 +90,7 @@ export default class App extends React.Component<IProps> {
 			<Router>
 				<div>
 					<Toaster autoFocus={false} canEscapeKeyClear={true} position={Position.TOP} ref={this.refHandlers.toaster} />
-					<ScoutNavbar addToast={this.addToast} setLoggedIn={this.setLoggedIn}></ScoutNavbar>
+					<ScoutNavbar addToast={this.addToast} setLoggedIn={this.setLoggedIn} isLoggedIn={this.state.isLoggedIn}></ScoutNavbar>
 					<Switch>
 						<Route path="/about">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
@@ -102,19 +102,19 @@ export default class App extends React.Component<IProps> {
 						</Route>
 						<Route path="/data_sources">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
-							<DataSources addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
+							<DataSources addToast={this.addToast} setLoggedIn={this.setLoggedIn} isLoggedIn={this.state.isLoggedIn} />
 						</Route>
 						<Route path="/recipes">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
-							<Recipes addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
+							<Recipes addToast={this.addToast} setLoggedIn={this.setLoggedIn} isLoggedIn={this.state.isLoggedIn} />
 						</Route>
 						<Route path="/login">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={false} />
-							<Login addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
+							<Login addToast={this.addToast} setLoggedIn={this.setLoggedIn} isLoggedIn={this.state.isLoggedIn} />
 						</Route>
 						<Route path="/">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
-							<Recipes addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
+							<Recipes addToast={this.addToast} setLoggedIn={this.setLoggedIn} isLoggedIn={this.state.isLoggedIn} />
 						</Route>
 					</Switch>
 				</div>

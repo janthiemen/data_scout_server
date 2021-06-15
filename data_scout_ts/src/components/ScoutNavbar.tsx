@@ -61,6 +61,7 @@ interface ScoutNavbarState {
     userProjects: UserProject[];
     userProfile: UserProfile;
     projectEdit: number;
+    isLoggedIn: boolean;
 }
 
 function createProject(title: string): UserProjectItem {
@@ -90,11 +91,28 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
         this.state = {
             userProjects: undefined,
             userProfile: undefined,
-            projectEdit: null
+            projectEdit: null,
+            isLoggedIn: props.isLoggedIn
         };
+        this.refresh();
+    }
+
+    private refresh() {
         this.userService.getUserProjects(this.receiveUserProjects);
         this.userService.getUserProfile(this.receiveUserProfile);
     }
+
+    /**
+     * Called when new props are received.
+     * @param props The new props
+     */
+    public componentWillReceiveProps(props: BasePageProps) {
+        if (props.isLoggedIn != this.state.isLoggedIn) {
+            this.refresh();            
+        }
+        this.setState({ isLoggedIn: props.isLoggedIn });
+    }
+
 
     private openProjectEdit(project) {
         this.setState({projectEdit: project});

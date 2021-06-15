@@ -57,31 +57,35 @@ export class APICaller {
         // If we're refreshing we may assume that the old token is obsolete
         localStorage.removeItem("jwt_access_token");
         let refresh_token = localStorage.getItem("jwt_refresh_token");
-        fetch('/scout/token/refresh/', {
-            method: "POST",
-            headers: this.getHeaders(),
-            body: JSON.stringify({ "refresh": refresh_token })
-        })
-            .then(r => r.json().then(data => ({ status: r.status, body: data })))
-            .then((result) => {
-                let status = result["status"];
-                let body = result["body"];
-                switch (status) {
-                    case 401:
-                        localStorage.removeItem("jwt_refresh_token");
-                        this.setLoggedIn(false);
-                        break;
-                    case 200:
-                        console.log(body);
-                        localStorage.setItem("jwt_access_token", body["access"]);
-                        this.call(url, type, body, callback, true);
-                        break;
-                    default:
-                        this.addToast({ intent: Intent.DANGER, message: "An error occured!" })
-                        this.setLoggedIn(false);
-                        console.error(body);        
-                }
-            });
+        if (refresh_token !== null) {
+            fetch('/scout/token/refresh/', {
+                method: "POST",
+                headers: this.getHeaders(),
+                body: JSON.stringify({ "refresh": refresh_token })
+            })
+                .then(r => r.json().then(data => ({ status: r.status, body: data })))
+                .then((result) => {
+                    let status = result["status"];
+                    let body = result["body"];
+                    switch (status) {
+                        case 401:
+                            localStorage.removeItem("jwt_refresh_token");
+                            this.setLoggedIn(false);
+                            break;
+                        case 200:
+                            console.log(body);
+                            localStorage.setItem("jwt_access_token", body["access"]);
+                            this.call(url, type, body, callback, true);
+                            break;
+                        default:
+                            this.addToast({ intent: Intent.DANGER, message: "An error occured!" })
+                            this.setLoggedIn(false);
+                            console.error(body);        
+                    }
+                });
+        } else {
+            this.setLoggedIn(false);
+        }
     }
 
     protected _prepareCall(type: string, body: {}, headers: {} = {}) {

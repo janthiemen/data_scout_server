@@ -4,6 +4,7 @@ import { RouteComponentProps } from "react-router-dom";
 export interface BasePageProps {
 	addToast: (toast: IToastProps, key?: string) => string;
 	setLoggedIn: (loggedIn: boolean) => void;
+	isLoggedIn: boolean;
 }
 
 export interface PageProps  extends RouteComponentProps<any>, BasePageProps, IProps {
