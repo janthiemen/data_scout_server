@@ -6,37 +6,10 @@ import { ScoutNavbar } from "./components/ScoutNavbar";
 import { DataSources } from "./components/DataSource/DataSources";
 import { Recipes } from "./components/Recipe/Recipes";
 import { Login } from "./components/User";
-import { Toaster, Position, IProps, IToastProps, HTMLTable } from "@blueprintjs/core";
+import { Toaster, Position, IProps, IToastProps } from "@blueprintjs/core";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import { Wrangler } from './components/Wrangler/Wrangler';
 
-import { ReactSortable } from "react-sortablejs";
-
-interface BasicClassState {
-	list: { id: string; name: string }[];
-}
-
-export class BasicClass extends React.Component<{}, BasicClassState> {
-	state: BasicClassState = {
-		list: [{ id: "1", name: "shrek" }, { id: "2", name: "fiona" }]
-	};
-	render() {
-		return (
-			<HTMLTable striped={true}>
-				<tbody>
-					<ReactSortable
-						list={this.state.list}
-						setList={newState => this.setState({ list: newState })}
-					>
-						{this.state.list.map(item => (
-							<tr><td>{item.id}</td><td>{item.name}</td><td>{item.name}</td></tr>
-						))}
-					</ReactSortable>
-				</tbody>
-			</HTMLTable>
-		);
-	}
-}
 
 interface LoginRedirectProps extends IProps {
 	isLoggedIn: boolean;
@@ -92,10 +65,6 @@ export default class App extends React.Component<IProps> {
 					<Toaster autoFocus={false} canEscapeKeyClear={true} position={Position.TOP} ref={this.refHandlers.toaster} />
 					<ScoutNavbar addToast={this.addToast} setLoggedIn={this.setLoggedIn} isLoggedIn={this.state.isLoggedIn}></ScoutNavbar>
 					<Switch>
-						<Route path="/about">
-							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
-							<About />
-						</Route>
 						<Route path="/wrangler/:recipe">
 							<LoginRedirect isLoggedIn={this.state.isLoggedIn} loginRequired={true} />
 							<Wrangler addToast={this.addToast} setLoggedIn={this.setLoggedIn} />
@@ -121,8 +90,4 @@ export default class App extends React.Component<IProps> {
 			</Router>
 		);
 	}
-}
-
-function About() {
-	return <h2>About</h2>;
 }

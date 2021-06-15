@@ -16,6 +16,9 @@ interface ExportDialogState {
     definition: string;
 }
 
+/**
+ * This dialog allows the user to download the code for their pipeline.
+ */
 export class ExportDialog extends React.Component<ExportDialogProps, ExportDialogState> {
     private wranglerService: WranglerService;
     private close: () => void;
@@ -44,11 +47,17 @@ export class ExportDialog extends React.Component<ExportDialogProps, ExportDialo
         });
     }
 
+    /**
+     * Callback when the definition is available.
+     * @param body 
+     */
     private receiveDefinition(body: {}) {
         this.setState({ definition: JSON.stringify(body, null, 2) })
-        console.log(body);
     }
 
+    /**
+     * Request the code for the pipeline definition from the server.
+     */
     private downloadCode() {
         this.wranglerService.downloadCode(this.state.recipe);
     }

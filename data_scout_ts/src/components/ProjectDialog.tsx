@@ -51,24 +51,43 @@ export class ProjectDialog extends React.Component<ProjectDialogProps, ProjectDi
         this.requestProject(props.project);
     }
 
+    /**
+     * Request project information from the server.
+     * @param project 
+     */
     private requestProject(project: number) {
         if (project !== null && project !== undefined) {
             this.userService.getProject(project, this.receiveProject);
         }
     }
 
+    /**
+     * Refresh the project information.
+     * @param body 
+     */
     private refreshProject(body: {}) {
         this.requestProject(this.state.project.id);
     }
 
+    /**
+     * Callback when project information has been received
+     * @param body The project details
+     */
     private receiveProject(body: ProjectFull) {
         this.setState({ project: body })
     }
 
+    /**
+     * Callback when a list of users has been received.
+     * @param body A list of users.
+     */
     private receiveUsers(body: {[key: string]: any}) {
         this.setState({ users: body["results"] });
     }
 
+    /**
+     * Get the users assigned to this project from the state.
+     */
     private getUsers(): UserProjectFull[] {
         if (this.state.project !== undefined) {
             return this.state.project.users;
@@ -77,23 +96,37 @@ export class ProjectDialog extends React.Component<ProjectDialogProps, ProjectDi
         }
     }
 
+    /**
+     * Handle delete a user from this project.
+     * @param userProject The user-project object to delete.
+     */
     private handleDelete(userProject: number) {
-        console.log(userProject);
         this.userService.deleteUserProject(userProject, this.refreshProject)
     }
 
+    /**
+     * Callback when the user selects a user to add to the project.
+     * @param user 
+     */
     private selectUser(user: DefaultItem) {
         let newUserProject = this.state.newUserProject;
         newUserProject.user = {"id": user.id, "username": user.title}
         this.setState({ newUserProject: newUserProject });
     }
 
+    /**
+     * Set the role for the new user.
+     * @param event 
+     */
     private selectRole(event: React.ChangeEvent<HTMLSelectElement>) {
         let newUserProject = this.state.newUserProject;
         newUserProject.role = event.target.value;
         this.setState({ newUserProject: newUserProject });
     }
 
+    /**
+     * Add a user to the project.
+     */
     private addUser() {
         this.userService.saveUserProject({
                 id: null, 
@@ -103,6 +136,11 @@ export class ProjectDialog extends React.Component<ProjectDialogProps, ProjectDi
             }, this.refreshProject);
     }
 
+    /**
+     * Render a user that's already assigned to the project.
+     * @param userProject 
+     * @returns 
+     */
     private renderUserProject(userProject: UserProjectFull) {
         return <tr>
             <td>{userProject.user.username}</td>
@@ -113,6 +151,11 @@ export class ProjectDialog extends React.Component<ProjectDialogProps, ProjectDi
         </tr>
     }
 
+    /**
+     * Render a delete button, iff the current user is the owner of the project.
+     * @param userProject 
+     * @returns 
+     */
     private renderDelete(userProject: UserProjectFull) {
         if (userProject.role !== "owner") {
             // TODO: Remove the delete button if the current user is not an admin or owner
@@ -125,6 +168,10 @@ export class ProjectDialog extends React.Component<ProjectDialogProps, ProjectDi
         }
     }
 
+    /**
+     * Update the name of the project
+     * @param event 
+     */
     private updateName(event: React.ChangeEvent<HTMLInputElement>) {
         let project = this.state.project;
         project.name = event.target.value;
@@ -132,7 +179,7 @@ export class ProjectDialog extends React.Component<ProjectDialogProps, ProjectDi
     }
 
     /**
-     * Renders export dialog.
+     * Renders the project dialog.
      * @returns  
      */
     render() {

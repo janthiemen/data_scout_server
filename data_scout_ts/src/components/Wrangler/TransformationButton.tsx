@@ -17,6 +17,9 @@ interface TransformationButtonState {
     isOpenDelete: boolean
 }
 
+/**
+ * The transformation button is displayed in the pipeline. It can be dragged to reorder it and deleted.
+ */
 export class TransformationButton extends React.PureComponent<TransformationButtonProps, TransformationButtonState> {
     private handleOpen: (transformation: Transformation) => void;
     private deleteTransformation: (transformation: Transformation) => void;
@@ -41,14 +44,23 @@ export class TransformationButton extends React.PureComponent<TransformationButt
         this.handleOpen(this.state.transformation);
     }
 
+    /**
+     * Confirm the delete action.
+     */
     private handleDeleteAsk() {
         this.setState({ isOpenDelete: true });
     }
 
+    /**
+     * Callback when the user cancels the delete action.
+     */
     private handleDeleteCancel() {
         this.setState({ isOpenDelete: false });
     }
 
+    /**
+     * Callback when the user confirms the delete action.
+     */
     private handleDeleteConfirm() {
         this.deleteTransformation(this.state.transformation);
         this.setState({ isOpenDelete: false });

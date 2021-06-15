@@ -178,6 +178,9 @@ export class APICaller {
 
 }
 
+/**
+ * User service
+ */
 export class UserService extends APICaller {
     public getUsers(callback: (body: {}) => void) {
         this.call("/scout/api/user/", "GET", {}, callback);

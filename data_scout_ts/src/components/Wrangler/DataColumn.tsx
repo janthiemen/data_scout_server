@@ -5,6 +5,10 @@ import { Menu, MenuItem, MenuDivider } from "@blueprintjs/core";
 
 import { AbstractSortableColumn, ISortCallback } from "./AbstractSortableColumn";
 
+/**
+ * This class represents a column in the data view.
+ * It also offers a (context-aware) menu with available transformations that can be quickly applied.
+ */
 export class DataColumn extends AbstractSortableColumn {
 	// Create transformation creates a transformation directly, new transformation show a popup where the user can change settings.
 	private createTransformation: (transformation: string, kwargs: { [key: string]: any }) => void;

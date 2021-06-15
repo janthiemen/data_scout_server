@@ -5,9 +5,8 @@ import { DefaultItem, DefaultSelect, defaultSelectSettings, highlightText } from
 import { ItemRenderer } from "@blueprintjs/select";
 
 import autobind from 'class-autobind';
-import { Dialog, Classes, Intent } from "@blueprintjs/core";
-import { UserService, WranglerService } from "../helpers/userService";
-import { BasePageProps, PageProps } from "../helpers/props";
+import { UserService } from "../helpers/userService";
+import { BasePageProps } from "../helpers/props";
 import { ProjectDialog } from "./ProjectDialog"
 
 
@@ -15,7 +14,6 @@ export interface User {
     id: number;
     username: string;
 }
-
 
 export interface ProjectFull {
     id: number;
@@ -35,7 +33,6 @@ export interface Project {
     name: string;
 }
 
-
 export interface UserProject {
     id: number;
     project: Project;
@@ -54,9 +51,6 @@ interface UserProjectItem extends DefaultItem {
     project: number;
 }
 
-// interface ScoutNavbarProps {
-//     userService: UserService;
-// }
 interface ScoutNavbarState {
     userProjects: UserProject[];
     userProfile: UserProfile;
@@ -64,10 +58,22 @@ interface ScoutNavbarState {
     isLoggedIn: boolean;
 }
 
+/**
+ * Create a new project item.
+ * @param title The title
+ * @returns 
+ */
 function createProject(title: string): UserProjectItem {
     return { title: title, id: null, label: "", role: "owner", project: null }
 }
 
+/**
+ * Render the create project menu item.
+ * @param query The name of the new project
+ * @param active 
+ * @param handleClick 
+ * @returns 
+ */
 function renderCreateProject(query: string, active: boolean, handleClick: React.MouseEventHandler<HTMLElement>) {
     return (
         <MenuItem
@@ -80,7 +86,10 @@ function renderCreateProject(query: string, active: boolean, handleClick: React.
     )
 }
 
-
+/**
+ * A navbar containing the primary menu items as well as a user menu.
+ * The navbar also handles project editing/creation.
+ */
 export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState> {
     private userService: UserService;
 
@@ -97,6 +106,9 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
         this.refresh();
     }
 
+    /**
+     * Refresh the navbar.
+     */
     private refresh() {
         this.userService.getUserProjects(this.receiveUserProjects);
         this.userService.getUserProfile(this.receiveUserProfile);
@@ -114,10 +126,18 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
     }
 
 
-    private openProjectEdit(project) {
+    /**
+     * Open the edit dialog.
+     * @param project The id of the project.
+     */
+    private openProjectEdit(project: number) {
         this.setState({projectEdit: project});
     }
 
+    /**
+     * Render a project in the select list.
+     * @returns 
+     */
     private projectItemRenderer: ItemRenderer<UserProjectItem> = (item, { handleClick, modifiers, query }) => {
         if (!modifiers.matchesPredicate) {
             return null;
@@ -133,6 +153,10 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
         );
     };
 
+    /**
+     * Set the active user project.
+     * @param userProject The user project.
+     */
     private setUserProject(userProject: UserProject): void {
         this.userService.setCurrentProject(this.state.userProfile.id, userProject.id);
         let userProjects = this.state.userProjects;
@@ -143,27 +167,48 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
         this.setState({ userProfile: userProfile, userProjects: userProjects });
     }
 
+    /**
+     * Callback when the project has been created.
+     * @param project The created project.
+     */
     private onProjectCreated(project: Project): void {
         this.userService.saveUserProject({id: null, project: project["id"], user: this.state.userProfile.id, role: "owner"}, this.setUserProject);
     }
 
+    /**
+     * Called when the user selects a project.
+     * @param item 
+     */
     private onProjectChange(item: UserProjectItem): void {
         if (item.id === null) {
-            this.userService.saveProject({id: null, name: item.title}, this.onProjectCreated)
+            // Create a project if it's new
+            this.userService.saveProject({id: null, name: item.title}, this.onProjectCreated);
         } else {
+            // Set the currently active project
             this.setUserProject(this.state.userProjects.filter((userProject: UserProject) => userProject.id === item.id)[0]);
         }
     }
     
+    /**
+     * Callback when the user projects are received.
+     * @param body A list of user project objects
+     */
     protected receiveUserProjects(body: {}) {
         this.setState({userProjects: body["results"]});
     }
 
+    /**
+     * Receive the user profile.
+     * @param body The user profile
+     */
     protected receiveUserProfile(body: {}) {
         this.setState({userProfile: body["results"][0]});
     }
 
-
+    /**
+     * Render the menu items in the navbar.
+     * @returns 
+     */
     private getMenuItems() {
         if (this.state.userProjects !== undefined && this.state.userProjects !== null) {
             return <>
@@ -177,6 +222,10 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
         }
     }
 
+    /**
+     * Render the user menu.
+     * @returns 
+     */
     private getUserMenu() {
         if (this.state.userProjects !== undefined && this.state.userProjects !== null) {
             let projects: UserProjectItem[] = this.state.userProjects.map((userProject: UserProject) => {
@@ -203,6 +252,9 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
         }
     }
 
+    /**
+     * Close the edit dialog.
+     */
     protected closeProjectEdit() {
         this.setState({projectEdit: null});
     }
@@ -225,51 +277,3 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
             </>;
         }
 }
-
-
-
-
-
-
-
-
-// function onProjectChange(item: DefaultItem) {
-//     console.log(item);
-// }
-
-// export function ScoutNavbarf() {
-//     let currentProject = "1";
-//     let projects: DefaultItem[] = [
-//         { title: "Test project", id: 1, label: "" },
-//         { title: "Test project 2", id: 2, label: "" }
-//     ]
-
-//     return (
-//         <Navbar className={"scout-navbar"}>
-//             <Navbar.Group align={Alignment.LEFT}>
-//                 <Navbar.Heading>Data Scout</Navbar.Heading>
-//                 <Navbar.Divider />
-//                 {/* <Link className="bp3-minimal" icon="home" to="/" />Home</Link>
-//                 <Link className="bp3-minimal" icon="document" to="/" />Data Sources</Link>
-//                 <Link className="bp3-minimal" icon="data-lineage" to="/about" />Flows</Link>
-//                 <Link className="bp3-minimal" icon="help" to="/users" />Help</Link> */}
-//                 <Link to="/"><Button className="bp3-minimal" icon="home" text="Home" /></Link>
-//                 <Link to="/data_sources"><Button className="bp3-minimal" icon="document" text="Data Sources" /></Link>
-//                 <Link to="/recipes"><Button className="bp3-minimal" icon="data-lineage" text="Flows" /></Link>
-//                 <Link to="/help"><Button className="bp3-minimal" icon="help" text="Help" /></Link>
-//             </Navbar.Group>
-//             <Navbar.Group align={Alignment.RIGHT}>
-//                 <DefaultSelect {...defaultSelectSettings} itemRenderer={projectItemRenderer} items={projects} onItemSelect={onProjectChange}>
-//                     <Button minimal icon="projects" rightIcon="caret-down" text={"(No project selected)"} />
-//                 </DefaultSelect>
-
-//                 {/* <Button className="bp3-minimal" icon="projects" text="Projects" /> */}
-//                 <Navbar.Divider />
-//                 <Button minimal icon="cog" text="" />
-//                 <Button minimal icon="user" text="" />
-//             </Navbar.Group>
-//         </Navbar>
-//     );
-// }
-
-

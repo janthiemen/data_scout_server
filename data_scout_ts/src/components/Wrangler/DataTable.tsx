@@ -27,6 +27,9 @@ interface DataTableState {
 	loading: boolean;
 }
 
+/**
+ * This is the main data table. 
+ */
 export class DataTable extends React.PureComponent<DataTableProps, DataTableState> {
 	public state: DataTableState;
 
@@ -69,6 +72,12 @@ export class DataTable extends React.PureComponent<DataTableProps, DataTableStat
 		);
 	}
 
+	/**
+	 * Get the data in a cell by its row and column indices.
+	 * @param rowIndex 
+	 * @param columnIndex 
+	 * @returns 
+	 */
 	private getCellData = (rowIndex: number, columnIndex: number) => {
 		const sortedRowIndex = this.state.sortedIndexMap[rowIndex];
 		if (sortedRowIndex != null) {
@@ -77,6 +86,11 @@ export class DataTable extends React.PureComponent<DataTableProps, DataTableStat
 		return this.state.data[rowIndex][columnIndex];
 	};
 
+	/**
+	 * Render a context menu for a certain cell. Currently only supports copying.
+	 * @param context 
+	 * @returns 
+	 */
 	private renderBodyContextMenu = (context: IMenuContext) => {
 		return (
 			<Menu>
@@ -85,6 +99,11 @@ export class DataTable extends React.PureComponent<DataTableProps, DataTableStat
 		);
 	};
 
+	/**
+	 * Sort by the values in a certain column.
+	 * @param columnIndex 
+	 * @param comparator 
+	 */
 	private sortColumn = (columnIndex: number, comparator: (a: any, b: any) => number) => {
 		const { data } = this.state;
 		const sortedIndexMap = Utils.times(data.length, (i: number) => i);

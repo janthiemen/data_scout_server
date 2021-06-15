@@ -14,6 +14,9 @@ interface NumberInputState {
     value: number
 }
 
+/**
+ * Number input for the transformation dialog.
+ */
 export class NumberInput extends React.PureComponent<NumberInputProps, NumberInputState> {
     private onValueChange: (field: string, value: any) => void;
 

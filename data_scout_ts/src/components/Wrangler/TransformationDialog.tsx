@@ -38,6 +38,9 @@ interface TransformationDialogFieldSetState {
     columns: { [key: string]: string}
 }
 
+/**
+ * Render a transformation field based on its type, etc.
+ */
 class TransformationDialogFieldSet extends React.Component<TransformationDialogFieldSetProps, TransformationDialogFieldSetState> {
     protected onFieldChange: (field: string, value: any) => void;
     protected fieldName: string;
@@ -131,6 +134,10 @@ class TransformationDialogFieldSet extends React.Component<TransformationDialogF
         }
     }
 
+    /**
+     * Add a row to a list input.
+     * @param field 
+     */
     multipleAddRow(field: string) {
         // Initialize the kwargs with their default values
         let values: {[key: string]: any} = {};
@@ -142,6 +149,11 @@ class TransformationDialogFieldSet extends React.Component<TransformationDialogF
         this.setState({ fieldValues: fieldValues });
     }
 
+    /**
+     * Delete a row from a list input.
+     * @param field 
+     * @param index 
+     */
     multipleDeleteRow(field: string, index: number) {
         let fieldValues = this.state.fieldValues;
         fieldValues[field].splice(index, 1);
@@ -203,6 +215,9 @@ class TransformationDialogFieldSet extends React.Component<TransformationDialogF
     }
 }
 
+/**
+ * This component provides a transformation dialog, that allows the user to edit the transformation settings.
+ */
 export class TransformationDialog extends React.Component<TransformationDialogProps, TransformationDialogState> {
     private setTransformation: () => void;
     private wranglerService: WranglerService;

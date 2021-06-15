@@ -1,32 +1,7 @@
-/*
- * Copyright 2017 Palantir Technologies, Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import * as React from "react";
 import autobind from 'class-autobind';
 
-import {
-    Button,
-    ButtonGroup,
-    Hotkey,
-    Hotkeys,
-    HotkeysTarget,
-    MenuItem,
-    Position,
-    Toaster,
-} from "@blueprintjs/core";
+import { Button, ButtonGroup, Hotkey, Hotkeys, HotkeysTarget, MenuItem, Position, Toaster } from "@blueprintjs/core";
 
 import { ItemPredicate, ItemRenderer, Omnibar } from "@blueprintjs/select";
 
@@ -42,6 +17,9 @@ interface QuickAccessState {
     isOpen: boolean;
 }
 
+/**
+ * This component provides a quick access search bar (omnibar) that allows the user to quickly find the transformation they're looking for.
+ */
 @HotkeysTarget
 export class QuickAccess extends React.PureComponent<QuickAccessProps, QuickAccessState> {
     private newTransformation: (transformationType: string, kwargs: { [key: string]: any }) => void;
@@ -80,6 +58,12 @@ export class QuickAccess extends React.PureComponent<QuickAccessProps, QuickAcce
         return text.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
     }
 
+    /**
+     * Method to highlight text that matches a query.
+     * @param text 
+     * @param query 
+     * @returns 
+     */
     protected highlightText(text: string, query: string) {
         let lastIndex = 0;
         const words = query
@@ -111,6 +95,14 @@ export class QuickAccess extends React.PureComponent<QuickAccessProps, QuickAcce
         return tokens;
     }
 
+    /**
+     * Filter the list of transformations to find those that match the query.
+     * @param query 
+     * @param transformation 
+     * @param _index 
+     * @param exactMatch 
+     * @returns 
+     */
     protected filterTransformation: ItemPredicate<TransformationMetaQA> = (query, transformation, _index, exactMatch) => {
         const normalizedTitle = transformation.key.toLowerCase();
         const normalizedQuery = query.toLowerCase();
@@ -122,11 +114,23 @@ export class QuickAccess extends React.PureComponent<QuickAccessProps, QuickAcce
         }
     };
 
+    /**
+     * Test if two transformations have the same key.
+     * @param transformationA 
+     * @param transformationB 
+     * @returns 
+     */
     protected areTransformationsEqual(transformationA: TransformationMetaQA, transformationB: TransformationMetaQA) {
         // Compare only the titles (ignoring case) just for simplicity.
         return transformationA.key.toLowerCase() === transformationB.key.toLowerCase();
     }
 
+    /**
+     * Render a transformation menu item to display on a query.
+     * @param transformation 
+     * @param param1 
+     * @returns 
+     */
     protected renderTransformation: ItemRenderer<TransformationMetaQA> = (transformation, { handleClick, modifiers, query }) => {
         if (!modifiers.matchesPredicate) {
             return null;
@@ -144,6 +148,10 @@ export class QuickAccess extends React.PureComponent<QuickAccessProps, QuickAcce
         );
     };
 
+    /**
+     * Render the omnibar.
+     * @returns 
+     */
     public render() {
         return (
             <span>
