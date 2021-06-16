@@ -215,7 +215,7 @@ export class ScoutNavbar extends React.Component<BasePageProps, ScoutNavbarState
                     <Link to="/"><Button className="bp3-minimal" icon="home" text="Home" /></Link>
                     <Link to="/data_sources"><Button className="bp3-minimal" icon="document" text="Data Sources" /></Link>
                     <Link to="/recipes"><Button className="bp3-minimal" icon="data-lineage" text="Flows" /></Link>
-                    <Link to="/help"><Button className="bp3-minimal" icon="help" text="Help" /></Link>
+                    {/* <Link to="/help"><Button className="bp3-minimal" icon="help" text="Help" /></Link> */}
             </>;
         } else {
             return <></>;
