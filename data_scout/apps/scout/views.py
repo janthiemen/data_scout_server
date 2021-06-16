@@ -57,7 +57,7 @@ class ProjectPermission(permissions.BasePermission):
                             if up.user == request.user and (request.method in permissions.SAFE_METHODS or
                                                             up.role in ('owner', 'admin', 'editor'))]
 
-        if len(user_permissions) == 0:
+        if len(user_permissions) == 0 and not request.user.is_staff:
             return False
         else:
             return True

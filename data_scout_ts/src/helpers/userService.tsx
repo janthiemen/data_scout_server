@@ -458,6 +458,14 @@ export class SettingsService extends APICaller {
         this.call("/scout/api/join/", "GET", {}, callback);
     }
 
+    getProjects(callback: (body: {}) => void) {
+        this.call("/scout/api/project/", "GET", {}, callback);
+    }
+
+    deleteProject(project: number, callback: (body: {}) => void) {
+        this.call(`/scout/api/project/${project}/`, "DELETE", {}, callback);
+    }
+
     save(data: { [key: string]: any }, callback: (body: {}) => void) {
         if (data["id"] > 0) {
             this.call(`/scout/api/join/${data["id"]}/`, "PUT", data, callback);
