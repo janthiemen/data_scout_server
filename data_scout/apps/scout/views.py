@@ -221,7 +221,13 @@ class UserDetailView(views.APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        # UserProfileUpdateSerializer(data={user: user.id})
+        # Every user needs at least one project and a profile
+        project = Project(name="Getting Started")
+        project.save()
+        user_project = UserProject(user=user, project=project)
+        user_project.save()
+        up = UserProfile(user=user, project=user_project)
+        up.save()
 
         return Response(self.serializer_class(user, many=False).data)
 
