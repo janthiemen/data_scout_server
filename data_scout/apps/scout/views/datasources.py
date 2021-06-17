@@ -22,6 +22,14 @@ from ..serializers import DataSourceSerializer, UserFileSerializer, DataSourceFo
 from ..models import DataSource, UserFile, DataSourceFolder, Join
 
 
+def _is_int(val):
+    try:
+        int(val)
+        return True
+    except:
+        return False
+
+
 class DataSourceViewSet(ProjectModelView):
     """
     API endpoint that allows users to be viewed or edited.
@@ -30,6 +38,12 @@ class DataSourceViewSet(ProjectModelView):
     serializer_class = DataSourceSerializer
 
     def _make_schema(self, request):
+        """
+        Generate a schema for this data source (column names and types).
+
+        :param request:
+        :return:
+        """
         # We try if the data source actually works and what the data schema looks like
         definition = {"use_sample": True,
                       "sampling_technique": "top",
@@ -66,7 +80,7 @@ class DataSourceViewSet(ProjectModelView):
 
 class UserFileViewSet(ProjectModelView):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoint that allows user files to be viewed or edited.
     """
     queryset = UserFile.objects.all()
     serializer_class = UserFileSerializer
@@ -75,6 +89,10 @@ class UserFileViewSet(ProjectModelView):
         return JsonResponse({"user_file": user_file})
 
     def retrieve(self, request, pk=None, **kwargs):
+        """
+        Retrieve the user file. If the "output" get parameter is set to file, it will return a raw file. If it's set to
+        JSON (which is the default), it will return the userfile object as JSON.
+        """
         user_file = get_object_or_404(self.queryset, pk=pk)
         if request.query_params.get("output", "json") == "file":
             with default_storage.open(user_file.file_name) as f:
@@ -92,11 +110,22 @@ class UserFileViewSet(ProjectModelView):
 
 
 class UserFileUploadView(views.APIView):
+    """
+    This view allows the user to upload files.
+    """
     parser_classes = [FileUploadParser]
     queryset = UserFile.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
     def put(self, request, user_file_id: int, format=None):
+        """
+        Upload a file to the default storage location and attach it to the userfile object that was created earlier.
+
+        :param request:
+        :param user_file_id: The user file object id to attach this file to.
+        :param format:
+        :return:
+        """
         file_name = str(uuid.uuid4())
         user_file = get_object_or_404(UserFile, pk=user_file_id)
 
@@ -118,6 +147,9 @@ class DataSourceTypesView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
+        """
+        Get an overview of all available data source types.
+        """
         scout = data_scout.scout.Scout()
         data_source_types = scout.data_sources
         serialized = []
@@ -129,19 +161,28 @@ class DataSourceTypesView(views.APIView):
 
 class DataSourceFolderViewSet(ProjectModelView):
     """
-    API endpoint that allows users to be viewed or edited.
-    Use ?orphans_only=1 to only select top level folders
+    API endpoint that allows data source folders to be viewed or edited.
     """
     queryset = DataSourceFolder.objects.all()
     serializer_class = DataSourceFolderSerializer
 
 
 class JoinViewSet(ProjectModelView):
+    """
+    API endpoint that allows joins to be viewed or edited.
+    """
     queryset = Join.objects.all()
     serializer_class = JoinSerializer
 
 
 def _data_source_to_dict(data_source: DataSource, scout: data_scout.scout.Scout):
+    """
+    Convert a data source object to a dictionary.
+
+    :param data_source: The data source to convert
+    :param scout: An initialized data scout Scout object
+    :return:
+    """
     data_source = {"source": data_source.source, "kwargs": json.loads(data_source.kwargs)}
     ds = scout.get_data_source(data_source["source"])
     for field_name, field in ds.fields.items():
@@ -153,6 +194,16 @@ def _data_source_to_dict(data_source: DataSource, scout: data_scout.scout.Scout)
 
 def _data_source_to_pipeline(data_source: DataSource, scout: data_scout.scout.Scout, use_sample=True, column_types=True,
                              sampling_technique: str = 'top'):
+    """
+    Convert a data source to a pipeline element.
+
+    :param data_source: The data source to convert
+    :param scout: An initialized data scout Scout object
+    :param use_sample: If True sample the dataset, if False use all data.
+    :param column_types: If True return the column types as well (more overhead), if False then don't include them
+    :param sampling_technique: The sampling technique to use
+    :return:
+    """
     # data_source = get_object_or_404(DataSource, pk=data_source)
     return {
         "use_sample": use_sample,

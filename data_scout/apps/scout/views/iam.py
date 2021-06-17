@@ -1,37 +1,13 @@
-import json
-import logging
-import mimetypes
-import os
-import uuid
-from wsgiref.util import FileWrapper
-
-from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
-from django.http import JsonResponse, HttpResponse
-from django.shortcuts import get_object_or_404
 
-from rest_framework import viewsets, views, response, status, generics
-from rest_framework import permissions
-from rest_framework.parsers import FileUploadParser
+from rest_framework import viewsets, views, response, status, generics, permissions
 from rest_framework.response import Response
 
-import data_scout
-import math
-import numpy as np
-
 from ..views.permissions import ProjectPermission, UserProfilePermission
-from ..serializers import DataSourceSerializer, RecipeSerializer, TransformationSerializer, \
-    JoinSerializer, TransformationSerializerUpdate, RecipeFolderSerializer, \
-    DataSourceFolderSerializer, UserFileSerializer, UserProjectSerializer, UserProfileSerializer, ProjectSerializer, \
-    UserProjectCreateSerializer, UserProfileUpdateSerializer, ProjectFullSerializer, UserSerializer, \
-    ChangePasswordSerializer, UserDetailSerializer, CreateUserSerializer
-from ..models import DataSource, Recipe, Transformation, Join, RecipeFolder, DataSourceFolder, UserFile, UserProject, \
-    UserProfile, Project
-from django.core.exceptions import ObjectDoesNotExist, FieldDoesNotExist
-
-from ..variable_logger import VariableLogger
+from ..serializers import UserProjectSerializer, UserProfileSerializer, UserProjectCreateSerializer, \
+    UserProfileUpdateSerializer, ProjectFullSerializer, UserSerializer, ChangePasswordSerializer, UserDetailSerializer, \
+    CreateUserSerializer
+from ..models import UserProject, UserProfile, Project
 
 
 class ProjectModelView(viewsets.ModelViewSet):
@@ -97,6 +73,9 @@ class ProjectModelView(viewsets.ModelViewSet):
 
 
 class LoginCheckView(views.APIView):
+    """
+    Perform a login check. This will produce a forbidden error if not logged in.
+    """
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
@@ -104,6 +83,9 @@ class LoginCheckView(views.APIView):
 
 
 class UserDetailView(views.APIView):
+    """
+    This view allows users to be created and user details to be retrieved.
+    """
     serializer_class = UserDetailSerializer
     model = User
     permission_classes = (permissions.IsAuthenticated, )
@@ -113,6 +95,10 @@ class UserDetailView(views.APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        """
+        Create a new user. This will also create the accompanying profile and a getting started project.
+        TODO: Check if we can do this as a hook on the user model.
+        """
         serializer = CreateUserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -144,6 +130,9 @@ class ChangePasswordView(generics.UpdateAPIView):
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
+    """
+    This view allows user profiles to be viewed and edited.
+    """
     permission_classes = [permissions.IsAuthenticated, UserProfilePermission]
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
@@ -173,17 +162,19 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
+    """
+    This view allows projects to be viewed and edited.
+    """
     permission_classes = [permissions.IsAuthenticated, ProjectPermission]
 
     queryset = Project.objects.all()
     serializer_class = ProjectFullSerializer
 
-    # TODO: Add some kind of security here
-    # def get_queryset(self):
-    #     return self.queryset.filter(user=self.request.user)
-
 
 class UserProjectViewSet(ProjectModelView):
+    """
+    This view allows user projects to be viewed and edited.
+    """
     queryset = UserProject.objects.all()
     serializer_class = UserProjectSerializer
 

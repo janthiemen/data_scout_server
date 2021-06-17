@@ -13,6 +13,7 @@ import numpy as np
 
 from .datasources import _data_source_to_pipeline, _data_source_to_dict
 from .iam import ProjectModelView
+from .permissions import TransformationPermission
 from ..serializers import RecipeSerializer, TransformationSerializer, TransformationSerializerUpdate, RecipeFolderSerializer
 from ..models import Recipe, Transformation, RecipeFolder
 from django.core.exceptions import ObjectDoesNotExist
@@ -20,18 +21,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from ..variable_logger import VariableLogger
 
 
-def _is_int(val):
-    try:
-        int(val)
-        return True
-    except:
-        return False
-
-
 class TransformationTypesView(views.APIView):
+    """
+    Get an overview of the available transformation types.
+    """
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
+        """
+        Get all transformation types.
+        """
         scout = data_scout.scout.Scout()
         transformation_types = list(scout.transformations.values())
         serialized = []
@@ -50,6 +49,10 @@ class RecipeViewSet(ProjectModelView):
     serializer_class = RecipeSerializer
 
     def get_queryset(self):
+        """
+        Get the queryset, depending on the "orphans_only" parameter. If this parameter is set to 1, only flows without
+        a parent folder are returned.
+        """
         orphans_only = self.request.query_params.get("orphans_only", 0) == 1
         queryset = self.queryset.filter(project=self.request.user.profile.project.project)
         if orphans_only:
@@ -67,6 +70,10 @@ class RecipeFolderViewSet(ProjectModelView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        """
+        Get the queryset, depending on the "orphans_only" parameter. If this parameter is set to 1, only folders without
+        a parent folder are returned.
+        """
         orphans_only = int(self.request.query_params.get("orphans_only", 0)) == 1
         queryset = self.queryset.filter(project=self.request.user.profile.project.project)
         if orphans_only:
@@ -74,30 +81,18 @@ class RecipeFolderViewSet(ProjectModelView):
         return queryset
 
 
-class TransformationPermission(permissions.BasePermission):
-    """
-    Object-level permission to only allow member of the respective projects to read or edit an object.
-    """
-
-    def has_object_permission(self, request, view, obj):
-        users = obj.recipe.project.users.all()
-        user_permissions = [up
-                            for up in users
-                            if up.user == request.user and (request.method in permissions.SAFE_METHODS or
-                                                            up.role in ('owner', 'admin', 'editor'))]
-
-        return len(user_permissions) != 0
-
-
 class TransformationViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoint that allows transformations to be viewed or edited.
     """
     permission_classes = [permissions.IsAuthenticated, TransformationPermission]
     queryset = Transformation.objects.all()
     serializer_class = TransformationSerializer
 
     def destroy(self, request, *args, **kwargs):
+        """
+        Delete a transformation. If this transformation is followed by another, it will take care of that before deletion.
+        """
         transformation = self.get_object()
         try:
             transformation_next = transformation.next.get()
@@ -122,7 +117,13 @@ class TransformationViewSet(viewsets.ModelViewSet):
         return serializer_class
 
 
-def _get_pipeline(recipe):
+def _get_pipeline(recipe: Recipe):
+    """
+    Generate a JSON pipeline definition, based on a recipe object.
+
+    :param recipe: The flow to transform to a JSON file
+    :return:
+    """
     try:
         transformation = recipe.transformations.filter(previous__isnull=True).get()
     except ObjectDoesNotExist as e:
@@ -155,9 +156,20 @@ class CleanJSON:
 
 
 def _recipe_to_pipeline(recipe: Recipe, scout: data_scout.scout.Scout, use_sample=True, column_types=True):
+    """
+    Convert a Recipe object to a complete pipeline definition, including the data source.
+
+    :param recipe: The recipe to convert
+    :param scout: An initialized data scout Scout object
+    :param use_sample: If True sample the dataset, if False use all data.
+    :param column_types: If True return the column types as well (more overhead), if False then don't include them
+    :return:
+    """
+
     if recipe.input is not None:
         data_source = _data_source_to_dict(recipe.input, scout)
     elif recipe.input_join is not None:
+        # If the input to this flow is a join, we need to construct it.
         if recipe.input_join.data_source_left is not None:
             data_source_left = _data_source_to_pipeline(recipe.input_join.data_source_left, scout, use_sample,
                                                         column_types)
@@ -202,7 +214,7 @@ def data(request, recipe: int):
     Load the data and execute a pipeline.
 
     :param request:
-    :param recipe:
+    :param recipe: The id of the recipe
     :return:
     """
     logger = logging.getLogger(__name__)
@@ -242,6 +254,13 @@ def data(request, recipe: int):
 
 
 def pipeline(request, recipe: int):
+    """
+    Export a complete pipeline as either Python code or as a JSON definition, depending on the "output" get parameter.
+
+    :param request:
+    :param recipe:
+    :return:
+    """
     scout = data_scout.scout.Scout()
     recipe = get_object_or_404(Recipe, pk=recipe)
     definition = _recipe_to_pipeline(recipe, scout)

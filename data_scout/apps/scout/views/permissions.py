@@ -36,3 +36,17 @@ class UserProfilePermission(permissions.BasePermission):
         else:
             return False
 
+
+class TransformationPermission(permissions.BasePermission):
+    """
+    Object-level permission to only allow member of the respective projects to read or edit an object.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        users = obj.recipe.project.users.all()
+        user_permissions = [up
+                            for up in users
+                            if up.user == request.user and (request.method in permissions.SAFE_METHODS or
+                                                            up.role in ('owner', 'admin', 'editor'))]
+
+        return len(user_permissions) != 0
