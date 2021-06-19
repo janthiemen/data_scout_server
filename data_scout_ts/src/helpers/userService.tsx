@@ -340,7 +340,15 @@ export class RecipeService extends APICaller {
 
     save(data: { [key: string]: any }, callback: (body: {}) => void) {
         if (data["id"] > 0) {
-            this.call(`/scout/api/recipe/${data["id"]}/`, "PUT", data, callback);
+            this.call(`/scout/api/recipe/${data["id"]}/`, "PUT", {
+                id: data["id"],
+                name: data["name"],
+                parent: data["parent"],
+                input: data["input"],
+                input_join: data["input_join"],
+                sampling_technique: data["sampling_technique"],
+                project: data["project"],
+            }, callback);
         } else {
             this.call("/scout/api/recipe/", "POST", data, callback);
         }
