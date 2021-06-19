@@ -1,0 +1,89 @@
+:mod:`data_scout.transformations.pivot`
+=======================================
+
+.. py:module:: data_scout.transformations.pivot
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.transformations.pivot.Pivot
+   data_scout.transformations.pivot.Unpivot
+
+
+
+
+.. class:: Pivot(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.groupby.GroupByBase`
+
+   .. attribute:: is_global
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Pivot the data
+
+      
+
+   .. attribute:: key
+      :annotation: = Pivot
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: _add_aggregation(self, name, field, function)
+
+
+   .. method:: _make_column_names(self, columns: pandas.MultiIndex) -> List[str]
+
+      Make column names based on the aggregations in the pivot table.
+
+      :param columns: The Pandas multilevel columns
+      :return: A list of flat column names
+
+
+   .. method:: __call__(self, rows: pandas.DataFrame, index: int)
+
+
+
+.. class:: Unpivot(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: is_global
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Unpivot the data
+
+      
+
+   .. attribute:: key
+      :annotation: = Unpivot
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, rows: pandas.DataFrame, index: int)
+
+
+

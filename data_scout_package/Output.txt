@@ -1,0 +1,12 @@
+import data_scout
+
+def _is_false(value):
+    return value != False
+
+data_source = data_scout.connectors.csv.CSV({'filename': 'C:\\\\Users\\\\janthiemen.postema\\\\development\\\\data_scout\\\\data_scout\\\\uploads\\\\test.csv', 'delimiter': ',', 'encoding': 'utf-8', 'has_header': True})
+records = data_source(False, 'top')
+sample_size = len(records)
+transformation = data_scout.transformations.data.Convert({'field': 'column1', 'to': 'int'}, sample_size, records[0])
+for i, record in enumerate(records):
+    records[i], _ = transformation(record, i)
+

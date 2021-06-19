@@ -1,0 +1,184 @@
+:mod:`data_scout.transformations.literal`
+=========================================
+
+.. py:module:: data_scout.transformations.literal
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.transformations.literal.Literal
+   data_scout.transformations.literal.String
+   data_scout.transformations.literal.Integer
+   data_scout.transformations.literal.Float
+   data_scout.transformations.literal.Null
+   data_scout.transformations.literal.RandBetween
+   data_scout.transformations.literal.RandInt
+
+
+
+
+.. class:: Literal(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+      :abstractmethod:
+
+
+
+.. class:: String(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: key
+      :annotation: = String literal
+
+      
+
+   .. attribute:: title
+      :annotation: = Create a string column {output} with the value {value}
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Integer(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: key
+      :annotation: = Integer literal
+
+      
+
+   .. attribute:: title
+      :annotation: = Create an integer column {output} with the value {value}
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Float(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: key
+      :annotation: = Float literal
+
+      
+
+   .. attribute:: title
+      :annotation: = Create a float column {output} with the value {value}
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Null(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: key
+      :annotation: = Null literal
+
+      
+
+   .. attribute:: title
+      :annotation: = Create a column {output} containing only null (None) values
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: RandBetween(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: key
+      :annotation: = Random float between
+
+      
+
+   .. attribute:: title
+      :annotation: = Create a float column {output} with a random value between {start} and {end}
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: RandInt(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: key
+      :annotation: = Random integer between
+
+      
+
+   .. attribute:: title
+      :annotation: = Create an integer column {output} with a random value between {start} and {end}
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+

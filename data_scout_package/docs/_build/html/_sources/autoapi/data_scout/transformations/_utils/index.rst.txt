@@ -1,0 +1,43 @@
+:mod:`data_scout.transformations._utils`
+========================================
+
+.. py:module:: data_scout.transformations._utils
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.transformations._utils.compare_convert_value
+   data_scout.transformations._utils.compare_basis
+   data_scout.transformations._utils.get_param_bool
+   data_scout.transformations._utils.get_param_int
+   data_scout.transformations._utils.get_columns
+
+
+
+.. function:: compare_convert_value(search, example)
+
+
+.. function:: compare_basis(test_value_orig, comparison, value)
+
+
+.. function:: get_param_bool(param)
+
+
+.. function:: get_param_int(param, alternative)
+
+
+.. function:: get_columns(records: List[dict]) -> dict
+
+   Get a list of column_name: column_type dicts.
+
+   :param records: A list of all records
+   :return: A list of column names and their types
+
+

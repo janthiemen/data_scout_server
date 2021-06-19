@@ -1,0 +1,62 @@
+:mod:`data_scout.connectors.excel`
+==================================
+
+.. py:module:: data_scout.connectors.excel
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.connectors.excel.Excel
+
+
+
+
+.. class:: Excel(arguments)
+
+
+   Bases: :py:obj:`data_scout.connectors.connector.Connector`
+
+   Read data from a Excel file.
+
+   .. attribute:: TMP_SINK
+      :annotation: = False
+
+      
+
+   .. attribute:: MAX_SIZE
+      :annotation: = 2000000
+
+      
+
+   .. attribute:: MAX_ROWS
+      :annotation: = 200
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: _get_row_values(self, row: tuple) -> list
+
+
+   .. method:: __call__(self, sample: bool = False, sampling_technique: str = 'top', column_types: bool = False) -> List[dict]
+
+      This class is called when the data needs to be loaded.
+
+      Arguments:
+          :type sample: boolean: Whether to take a sample or not
+          :type sampling_technique: str: Which sampling technique to use (top, stratisfied, random)
+
+      Returns:
+          dict -- The row, including the extra output column
+
+
+

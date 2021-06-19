@@ -1,0 +1,43 @@
+:mod:`data_scout.connectors.join`
+=================================
+
+.. py:module:: data_scout.connectors.join
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.connectors.join.Join
+
+
+
+
+.. class:: Join(arguments)
+
+
+   Bases: :py:obj:`data_scout.connectors.connector.Connector`
+
+   Join two pipelines.
+
+   .. method:: spark(self, sample: bool = False, sampling_technique: str = 'top', column_types: bool = False)
+      :abstractmethod:
+
+
+   .. method:: __call__(self, sample: bool = False, sampling_technique: str = 'top', column_types: bool = False) -> List[dict]
+
+      This class is called when the data needs to be loaded.
+
+      Arguments:
+          :type sample: boolean: Whether to take a sample or not - IGNORED
+          :type sampling_technique: str: Which sampling technique to use (top) - IGNORED
+
+      Returns:
+          dict -- The row, including the extra output column
+
+
+

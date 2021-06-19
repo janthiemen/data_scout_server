@@ -1,0 +1,349 @@
+:mod:`data_scout.transformations.format`
+========================================
+
+.. py:module:: data_scout.transformations.format
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.transformations.format.Format
+   data_scout.transformations.format.UpperCase
+   data_scout.transformations.format.LowerCase
+   data_scout.transformations.format.ProperCase
+   data_scout.transformations.format.Trim
+   data_scout.transformations.format.TrimWhitespace
+   data_scout.transformations.format.TrimQuotes
+   data_scout.transformations.format.RemoveWhitespace
+   data_scout.transformations.format.RemoveQuotes
+   data_scout.transformations.format.RemoveSymbols
+   data_scout.transformations.format.RemoveAccents
+   data_scout.transformations.format.AddFix
+   data_scout.transformations.format.AddPrefix
+   data_scout.transformations.format.AddSuffix
+   data_scout.transformations.format.Pad
+   data_scout.transformations.format.Number
+
+
+
+
+.. class:: Format(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+      :abstractmethod:
+
+
+
+.. class:: UpperCase(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Format`
+
+   .. attribute:: title
+      :annotation: = Convert {fields} to uppercase
+
+      
+
+   .. attribute:: key
+      :annotation: = To uppercase
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: LowerCase(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Format`
+
+   .. attribute:: title
+      :annotation: = Convert {fields} to lowercase
+
+      
+
+   .. attribute:: key
+      :annotation: = To lowercase
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ProperCase(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Format`
+
+   .. attribute:: title
+      :annotation: = Convert {fields} to proper case
+
+      
+
+   .. attribute:: key
+      :annotation: = To propercase
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Trim(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: character
+      
+
+      
+
+   .. attribute:: key
+      :annotation: = Trim
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: TrimWhitespace(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Trim`
+
+   .. attribute:: title
+      :annotation: = Trim {fields} of whitespace
+
+      
+
+   .. attribute:: key
+      :annotation: = Trim whitespace
+
+      
+
+   .. attribute:: character
+      
+
+      
+
+
+.. class:: TrimQuotes(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Trim`
+
+   .. attribute:: title
+      :annotation: = Trim {fields} of quotes
+
+      
+
+   .. attribute:: key
+      :annotation: = Trim quotes
+
+      
+
+   .. attribute:: character
+      :annotation: = '"
+
+      
+
+
+.. class:: RemoveWhitespace(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Format`
+
+   .. attribute:: title
+      :annotation: = Remove whitespace from {fields}
+
+      
+
+   .. attribute:: key
+      :annotation: = Remove whitespace
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: RemoveQuotes(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Format`
+
+   .. attribute:: title
+      :annotation: = Remove quotes from {fields}
+
+      
+
+   .. attribute:: key
+      :annotation: = Remove quotes
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: RemoveSymbols(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Format`
+
+   .. attribute:: title
+      :annotation: = Remove symbols from {fields}
+
+      
+
+   .. attribute:: key
+      :annotation: = Remove symbols
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: RemoveAccents(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Format`
+
+   .. attribute:: title
+      :annotation: = Remove accents from {fields}
+
+      
+
+   .. attribute:: key
+      :annotation: = Remove accents
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: AddFix(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+      :abstractmethod:
+
+
+
+.. class:: AddPrefix(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`AddFix`
+
+   .. attribute:: title
+      :annotation: = Add the prefix {text} to {fields}
+
+      
+
+   .. attribute:: key
+      :annotation: = Add prefix
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: AddSuffix(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`AddFix`
+
+   .. attribute:: title
+      :annotation: = Add the suffix {text} to {fields}
+
+      
+
+   .. attribute:: key
+      :annotation: = Add suffix
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Pad(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Pad {fields} {side} to {length} characters with {character}
+
+      
+
+   .. attribute:: key
+      :annotation: = Pad
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Number(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Format {fields} as numbers
+
+      
+
+   .. attribute:: key
+      :annotation: = Format as number
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+

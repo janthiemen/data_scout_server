@@ -1,0 +1,584 @@
+:mod:`data_scout.transformations.filter`
+========================================
+
+.. py:module:: data_scout.transformations.filter
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.transformations.filter.FilterMissing
+   data_scout.transformations.filter.FilterMismatched
+   data_scout.transformations.filter.FilterIs
+   data_scout.transformations.filter.FilterIsNot
+   data_scout.transformations.filter.FilterList
+   data_scout.transformations.filter.FilterIsOneOf
+   data_scout.transformations.filter.FilterIsnotOneOf
+   data_scout.transformations.filter.FilterLessThan
+   data_scout.transformations.filter.FilterGreaterThan
+   data_scout.transformations.filter.FilterBetween
+   data_scout.transformations.filter.FilterNotBetween
+   data_scout.transformations.filter.FilterContains
+   data_scout.transformations.filter.FilterStartsWith
+   data_scout.transformations.filter.FilterEndsWith
+   data_scout.transformations.filter.FilterRegex
+   data_scout.transformations.filter.FilterRowsInterval
+   data_scout.transformations.filter.FilterRowsRange
+   data_scout.transformations.filter.FilterRowsTop
+   data_scout.transformations.filter.FilterRowsDuplicates
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.transformations.filter.convert_search_value
+
+
+
+.. class:: FilterMissing(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter rows with missing values in {field}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter missing values
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterMismatched(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter rows with mismatched values in {field}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter mismatched values
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. function:: convert_search_value(search, example)
+
+
+.. class:: FilterIs(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter rows where {field} matched {search}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter were equals
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterIsNot(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter rows where {field} does not equal {search}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter where not equals
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterList(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterIsOneOf(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`FilterList`
+
+   .. attribute:: title
+      :annotation: = Filter rows where {field} is one of {self.search}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter where in list
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterIsnotOneOf(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`FilterList`
+
+   .. attribute:: title
+      :annotation: = Filter rows where {field} is not one of {self.search}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter where not in list
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterLessThan(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter rows where {field} is lower than {threshold}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter lower than
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterGreaterThan(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter rows where {field} is higher than {threshold}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter greater than
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterBetween(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter rows where {field} is between {min} and {max}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter between
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterNotBetween(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter rows where {field} is not between {min} and {max}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter not between
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterContains(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter rows where {field} contains {search}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter contains
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterStartsWith(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter rows where {field} starts with {search}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter starts with
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterEndsWith(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter rows where {field} ends with {search}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter ends with
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterRegex(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter rows where {field} matches {search}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter regex
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterRowsInterval(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter the rows at a regular interval of {interval}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter at interval
+
+      
+
+   .. attribute:: allowed_sampling_techniques
+      :annotation: = ['top']
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterRowsRange(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter the rows in the range {min} - {max}
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter in range
+
+      
+
+   .. attribute:: allowed_sampling_techniques
+      :annotation: = ['top']
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterRowsTop(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: filter
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter the top {rows} rows
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter top rows
+
+      
+
+   .. attribute:: allowed_sampling_techniques
+      :annotation: = ['top']
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: FilterRowsDuplicates(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: is_global
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Filter the duplicates from the dataset
+
+      
+
+   .. attribute:: key
+      :annotation: = Filter duplicate rows
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, rows: pandas.DataFrame, index: int)
+
+
+

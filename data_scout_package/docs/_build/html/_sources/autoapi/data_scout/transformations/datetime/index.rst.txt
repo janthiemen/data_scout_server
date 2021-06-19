@@ -1,0 +1,403 @@
+:mod:`data_scout.transformations.datetime`
+==========================================
+
+.. py:module:: data_scout.transformations.datetime
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.transformations.datetime.ExtractBasic
+   data_scout.transformations.datetime.ExtractYear
+   data_scout.transformations.datetime.ExtractMonth
+   data_scout.transformations.datetime.ExtractMonthName
+   data_scout.transformations.datetime.ExtractEndOfMonth
+   data_scout.transformations.datetime.ExtractDay
+   data_scout.transformations.datetime.ExtractWeek
+   data_scout.transformations.datetime.ExtractDayOfWeek
+   data_scout.transformations.datetime.ExtractDayOfWeekName
+   data_scout.transformations.datetime.ExtractDayOfYear
+   data_scout.transformations.datetime.ExtractHours
+   data_scout.transformations.datetime.ExtractMinutes
+   data_scout.transformations.datetime.ExtractSeconds
+   data_scout.transformations.datetime.ExtractTimestamp
+   data_scout.transformations.datetime.DateAdd
+   data_scout.transformations.datetime.DateDiff
+   data_scout.transformations.datetime.Now
+   data_scout.transformations.datetime.Today
+
+
+
+
+.. class:: ExtractBasic(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Extract year from {field} into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime minutes
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ExtractYear(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`ExtractBasic`
+
+   .. attribute:: title
+      :annotation: = Extract year from {field} into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime year
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ExtractMonth(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`ExtractBasic`
+
+   .. attribute:: title
+      :annotation: = Extract month from {field} into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime month
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ExtractMonthName(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`ExtractBasic`
+
+   .. attribute:: title
+      :annotation: = Extract month name from {field} into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime month name
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ExtractEndOfMonth(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`ExtractBasic`
+
+   .. attribute:: title
+      :annotation: = Get the last day of the month from {field} into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime end of month
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ExtractDay(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`ExtractBasic`
+
+   .. attribute:: title
+      :annotation: = Extract day from {field} into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime day
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ExtractWeek(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`ExtractBasic`
+
+   .. attribute:: title
+      :annotation: = Extract week number from {field} into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime week
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ExtractDayOfWeek(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`ExtractBasic`
+
+   .. attribute:: title
+      :annotation: = Extract the day of the week from {field} into {output} (Monday is 0)
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime day of week
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ExtractDayOfWeekName(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`ExtractBasic`
+
+   .. attribute:: title
+      :annotation: = Extract the name of the day of the week from {field} into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime day of week name
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ExtractDayOfYear(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`ExtractBasic`
+
+   .. attribute:: title
+      :annotation: = Extract the day of the year from {field} into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime day of year
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ExtractHours(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`ExtractBasic`
+
+   .. attribute:: title
+      :annotation: = Extract the hours from {field} into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime hours
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ExtractMinutes(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`ExtractBasic`
+
+   .. attribute:: title
+      :annotation: = Extract the minutes from {field} into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime minutes
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ExtractSeconds(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`ExtractBasic`
+
+   .. attribute:: title
+      :annotation: = Extract the seconds from {field} into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime seconds
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ExtractTimestamp(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`ExtractBasic`
+
+   .. attribute:: title
+      :annotation: = Extract the timestamp from {field} into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime timestamp
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: DateAdd(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Move {field} by a certain amount of time
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime add
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: DateDiff(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Calculate {field_a} - {field_b} in {unit}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime difference
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Now(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Current datetime into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime now
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Today(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Current date into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Datetime today
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+

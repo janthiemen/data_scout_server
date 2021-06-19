@@ -1,0 +1,46 @@
+:mod:`data_scout.exceptions`
+============================
+
+.. py:module:: data_scout.exceptions
+
+
+Module Contents
+---------------
+
+.. exception:: DataSourceConnectorUnavailableException(connector: str, message: str = 'The requested data source connector is not available')
+
+
+   Bases: :py:obj:`BaseException`
+
+   Common base class for all exceptions
+
+
+.. exception:: TransformationUnavailableException(transformation: str, message: str = 'The requested transformation is not available')
+
+
+   Bases: :py:obj:`BaseException`
+
+   Common base class for all exceptions
+
+
+.. exception:: PipelineException(transformation: int, original_exception: Exception, message: str = 'An error occurred while running the pipeline')
+
+
+   Bases: :py:obj:`BaseException`
+
+   This exception is used as a "catch all". It includes a message, the original exception type and the transformation.
+
+
+.. exception:: IndexFilterException
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+   .. attribute:: message
+      :annotation: = An error occurred while filtering
+
+      
+
+

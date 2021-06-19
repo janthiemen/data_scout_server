@@ -1,0 +1,344 @@
+:mod:`data_scout.transformations.comparison`
+============================================
+
+.. py:module:: data_scout.transformations.comparison
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.transformations.comparison.CompareValue
+   data_scout.transformations.comparison.CompareColumns
+   data_scout.transformations.comparison.Parity
+   data_scout.transformations.comparison.Mismatched
+   data_scout.transformations.comparison.Missing
+   data_scout.transformations.comparison.IsNull
+   data_scout.transformations.comparison.Negate
+   data_scout.transformations.comparison.Logical
+   data_scout.transformations.comparison.IfElse
+   data_scout.transformations.comparison.Min
+   data_scout.transformations.comparison.Max
+   data_scout.transformations.comparison.Mean
+   data_scout.transformations.comparison.Mode
+   data_scout.transformations.comparison.Coalesce
+
+
+
+
+.. class:: CompareValue(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Check if {field} {comparison} {value}
+
+      
+
+   .. attribute:: key
+      :annotation: = Compare to value
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: CompareColumns(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Check if {field_a} {comparison} {field_b}
+
+      
+
+   .. attribute:: key
+      :annotation: = Compare columns
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Parity(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Check if {field} is {parity}
+
+      
+
+   .. attribute:: key
+      :annotation: = Parity (even/odd)
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Mismatched(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Check if {field} is mismatched
+
+      
+
+   .. attribute:: key
+      :annotation: = Check mismatched
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Missing(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Mismatched`
+
+   .. attribute:: title
+      :annotation: = Check if {field} is missing
+
+      
+
+   .. attribute:: key
+      :annotation: = Check missing
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: IsNull(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Mismatched`
+
+   .. attribute:: title
+      :annotation: = Check if {field} is null
+
+      
+
+   .. attribute:: key
+      :annotation: = Check null
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Negate(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Negate {field}
+
+      
+
+   .. attribute:: key
+      :annotation: = Negate
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Logical(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Compare {fields} using {comparison}
+
+      
+
+   .. attribute:: key
+      :annotation: = Logical comparison (and/or/xor)
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: IfElse(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = If else statement using {if}
+
+      
+
+   .. attribute:: key
+      :annotation: = If/else
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: _get_value(self, value_type, value_string, value_number)
+
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Min(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Get the minimum of {fields}
+
+      
+
+   .. attribute:: key
+      :annotation: = Columns minimum
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: _get_values(self, row)
+
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Max(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Min`
+
+   .. attribute:: title
+      :annotation: = Get the maximum of {fields}
+
+      
+
+   .. attribute:: key
+      :annotation: = Columns maximum
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Mean(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Min`
+
+   .. attribute:: title
+      :annotation: = Get the mean of {fields}
+
+      
+
+   .. attribute:: key
+      :annotation: = Columns mean
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Mode(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Min`
+
+   .. attribute:: title
+      :annotation: = Get the mode of {fields}
+
+      
+
+   .. attribute:: key
+      :annotation: = Columns mode
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: Coalesce(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`Min`
+
+   .. attribute:: title
+      :annotation: = Get the first non-null value of {fields}
+
+      
+
+   .. attribute:: key
+      :annotation: = Columns coalesce
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+

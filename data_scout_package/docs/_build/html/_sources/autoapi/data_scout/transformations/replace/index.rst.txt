@@ -1,0 +1,168 @@
+:mod:`data_scout.transformations.replace`
+=========================================
+
+.. py:module:: data_scout.transformations.replace
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.transformations.replace.ReplaceText
+   data_scout.transformations.replace.ReplaceRegex
+   data_scout.transformations.replace.ReplaceDelimiters
+   data_scout.transformations.replace.ReplacePositions
+   data_scout.transformations.replace.ReplaceMismatched
+   data_scout.transformations.replace.ReplaceMissing
+
+
+
+
+.. class:: ReplaceText(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Replace exact matches of {old} with {new} in {field} as {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Replace text
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ReplaceRegex(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Replace matches of the regex {pattern} with {new} in {field} as {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Replace regex
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ReplaceDelimiters(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Replace all characters between the delimiter: {delimiter} in {field} as {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Replace between delimiters
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ReplacePositions(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Replace all characters between pos. {start} - {end} with {new} into {output}
+
+      
+
+   .. attribute:: key
+      :annotation: = Replace between positions
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ReplaceMismatched(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Replace mismatched values in {field} with {new}
+
+      
+
+   .. attribute:: key
+      :annotation: = Replace mismatched
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: ReplaceMissing(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Replace missing values in {field} with {new}
+
+      
+
+   .. attribute:: key
+      :annotation: = Replace missing
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, row, index: int)
+
+
+

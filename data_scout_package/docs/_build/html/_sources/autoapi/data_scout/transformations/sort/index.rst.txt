@@ -1,0 +1,48 @@
+:mod:`data_scout.transformations.sort`
+======================================
+
+.. py:module:: data_scout.transformations.sort
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.transformations.sort.SortBy
+
+
+
+
+.. class:: SortBy(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: is_global
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Sort the data
+
+      
+
+   .. attribute:: key
+      :annotation: = Sort
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, rows: pandas.DataFrame, index: int)
+
+
+

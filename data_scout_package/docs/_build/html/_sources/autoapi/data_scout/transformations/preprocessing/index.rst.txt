@@ -1,0 +1,228 @@
+:mod:`data_scout.transformations.preprocessing`
+===============================================
+
+.. py:module:: data_scout.transformations.preprocessing
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.transformations.preprocessing.Scale
+   data_scout.transformations.preprocessing.CategoricalEncoding
+   data_scout.transformations.preprocessing.DiscretizeBin
+   data_scout.transformations.preprocessing.Binarize
+   data_scout.transformations.preprocessing.Normalize
+   data_scout.transformations.preprocessing.Polynomial
+   data_scout.transformations.preprocessing.Impute
+
+
+
+
+.. class:: Scale(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Scale {field} using a {method} scaler
+
+      
+
+   .. attribute:: key
+      :annotation: = Scale
+
+      
+
+   .. attribute:: is_global
+      :annotation: = True
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, rows: pandas.DataFrame, index: int)
+
+
+
+.. class:: CategoricalEncoding(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Encoding {field} using a {method} encoder
+
+      
+
+   .. attribute:: key
+      :annotation: = Encode categorical features
+
+      
+
+   .. attribute:: is_global
+      :annotation: = True
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, rows: pandas.DataFrame, index: int)
+
+
+
+.. class:: DiscretizeBin(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Discretize {field} into {k} bins
+
+      
+
+   .. attribute:: key
+      :annotation: = Discretize
+
+      
+
+   .. attribute:: is_global
+      :annotation: = True
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, rows: pandas.DataFrame, index: int)
+
+
+
+.. class:: Binarize(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Binarize {field} using {threshold} as threshold
+
+      
+
+   .. attribute:: key
+      :annotation: = Binarize
+
+      
+
+   .. attribute:: is_global
+      :annotation: = True
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, rows: pandas.DataFrame, index: int)
+
+
+
+.. class:: Normalize(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Normalize {field} using the {norm} norm
+
+      
+
+   .. attribute:: key
+      :annotation: = Normalize
+
+      
+
+   .. attribute:: is_global
+      :annotation: = True
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, rows: pandas.DataFrame, index: int)
+
+
+
+.. class:: Polynomial(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: is_global
+      :annotation: = True
+
+      
+
+   .. attribute:: key
+      :annotation: = Polynomial features
+
+      
+
+   .. attribute:: title
+      :annotation: = Generate a polynomial feature based on {fields}
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, rows: pandas.DataFrame, index: int)
+
+
+
+.. class:: Impute(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: title
+      :annotation: = Impute {field} through {strategy}
+
+      
+
+   .. attribute:: key
+      :annotation: = Impute missing values
+
+      
+
+   .. attribute:: is_global
+      :annotation: = True
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, rows: pandas.DataFrame, index: int)
+
+
+

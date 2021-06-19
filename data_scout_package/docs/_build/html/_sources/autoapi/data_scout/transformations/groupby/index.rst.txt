@@ -1,0 +1,69 @@
+:mod:`data_scout.transformations.groupby`
+=========================================
+
+.. py:module:: data_scout.transformations.groupby
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.transformations.groupby.GroupByBase
+   data_scout.transformations.groupby.GroupBy
+
+
+
+
+.. class:: GroupByBase(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   .. attribute:: key
+      :annotation: = Group by
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: _add_aggregation(self, name, field, function)
+
+
+   .. method:: _create_aggregations(self, aggs)
+
+
+   .. method:: __call__(self, row, index: int)
+
+
+
+.. class:: GroupBy(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`GroupByBase`
+
+   .. attribute:: is_global
+      :annotation: = True
+
+      
+
+   .. attribute:: title
+      :annotation: = Group the data by {fields}
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: __call__(self, rows: pandas.DataFrame, index: int)
+
+
+

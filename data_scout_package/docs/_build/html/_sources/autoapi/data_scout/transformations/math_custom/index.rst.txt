@@ -1,0 +1,133 @@
+:mod:`data_scout.transformations.math_custom`
+=============================================
+
+.. py:module:: data_scout.transformations.math_custom
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.transformations.math_custom.Custom
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   data_scout.transformations.math_custom.__author__
+   data_scout.transformations.math_custom.__version__
+   data_scout.transformations.math_custom.__date__
+   data_scout.transformations.math_custom.__source__
+   data_scout.transformations.math_custom.__note__
+
+
+.. data:: __author__
+   :annotation: = Paul McGuire
+
+   
+
+.. data:: __version__
+   :annotation: = $Revision: 0.0 $
+
+   
+
+.. data:: __date__
+   :annotation: = $Date: 2009-03-20 $
+
+   
+
+.. data:: __source__
+   :annotation: = Multiline-String
+
+    .. raw:: html
+
+        <details><summary>Show Value</summary>
+
+    .. code-block:: text
+        :linenos:
+
+        http://pyparsing.wikispaces.com/file/view/fourFn.py
+        http://pyparsing.wikispaces.com/message/view/home/15549426
+
+
+    .. raw:: html
+
+        </details>
+
+   
+
+.. data:: __note__
+   :annotation: = Multiline-String
+
+    .. raw:: html
+
+        <details><summary>Show Value</summary>
+
+    .. code-block:: text
+        :linenos:
+
+        
+        All I've done is rewrap Paul McGuire's fourFn.py as a class, so I can use it
+        more easily in other places.
+
+
+    .. raw:: html
+
+        </details>
+
+   
+
+.. class:: Custom(arguments: dict, sample_size: int, example: dict = None)
+
+
+   Bases: :py:obj:`data_scout.transformations.transformation.Transformation`
+
+   Most of this code comes from the fourFn.py pyparsing example
+
+   .. attribute:: title
+      :annotation: = Custom equation
+
+      
+
+   .. attribute:: key
+      :annotation: = Math equation
+
+      
+
+   .. attribute:: fields
+      
+
+      
+
+   .. method:: push_first(self, strg, loc, toks)
+
+
+   .. method:: push_u_minus(self, strg, loc, toks)
+
+
+   .. method:: evaluate_stack(self, s)
+
+
+   .. method:: eval(self, num_string, parse_all=True)
+
+
+   .. method:: __call__(self, row, index: int)
+
+      This class is called on each row.
+
+      Arguments:
+          row {dict} -- The complete row
+
+      Returns:
+          dict -- The row, including the extra output column
+
+
+
