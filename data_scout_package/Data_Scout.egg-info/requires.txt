@@ -1,5 +1,0 @@
-pandas
-xlrd
-
-[dev]
-nose2
