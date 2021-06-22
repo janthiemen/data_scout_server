@@ -4,4 +4,4 @@ This is a web-based tool to quickly and easily create and edit data preparation 
 ## Installation
 A complete installation instruction can be found [in the documentation](https://janthiemen.github.io/data_scout/pages/server.html). Alternatively you can have a look in the respective directories.
 
-![Screenshot of the interface](screenshot.png)
+![Screenshot of the interface](screenshot.PNG)
